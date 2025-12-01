@@ -1,7 +1,8 @@
-package com.helpdesk.service;
+package com.helpdesk.service.impl;
 
 import com.helpdesk.model.Ticket;
 import com.helpdesk.repository.TicketRepository;
+import com.helpdesk.service.TicketService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
