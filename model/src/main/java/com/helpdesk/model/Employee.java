@@ -1,0 +1,102 @@
+package com.helpdesk.model;
+
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "employees")
+public class Employee {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long employeeId;
+
+    private String employeeName;
+    private int employeeAge;
+    private String employeeAddress;
+    private String  employeeContactNumber;
+    private String employeeEmail;
+    private String employeePosition;
+
+    @Enumerated(EnumType.STRING)
+    private EmploymentStatus employmentStatus;
+
+    // Constructors
+    public Employee() {}
+
+    public Employee(String employeeName,
+                    int employeeAge,
+                    String employeeAddress,
+                    String employeeContactNumber,
+                    String employeeEmail) {
+        this.employeeName = employeeName;
+        this.employeeAge = employeeAge;
+        this.employeeAddress = employeeAddress;
+        this.employeeContactNumber = employeeContactNumber;
+        this.employeeEmail = employeeEmail;
+    }
+
+    // Getters
+    public Long getEmployeeId() {
+        return employeeId;
+    }
+
+    public String getEmployeeName() {
+        return employeeName;
+    }
+
+    public int getEmployeeAge() {
+        return employeeAge;
+    }
+
+    public String getEmployeeAddress() {
+        return employeeAddress;
+    }
+
+    public String getEmployeeContactNumber() {
+        return employeeContactNumber;
+    }
+
+    public String getEmployeeEmail() {
+        return employeeEmail;
+    }
+
+    public EmploymentStatus getEmploymentStatus() {
+        return employmentStatus;
+    }
+
+    public String getEmployeePosition() {
+        return employeePosition;
+    }
+
+    // Setters
+    public void setEmployeeId(Long employeeId) {
+        this.employeeId = employeeId;
+    }
+
+    public void setEmployeeName(String employeeName) {
+        this.employeeName = employeeName;
+    }
+
+    public void setEmployeeAge(Integer employeeAge) {
+        this.employeeAge = employeeAge;
+    }
+
+    public void setEmployeeAddress(String employeeAddress) {
+        this.employeeAddress = employeeAddress;
+    }
+
+    public void setEmployeeContactNumber(String employeeContactNumber) {
+        this.employeeContactNumber = employeeContactNumber;
+    }
+
+    public void setEmployeeEmail(String employeeEmail) {
+        this.employeeEmail = employeeEmail;
+    }
+
+    public void setEmploymentStatus(EmploymentStatus employmentStatus) {
+        this.employmentStatus = employmentStatus;
+    }
+
+    public void setEmployeePosition(String employeePosition) {
+        this.employeePosition = employeePosition;
+    }
+}
