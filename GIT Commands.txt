@@ -1,0 +1,19 @@
+Personal Access Token: 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
+
+Connect local project to a GitHub repository.
+git remote add origin Repository URL
+
+Add your project files to Git
+git add .
+
+Commit the files:
+git commit -m "Initial commit"
+
+Check branch
+git branch
+
+Force rename master to main
+git branch -M main
+
+Push local project to GitHub:
+git push -u origin main
