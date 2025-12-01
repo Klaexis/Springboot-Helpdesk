@@ -1,50 +1,121 @@
 package com.helpdesk.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
+@Table(name="tickets")
 public class Ticket {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long ticketNumber;
 
-    private String title;
-    private String description;
+    private String ticketTitle;
+    private String ticketBody;
+    private String ticketAssignee;
+    private String ticketCreatedDate;
+    private String ticketCreatedBy;
+    private String ticketUpdatedDate;
+    private String ticketUpdatedBy;
+    private String ticketRemarks;
 
+    @Enumerated(EnumType.STRING)
+    private TicketStatus ticketStatus;
+
+    // Constructors
     public Ticket() {}
 
-    public Ticket(Long id, String title, String description) {
-        this.id = id;
-        this.title = title;
-        this.description = description;
+    public Ticket(Long ticketNumber,
+                  String ticketTitle,
+                  String ticketBody,
+                  String ticketCreatedDate,
+                  String ticketCreatedBy) {
+        this.ticketNumber = ticketNumber;
+        this.ticketTitle = ticketTitle;
+        this.ticketBody = ticketBody;
+        this.ticketCreatedDate = ticketCreatedDate;
+        this.ticketCreatedBy = ticketCreatedBy;
     }
 
-    // Getters and setters
-    public Long getId() {
-        return id;
+    // Getters
+    public Long getTicketNumber() {
+        return ticketNumber;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public String getTicketTitle() {
+        return ticketTitle;
     }
 
-    public String getTitle() {
-        return title;
+    public String getTicketBody() {
+        return ticketBody;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public String getTicketAssignee() {
+        return ticketAssignee;
     }
 
-    public String getDescription() {
-        return description;
+    public String getTicketCreatedDate() {
+        return ticketCreatedDate;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public String getTicketCreatedBy() {
+        return ticketCreatedBy;
+    }
+
+    public String getTicketUpdatedDate() {
+        return ticketUpdatedDate;
+    }
+
+    public String getTicketUpdatedBy() {
+        return ticketUpdatedBy;
+    }
+
+    public String getTicketRemarks() {
+        return ticketRemarks;
+    }
+
+    public TicketStatus getTicketStatus() {
+        return ticketStatus;
+    }
+
+    // Setters
+    public void setTicketNumber(Long ticketNumber) {
+        this.ticketNumber = ticketNumber;
+    }
+
+    public void setTicketTitle(String ticketTitle) {
+        this.ticketTitle = ticketTitle;
+    }
+
+    public void setTicketBody(String ticketBody) {
+        this.ticketBody = ticketBody;
+    }
+
+    public void setTicketAssignee(String ticketAssignee) {
+        this.ticketAssignee = ticketAssignee;
+    }
+
+    public void setTicketCreatedDate(String ticketCreatedDate) {
+        this.ticketCreatedDate = ticketCreatedDate;
+    }
+
+    public void setTicketCreatedBy(String ticketCreatedBy) {
+        this.ticketCreatedBy = ticketCreatedBy;
+    }
+
+    public void setTicketUpdatedDate(String ticketUpdatedDate) {
+        this.ticketUpdatedDate = ticketUpdatedDate;
+    }
+
+    public void setTicketUpdatedBy(String ticketUpdatedBy) {
+        this.ticketUpdatedBy = ticketUpdatedBy;
+    }
+
+    public void setTicketRemarks(String ticketRemarks) {
+        this.ticketRemarks = ticketRemarks;
+    }
+
+    public void setTicketStatus(TicketStatus ticketStatus) {
+        this.ticketStatus = ticketStatus;
     }
 
 }
