@@ -1,6 +1,10 @@
 package com.helpdesk.model;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name="tickets")
@@ -12,9 +16,15 @@ public class Ticket {
     private String ticketTitle;
     private String ticketBody;
     private String ticketAssignee;
-    private String ticketCreatedDate;
+
+    @CreationTimestamp
+    private LocalDateTime ticketCreatedDate;
+
     private String ticketCreatedBy;
-    private String ticketUpdatedDate;
+
+    @UpdateTimestamp
+    private LocalDateTime ticketUpdatedDate;
+
     private String ticketUpdatedBy;
     private String ticketRemarks;
 
@@ -27,7 +37,7 @@ public class Ticket {
     public Ticket(Long ticketNumber,
                   String ticketTitle,
                   String ticketBody,
-                  String ticketCreatedDate,
+                  LocalDateTime ticketCreatedDate,
                   String ticketCreatedBy) {
         this.ticketNumber = ticketNumber;
         this.ticketTitle = ticketTitle;
@@ -53,7 +63,7 @@ public class Ticket {
         return ticketAssignee;
     }
 
-    public String getTicketCreatedDate() {
+    public LocalDateTime getTicketCreatedDate() {
         return ticketCreatedDate;
     }
 
@@ -61,7 +71,7 @@ public class Ticket {
         return ticketCreatedBy;
     }
 
-    public String getTicketUpdatedDate() {
+    public LocalDateTime getTicketUpdatedDate() {
         return ticketUpdatedDate;
     }
 
@@ -94,7 +104,7 @@ public class Ticket {
         this.ticketAssignee = ticketAssignee;
     }
 
-    public void setTicketCreatedDate(String ticketCreatedDate) {
+    public void setTicketCreatedDate(LocalDateTime ticketCreatedDate) {
         this.ticketCreatedDate = ticketCreatedDate;
     }
 
@@ -102,7 +112,7 @@ public class Ticket {
         this.ticketCreatedBy = ticketCreatedBy;
     }
 
-    public void setTicketUpdatedDate(String ticketUpdatedDate) {
+    public void setTicketUpdatedDate(LocalDateTime ticketUpdatedDate) {
         this.ticketUpdatedDate = ticketUpdatedDate;
     }
 
