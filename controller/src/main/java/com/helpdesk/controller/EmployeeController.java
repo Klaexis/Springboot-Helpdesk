@@ -10,39 +10,39 @@ import java.util.List;
 @RequestMapping("/api/admin/employees")
 public class EmployeeController {
 
-    private final EmployeeService service;
+    private final EmployeeService employeeService;
 
-    public EmployeeController(EmployeeService service) {
-        this.service = service;
+    public EmployeeController(EmployeeService employeeService) {
+        this.employeeService = employeeService;
     }
 
     // GET /api/admin/employees
     @GetMapping
     public List<Employee> getAllEmployees() {
-        return service.getAllEmployees();
+        return employeeService.getAllEmployees();
     }
 
     // GET /api/admin/employees/{id}
     @GetMapping("/{id}")
     public Employee getEmployeeById(@PathVariable Long id) {
-        return service.findEmployee(id);
+        return employeeService.findEmployee(id);
     }
 
     // POST /api/admin/employees
     @PostMapping
     public Employee createEmployee(@RequestBody Employee employee) {
-        return service.createEmployee(employee);
+        return employeeService.createEmployee(employee);
     }
 
     // PUT /api/admin/employees/{id}
     @PutMapping("/{id}")
     public Employee updateEmployee(@PathVariable Long id, @RequestBody Employee employee) {
-        return service.updateEmployee(id, employee);
+        return employeeService.updateEmployee(id, employee);
     }
 
     // DELETE /api/admin/employees/{id}
     @DeleteMapping("/{id}")
     public void deleteEmployee(@PathVariable Long id) {
-        service.deleteEmployee(id);
+        employeeService.deleteEmployee(id);
     }
 }

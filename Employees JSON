@@ -1,0 +1,35 @@
+{
+    "employeeName": "Robert Brown",
+    "employeeAge": 45,
+    "employeeAddress": "789 Oak St, Villageville",
+    "employeeContactNumber": "555-9876",
+    "employeeEmail": "robert.brown@example.com",
+    "employmentStatus": "INACTIVE",
+    "employeePosition": {
+        "positionTitle": "Admin"
+    }
+}
+
+{
+    "employeeName": "John Doe",
+    "employeeAge": 30,
+    "employeeAddress": "123 Main St, Cityville",
+    "employeeContactNumber": "555-1234",
+    "employeeEmail": "john.doe@example.com",
+    "employmentStatus": "ACTIVE",
+    "employeePosition": {
+        "positionTitle": "Software Engineer"
+    }
+}
+
+{
+    "employeeName": "Jane Smith",
+    "employeeAge": 28,
+    "employeeAddress": "456 Elm St, Townsville",
+    "employeeContactNumber": "555-5678",
+    "employeeEmail": "jane.smith@example.com",
+    "employmentStatus": "ACTIVE",
+    "employeePosition": {
+        "positionTitle": "Product Manager"
+    }
+}

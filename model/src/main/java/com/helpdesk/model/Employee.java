@@ -10,11 +10,14 @@ public class Employee {
     private Long employeeId;
 
     private String employeeName;
-    private int employeeAge;
+    private Integer employeeAge;
     private String employeeAddress;
     private String  employeeContactNumber;
     private String employeeEmail;
-    private String employeePosition;
+
+    @ManyToOne
+    @JoinColumn(name = "employee_title")
+    private EmployeePosition employeePosition;
 
     @Enumerated(EnumType.STRING)
     private EmploymentStatus employmentStatus;
@@ -23,7 +26,7 @@ public class Employee {
     public Employee() {}
 
     public Employee(String employeeName,
-                    int employeeAge,
+                    Integer employeeAge,
                     String employeeAddress,
                     String employeeContactNumber,
                     String employeeEmail) {
@@ -43,7 +46,7 @@ public class Employee {
         return employeeName;
     }
 
-    public int getEmployeeAge() {
+    public Integer getEmployeeAge() {
         return employeeAge;
     }
 
@@ -63,7 +66,7 @@ public class Employee {
         return employmentStatus;
     }
 
-    public String getEmployeePosition() {
+    public EmployeePosition getEmployeePosition() {
         return employeePosition;
     }
 
@@ -96,7 +99,7 @@ public class Employee {
         this.employmentStatus = employmentStatus;
     }
 
-    public void setEmployeePosition(String employeePosition) {
+    public void setEmployeePosition(EmployeePosition employeePosition) {
         this.employeePosition = employeePosition;
     }
 }

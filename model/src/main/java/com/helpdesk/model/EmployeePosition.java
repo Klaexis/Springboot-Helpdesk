@@ -7,32 +7,32 @@ import jakarta.persistence.*;
 public class EmployeePosition {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long positionId;
 
-    private String position;
+    private String positionTitle;
 
     // Constructors
     public EmployeePosition() {}
 
     public EmployeePosition(String position) {
-        this.position = position;
+        this.positionTitle = position;
     }
 
     // Getters
-    public Long getId() {
-        return id;
+    public Long getPositionId() {
+        return positionId;
     }
 
-    public String getPosition() {
-        return position;
+    public String getPositionTitle() {
+        return positionTitle;
     }
 
     // Setters
-    public void setId(Long id) {
-        this.id = id;
+    public void setPositionId(Long positionId) {
+        this.positionId = positionId;
     }
 
-    public void setPosition(String position) {
-        this.position = position;
+    public void setPositionTitle(String positionTitle) {
+        this.positionTitle = positionTitle;
     }
 }
