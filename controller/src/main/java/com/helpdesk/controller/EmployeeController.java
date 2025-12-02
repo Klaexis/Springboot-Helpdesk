@@ -45,4 +45,12 @@ public class EmployeeController {
     public void deleteEmployee(@PathVariable Long id) {
         employeeService.deleteEmployee(id);
     }
+
+    // PUT /api/admin/employees/id/assign-position?title=positionTitle
+    @PutMapping("/{id}/assign-position")
+    public Employee assignPosition(
+            @PathVariable Long id,
+            @RequestParam String title) {
+        return employeeService.assignPositionToEmployee(id, title);
+    }
 }

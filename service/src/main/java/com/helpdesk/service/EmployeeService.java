@@ -55,21 +55,24 @@ public class EmployeeService {
         Optional.ofNullable(newData.getEmployeeEmail()).ifPresent(emp::setEmployeeEmail);
         Optional.ofNullable(newData.getEmploymentStatus()).ifPresent(emp::setEmploymentStatus);
 
-        if (newData.getEmployeePosition() != null) {
-            String positionTitle = newData.getEmployeePosition().getPositionTitle();
-            EmployeePosition employeePosition = positionRepository.findByPositionTitle(positionTitle);
-
-            if (employeePosition == null) {
-                throw new RuntimeException("Employee position not found");
-            }
-
-            emp.setEmployeePosition(employeePosition);
-        }
-
         return employeeRepository.save(emp);
     }
 
     public void deleteEmployee(Long id) {
         employeeRepository.deleteById(id);
+    }
+
+    public Employee assignPositionToEmployee(Long employeeId, String positionTitle) {
+
+        Employee employee = findEmployee(employeeId);
+
+        EmployeePosition position = positionRepository.findByPositionTitle(positionTitle);
+
+        if (position == null) {
+            throw new RuntimeException("Position '" + positionTitle + "' not found");
+        }
+
+        employee.setEmployeePosition(position);
+        return employeeRepository.save(employee);
     }
 }
