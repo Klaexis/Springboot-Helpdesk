@@ -27,19 +27,19 @@ public class EmployeePositionController {
         return employeePositionService.findPosition(id);
     }
 
-    // POST /api/admin/position
+    // POST /api/admin/positions
     @PostMapping
     public EmployeePosition createEmployeePosition(@RequestBody String title) {
         return employeePositionService.createPosition(title);
     }
 
-    // PUT /api/admin/position/{id}
+    // PUT /api/admin/positions/{id}
     @PutMapping("/{id}")
     public EmployeePosition updateEmployeePosition(@PathVariable Long id, @RequestBody String title) {
         return employeePositionService.updatePosition(id, title);
     }
 
-    // DELETE /api/admin/position/{id}
+    // DELETE /api/admin/positions/{id}
     @DeleteMapping("/{id}")
     public void deleteEmployeePosition(@PathVariable Long id) {
         employeePositionService.deletePosition(id);
