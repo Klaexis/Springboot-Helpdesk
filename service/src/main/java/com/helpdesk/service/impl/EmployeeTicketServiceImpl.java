@@ -85,7 +85,7 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
         return ticketRepository.save(ticket);
     }
 
-    public List<Ticket> getFiledTickets() {
+    public List<Ticket> getAllFiledTickets() {
         return ticketRepository.findByTicketStatus(TicketStatus.FILED);
     }
 

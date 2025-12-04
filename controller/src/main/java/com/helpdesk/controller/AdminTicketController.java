@@ -12,10 +12,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/admin/{adminId}/tickets")
 public class AdminTicketController {
-
+    @Autowired
     private final AdminTicketService adminTicketService;
 
-    @Autowired
     public AdminTicketController(AdminTicketService adminTicketService) {
         this.adminTicketService = adminTicketService;
     }
