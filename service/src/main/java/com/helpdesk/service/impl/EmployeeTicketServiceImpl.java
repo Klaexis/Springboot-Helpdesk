@@ -8,6 +8,7 @@ import com.helpdesk.repository.EmployeeRepository;
 import com.helpdesk.repository.TicketRepository;
 
 import com.helpdesk.service.EmployeeTicketService;
+import com.helpdesk.service.EmployeeValidationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,22 +22,21 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
     @Autowired
     private final EmployeeRepository employeeRepository;
 
+    @Autowired
+    private final EmployeeValidationService employeeValidationService;
+
     public EmployeeTicketServiceImpl(TicketRepository ticketRepository,
-                                     EmployeeRepository employeeRepository) {
+                                     EmployeeRepository employeeRepository,
+                                     EmployeeValidationService employeeValidationService) {
         this.ticketRepository = ticketRepository;
         this.employeeRepository = employeeRepository;
-    }
-
-    private void checkIfEmployeeIsActive(Employee employee) {
-        if (employee.getEmploymentStatus() != EmploymentStatus.ACTIVE) {
-            throw new RuntimeException("Employee is not active. Cannot proceed.");
-        }
+        this.employeeValidationService = employeeValidationService;
     }
 
     public Ticket fileTicket(Ticket ticket, Long employeeId) {
         Employee employee = employeeRepository.findById(employeeId)
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
-        checkIfEmployeeIsActive(employee);
+        employeeValidationService.validateActive(employee);
 
         ticket.setTicketStatus(TicketStatus.FILED);
         ticket.setTicketCreatedBy(employee.getEmployeeName());
@@ -53,7 +53,7 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
 
         Employee employee = employeeRepository.findById(employeeId)
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
-        checkIfEmployeeIsActive(employee);
+        employeeValidationService.validateActive(employee);
 
         if (!ticket.getTicketCreatedBy().equals(employee.getEmployeeName())) {
             throw new RuntimeException("You can only update your own tickets");
@@ -74,7 +74,7 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
 
         Employee employee = employeeRepository.findById(employeeId)
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
-        checkIfEmployeeIsActive(employee);
+        employeeValidationService.validateActive(employee);
 
         if (!ticket.getTicketAssignee().equals(employee.getEmployeeName())) {
             throw new RuntimeException("You can only update your own tickets");

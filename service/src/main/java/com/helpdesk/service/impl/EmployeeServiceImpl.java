@@ -9,6 +9,7 @@ import com.helpdesk.service.EmployeeService;
 import java.util.List;
 import java.util.Optional;
 
+import com.helpdesk.service.EmployeeValidationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,22 +21,45 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Autowired
     private final EmployeePositionRepository positionRepository;
 
+    @Autowired
+    private final EmployeeValidationService employeeValidationService;
+
     public EmployeeServiceImpl(EmployeeRepository employeeRepository,
-                               EmployeePositionRepository positionRepository) {
+                               EmployeePositionRepository positionRepository,
+                               EmployeeValidationService employeeValidationService) {
         this.employeeRepository = employeeRepository;
         this.positionRepository = positionRepository;
+        this.employeeValidationService = employeeValidationService;
     }
 
-    public Employee findEmployee(Long id) {
-        return employeeRepository.findById(id)
+    public Employee findEmployee(Long adminId, Long employeeId) {
+        Employee admin = employeeRepository.findById(adminId)
+                .orElseThrow(() -> new RuntimeException("Admin not found"));
+
+        employeeValidationService.validateAdmin(admin);
+        employeeValidationService.validateActive(admin);
+
+        return employeeRepository.findById(employeeId)
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
     }
 
-    public List<Employee> getAllEmployees() {
+    public List<Employee> getAllEmployees(Long adminId) {
+        Employee admin = employeeRepository.findById(adminId)
+                .orElseThrow(() -> new RuntimeException("Admin not found"));
+
+        employeeValidationService.validateAdmin(admin);
+        employeeValidationService.validateActive(admin);
+
         return employeeRepository.findAll();
     }
 
-    public Employee createEmployee(Employee employee) {
+    public Employee createEmployee(Long adminId, Employee employee) {
+        Employee admin = employeeRepository.findById(adminId)
+                .orElseThrow(() -> new RuntimeException("Admin not found"));
+
+        employeeValidationService.validateAdmin(admin);
+        employeeValidationService.validateActive(admin);
+
         EmployeePosition employeePosition = positionRepository.findByPositionTitle(employee.getEmployeePosition().getPositionTitle());
 
         if (employeePosition == null) {
@@ -46,26 +70,45 @@ public class EmployeeServiceImpl implements EmployeeService {
         return employeeRepository.save(employee);
     }
 
-    public Employee updateEmployee(Long id, Employee newData) {
-        Employee emp = findEmployee(id);
+    public Employee updateEmployee(Long adminId, Long employeeId, Employee newData) {
+        Employee admin = employeeRepository.findById(adminId)
+                .orElseThrow(() -> new RuntimeException("Admin not found"));
 
-        Optional.ofNullable(newData.getEmployeeName()).ifPresent(emp::setEmployeeName);
-        Optional.ofNullable(newData.getEmployeeAge()).ifPresent(emp::setEmployeeAge);
-        Optional.ofNullable(newData.getEmployeeAddress()).ifPresent(emp::setEmployeeAddress);
-        Optional.ofNullable(newData.getEmployeeContactNumber()).ifPresent(emp::setEmployeeContactNumber);
-        Optional.ofNullable(newData.getEmployeeEmail()).ifPresent(emp::setEmployeeEmail);
-        Optional.ofNullable(newData.getEmploymentStatus()).ifPresent(emp::setEmploymentStatus);
+        employeeValidationService.validateAdmin(admin);
+        employeeValidationService.validateActive(admin);
 
-        return employeeRepository.save(emp);
+        Employee employee = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+        Optional.ofNullable(newData.getEmployeeName()).ifPresent(employee::setEmployeeName);
+        Optional.ofNullable(newData.getEmployeeAge()).ifPresent(employee::setEmployeeAge);
+        Optional.ofNullable(newData.getEmployeeAddress()).ifPresent(employee::setEmployeeAddress);
+        Optional.ofNullable(newData.getEmployeeContactNumber()).ifPresent(employee::setEmployeeContactNumber);
+        Optional.ofNullable(newData.getEmployeeEmail()).ifPresent(employee::setEmployeeEmail);
+        Optional.ofNullable(newData.getEmploymentStatus()).ifPresent(employee::setEmploymentStatus);
+
+        return employeeRepository.save(employee);
     }
 
-    public void deleteEmployee(Long id) {
-        employeeRepository.deleteById(id);
+    public void deleteEmployee(Long adminId, Long employeeId) {
+        Employee admin = employeeRepository.findById(adminId)
+                .orElseThrow(() -> new RuntimeException("Admin not found"));
+
+        employeeValidationService.validateAdmin(admin);
+        employeeValidationService.validateActive(admin);
+
+        employeeRepository.deleteById(employeeId);
     }
 
-    public Employee assignPositionToEmployee(Long employeeId, String positionTitle) {
+    public Employee assignPositionToEmployee(Long adminId, Long employeeId, String positionTitle) {
+        Employee admin = employeeRepository.findById(adminId)
+                .orElseThrow(() -> new RuntimeException("Admin not found"));
 
-        Employee employee = findEmployee(employeeId);
+        employeeValidationService.validateAdmin(admin);
+        employeeValidationService.validateActive(admin);
+
+        Employee employee = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
 
         EmployeePosition position = positionRepository.findByPositionTitle(positionTitle);
 

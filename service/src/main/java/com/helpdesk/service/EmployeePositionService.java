@@ -5,13 +5,13 @@ import com.helpdesk.model.EmployeePosition;
 import java.util.List;
 
 public interface EmployeePositionService {
-    EmployeePosition findPosition(Long id);
+    EmployeePosition findPosition(Long adminId, Long positionId);
 
-    List<EmployeePosition> getAllPositions();
+    List<EmployeePosition> getAllPositions(Long adminId);
 
-    EmployeePosition createPosition(String title);
+    EmployeePosition createPosition(Long adminId, String positionTitle);
 
-    EmployeePosition updatePosition(Long id, String title);
+    EmployeePosition updatePosition(Long adminId, Long positionId, String positionTitle);
 
-    void deletePosition(Long id);
+    void deletePosition(Long adminId, Long positionId);
 }

@@ -8,6 +8,7 @@ import com.helpdesk.repository.EmployeeRepository;
 import com.helpdesk.repository.TicketRepository;
 import com.helpdesk.service.AdminTicketService;
 
+import com.helpdesk.service.EmployeeValidationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,24 +22,15 @@ public class AdminTicketServiceImpl implements AdminTicketService {
     @Autowired
     private final EmployeeRepository employeeRepository;
 
+    @Autowired
+    private final EmployeeValidationService employeeValidationService;
+
     public AdminTicketServiceImpl(TicketRepository ticketRepository,
-                                  EmployeeRepository employeeRepository) {
+                                  EmployeeRepository employeeRepository,
+                                  EmployeeValidationService employeeValidationService) {
         this.ticketRepository = ticketRepository;
         this.employeeRepository = employeeRepository;
-    }
-
-    private void checkIfAdmin(Employee admin) {
-        if (admin.getEmployeePosition() == null || !admin.getEmployeePosition().getPositionTitle().equals("Admin")) {
-            throw new RuntimeException("Unauthorized access: Employee is not an admin.");
-        }
-
-        checkIfEmployeeIsActive(admin);
-    }
-
-    private void checkIfEmployeeIsActive(Employee employee) {
-        if (employee.getEmploymentStatus() != EmploymentStatus.ACTIVE) {
-            throw new RuntimeException("Employee is not active. Cannot proceed.");
-        }
+        this.employeeValidationService = employeeValidationService;
     }
 
     public Ticket assignTicket(Long ticketId,
@@ -49,11 +41,12 @@ public class AdminTicketServiceImpl implements AdminTicketService {
 
         Employee admin = employeeRepository.findById(adminId)
                 .orElseThrow(() -> new RuntimeException("Admin not found"));
-        checkIfAdmin(admin);
+        employeeValidationService.validateAdmin(admin);
+        employeeValidationService.validateActive(admin);
 
         Employee employee = employeeRepository.findById(employeeId)
                     .orElseThrow(() -> new RuntimeException("Employee not found"));
-        checkIfEmployeeIsActive(employee);
+        employeeValidationService.validateActive(employee);
 
         ticket.setTicketAssignee(employee.getEmployeeName());
         ticket.setTicketUpdatedBy(admin.getEmployeeName());
@@ -79,7 +72,8 @@ public class AdminTicketServiceImpl implements AdminTicketService {
 
         Employee admin = employeeRepository.findById(adminId)
                 .orElseThrow(() -> new RuntimeException("Admin not found"));
-        checkIfAdmin(admin);
+        employeeValidationService.validateAdmin(admin);
+        employeeValidationService.validateActive(admin);
 
         ticket.setTicketTitle(updatedTicket.getTicketTitle());
         ticket.setTicketBody(updatedTicket.getTicketBody());
@@ -99,7 +93,8 @@ public class AdminTicketServiceImpl implements AdminTicketService {
 
         Employee admin = employeeRepository.findById(adminId)
                 .orElseThrow(() -> new RuntimeException("Admin not found"));
-        checkIfAdmin(admin);
+        employeeValidationService.validateAdmin(admin);
+        employeeValidationService.validateActive(admin);
 
         ticket.setTicketStatus(newStatus);
         ticket.setTicketUpdatedBy(admin.getEmployeeName());
