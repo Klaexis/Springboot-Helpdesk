@@ -1,55 +1,55 @@
-//package com.helpdesk.controller;
-//
-//import com.helpdesk.model.Employee;
-//import com.helpdesk.service.impl.AdminServiceImpl;
-//import org.springframework.web.bind.annotation.*;
-//
-//import java.util.List;
-//
-//@RestController
-//@RequestMapping("/api/admin/employees")
-//public class AdminController {
-//
-//    private final AdminServiceImpl adminServiceImpl;
-//
-//    public AdminController(AdminServiceImpl adminServiceImpl) {
-//        this.adminServiceImpl = adminServiceImpl;
-//    }
-//
-//    // GET /api/admin/employees
-//    @GetMapping
-//    public List<Employee> getAllEmployees() {
-//        return adminServiceImpl.getAllEmployees();
-//    }
-//
-//    // GET /api/admin/employees/{id}
-//    @GetMapping("/{id}")
-//    public Employee getEmployeeById(@PathVariable Long id) {
-//        return adminServiceImpl.findEmployee(id);
-//    }
-//
-//    // POST /api/admin/employees
-//    @PostMapping
-//    public Employee createEmployee(@RequestBody Employee employee) {
-//        return adminServiceImpl.createEmployee(employee);
-//    }
-//
-//    // PUT /api/admin/employees/{id}
-//    @PutMapping("/{id}")
-//    public Employee updateEmployee(@PathVariable Long id, @RequestBody Employee employee) {
-//        return adminServiceImpl.updateEmployee(id, employee);
-//    }
-//
-//    // DELETE /api/admin/employees/{id}
-//    @DeleteMapping("/{id}")
-//    public void deleteEmployee(@PathVariable Long id) {
-//        adminServiceImpl.deleteEmployee(id);
-//    }
-//
-//    // PUT /api/admin/employees/id/assign-position?title=positionTitle
-//    @PutMapping("/{id}/assign-position")
-//    public Employee assignPosition(@PathVariable Long id,
-//                                   @RequestParam String title) {
-//        return adminServiceImpl.assignPositionToEmployee(id, title);
-//    }
-//}
+package com.helpdesk.controller;
+
+import com.helpdesk.model.Employee;
+import com.helpdesk.service.impl.AdminServiceImpl;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/admin/{adminId}/employees")
+public class AdminController {
+    private final AdminServiceImpl adminServiceImpl;
+
+    public AdminController(AdminServiceImpl adminServiceImpl) {
+        this.adminServiceImpl = adminServiceImpl;
+    }
+
+    // GET /admin/{adminId}/employees
+    @GetMapping
+    public List<Employee> getAllEmployees(@PathVariable Long adminId) {
+        return adminServiceImpl.getAllEmployees(adminId);
+    }
+
+    // GET /admin/{adminId}/employees/find/{employeeId}
+    @GetMapping("/find/{employeeId}")
+    public Employee getEmployeeById(@PathVariable Long adminId, Long employeeId) {
+        return adminServiceImpl.findEmployee(adminId, employeeId);
+    }
+
+    // POST /admin/{adminId}/employees/create
+    @PostMapping("/create")
+    public Employee createEmployee(@PathVariable Long adminId, @RequestBody Employee employee) {
+        return adminServiceImpl.createEmployee(adminId, employee);
+    }
+
+    // PUT /admin/{adminId}/employees/update/{employeeId}
+    @PutMapping("/update/{employeeId}")
+    public Employee updateEmployee(@PathVariable Long adminId, @PathVariable Long employeeId, @RequestBody Employee employee) {
+        return adminServiceImpl.updateEmployee(adminId, employeeId, employee);
+    }
+
+    // DELETE /admin/{adminId}/employees/delete/{employeeId}
+    @DeleteMapping("/delete/{employeeId}")
+    public void deleteEmployee(@PathVariable Long adminId, @PathVariable Long employeeId) {
+        adminServiceImpl.deleteEmployee(adminId, employeeId);
+    }
+
+    // PUT /admin/{adminId}/employees/{employeeId}/assign-position?positionTitle=positionTitle
+    @PutMapping("/assign-position/{employeeId}")
+    public Employee assignPosition(@PathVariable Long adminId,
+                                   @PathVariable Long employeeId,
+                                   @RequestParam String positionTitle) {
+        return adminServiceImpl.assignPositionToEmployee(adminId, employeeId, positionTitle);
+    }
+}

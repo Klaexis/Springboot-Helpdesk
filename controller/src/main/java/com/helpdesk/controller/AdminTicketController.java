@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/admin/tickets")
+@RequestMapping("/admin/{adminId}/tickets")
 public class AdminTicketController {
 
     private final AdminTicketService adminTicketService;
@@ -20,48 +20,48 @@ public class AdminTicketController {
         this.adminTicketService = adminTicketService;
     }
 
-    // PUT /admin/tickets/{ticketId}/assign
-    @PutMapping("/{ticketId}/assign")
+    // PUT /admin/{adminId}/tickets/assign/{ticketId}/assignTo/{employeeId}
+    @PutMapping("assign/{ticketId}/assignTo/{employeeId}")
     public ResponseEntity<Ticket> assignTicket(
             @PathVariable Long ticketId,
-            @RequestParam Long adminId,
-            @RequestParam Long employeeId) {
+            @PathVariable Long adminId,
+            @PathVariable Long employeeId) {
 
         Ticket updatedTicket = adminTicketService.assignTicket(ticketId, adminId, employeeId);
         return ResponseEntity.ok(updatedTicket);
     }
 
-    // GET /admin/tickets/{ticketId}
-    @GetMapping("/{ticketId}")
-    public ResponseEntity<Ticket> getTicket(@PathVariable Long ticketId) {
-        Ticket ticket = adminTicketService.getTicket(ticketId);
+    // GET /admin/{adminId}/tickets/find/{ticketId}
+    @GetMapping("/find/{ticketId}")
+    public ResponseEntity<Ticket> getTicket(@PathVariable Long adminId, @PathVariable Long ticketId) {
+        Ticket ticket = adminTicketService.getTicket(adminId, ticketId);
         return ResponseEntity.ok(ticket);
     }
 
-    // GET /admin/tickets
+    // GET /admin/{adminId}/tickets
     @GetMapping
-    public ResponseEntity<List<Ticket>> getAllTickets() {
-        List<Ticket> tickets = adminTicketService.getAllTickets();
+    public ResponseEntity<List<Ticket>> getAllTickets(@PathVariable Long adminId) {
+        List<Ticket> tickets = adminTicketService.getAllTickets(adminId);
         return ResponseEntity.ok(tickets);
     }
 
-    // PUT /admin/tickets/{ticketId}?adminId=ADMIN_ID
-    @PutMapping("/{ticketId}")
+    // PUT /admin/{adminId}/tickets/update/{ticketId}
+    @PutMapping("update/{ticketId}")
     public ResponseEntity<Ticket> updateTicket(
             @PathVariable Long ticketId,
             @RequestBody Ticket updatedTicket,
-            @RequestParam Long adminId) {
+            @PathVariable Long adminId) {
 
         Ticket ticket = adminTicketService.updateTicket(ticketId, updatedTicket, adminId);
         return ResponseEntity.ok(ticket);
     }
 
-    // PUT /admin/tickets/{ticketId}/status?newStatus=STATUS&adminId=ADMIN_ID
-    @PutMapping("/{ticketId}/status")
+    // PUT /admin/{adminId}/tickets/update/{ticketId}/status?newStatus=STATUS
+    @PutMapping("/update/{ticketId}/status")
     public ResponseEntity<Ticket> updateTicketStatus(
             @PathVariable Long ticketId,
             @RequestParam TicketStatus newStatus,
-            @RequestParam Long adminId) {
+            @PathVariable Long adminId) {
 
         Ticket updatedTicket = adminTicketService.updateTicketStatus(ticketId, newStatus, adminId);
         return ResponseEntity.ok(updatedTicket);

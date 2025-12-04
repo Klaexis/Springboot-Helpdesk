@@ -8,9 +8,9 @@ import java.util.List;
 public interface AdminTicketService {
     Ticket assignTicket(Long ticketId, Long adminId, Long employeeId);
 
-    Ticket getTicket(Long ticketId);
+    Ticket getTicket(Long adminId, Long ticketId);
 
-    List<Ticket> getAllTickets();
+    List<Ticket> getAllTickets(Long adminId);
 
     Ticket updateTicket(Long ticketId, Ticket updatedTicket, Long adminId);
 

@@ -54,12 +54,24 @@ public class AdminTicketServiceImpl implements AdminTicketService {
         return ticketRepository.save(ticket);
     }
 
-    public Ticket getTicket(Long ticketId) {
+    public Ticket getTicket(Long adminId, Long ticketId) {
+        Employee admin = employeeRepository.findById(adminId)
+                .orElseThrow(() -> new RuntimeException("Admin not found"));
+
+        employeeValidationService.validateAdmin(admin);
+        employeeValidationService.validateActive(admin);
+
         return ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new RuntimeException("Ticket not found"));
     }
 
-    public List<Ticket> getAllTickets() {
+    public List<Ticket> getAllTickets(Long adminId) {
+        Employee admin = employeeRepository.findById(adminId)
+                .orElseThrow(() -> new RuntimeException("Admin not found"));
+
+        employeeValidationService.validateAdmin(admin);
+        employeeValidationService.validateActive(admin);
+
         return ticketRepository.findAll();
     }
 
