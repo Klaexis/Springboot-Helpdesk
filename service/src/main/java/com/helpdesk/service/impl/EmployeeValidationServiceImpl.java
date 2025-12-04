@@ -2,10 +2,11 @@ package com.helpdesk.service.impl;
 
 import com.helpdesk.model.Employee;
 import com.helpdesk.model.EmploymentStatus;
+import com.helpdesk.service.EmployeeValidationService;
 import org.springframework.stereotype.Service;
 
 @Service
-public class EmployeeValidationServiceImpl {
+public class EmployeeValidationServiceImpl implements EmployeeValidationService {
 
     public boolean isAdmin(Employee employee) {
         return employee.getEmployeePosition() != null && employee.getEmployeePosition().getPositionTitle().equals("Admin");

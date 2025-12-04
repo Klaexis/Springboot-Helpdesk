@@ -7,8 +7,6 @@ public interface EmployeeValidationService {
 
     boolean isActive(Employee employee);
 
-    boolean isAdminAndActive(Employee employee);
-
     void validateAdmin(Employee employee);
 
     void validateActive(Employee employee);
