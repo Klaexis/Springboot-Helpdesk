@@ -1,7 +1,6 @@
 package com.helpdesk.service.impl;
 
 import com.helpdesk.model.Employee;
-import com.helpdesk.model.EmploymentStatus;
 import com.helpdesk.model.Ticket;
 import com.helpdesk.model.TicketStatus;
 import com.helpdesk.repository.EmployeeRepository;

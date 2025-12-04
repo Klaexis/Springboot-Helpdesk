@@ -1,14 +1,13 @@
 package com.helpdesk.service.impl;
 
 import com.helpdesk.model.Employee;
-import com.helpdesk.model.EmploymentStatus;
 import com.helpdesk.model.Ticket;
 import com.helpdesk.model.TicketStatus;
 import com.helpdesk.repository.EmployeeRepository;
 import com.helpdesk.repository.TicketRepository;
-
 import com.helpdesk.service.EmployeeTicketService;
 import com.helpdesk.service.EmployeeValidationService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
