@@ -1,6 +1,7 @@
 package com.helpdesk.service.impl;
 
 import com.helpdesk.model.Employee;
+import com.helpdesk.model.EmploymentStatus;
 import com.helpdesk.model.Ticket;
 import com.helpdesk.model.TicketStatus;
 import com.helpdesk.repository.EmployeeRepository;
@@ -26,23 +27,43 @@ public class AdminTicketServiceImpl implements AdminTicketService {
         this.employeeRepository = employeeRepository;
     }
 
-    public Ticket assignTicket(Long ticketNumber,
-                               Long employeeId,
-                               String assignedBy) {
-        Ticket ticket = ticketRepository.findById(ticketNumber)
+    private void checkIfAdmin(Employee admin) {
+        if (admin.getEmployeePosition() == null || !admin.getEmployeePosition().getPositionTitle().equals("Admin")) {
+            throw new RuntimeException("Unauthorized access: Employee is not an admin.");
+        }
+
+        checkIfEmployeeIsActive(admin);
+    }
+
+    private void checkIfEmployeeIsActive(Employee employee) {
+        if (employee.getEmploymentStatus() != EmploymentStatus.ACTIVE) {
+            throw new RuntimeException("Employee is not active. Cannot proceed.");
+        }
+    }
+
+    public Ticket assignTicket(Long ticketId,
+                               Long adminId,
+                               Long employeeId) {
+        Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new RuntimeException("Ticket not found"));
+
+        Employee admin = employeeRepository.findById(adminId)
+                .orElseThrow(() -> new RuntimeException("Admin not found"));
+        checkIfAdmin(admin);
+
         Employee employee = employeeRepository.findById(employeeId)
-                .orElseThrow(() -> new RuntimeException("Employee not found"));
+                    .orElseThrow(() -> new RuntimeException("Employee not found"));
+        checkIfEmployeeIsActive(employee);
 
         ticket.setTicketAssignee(employee.getEmployeeName());
-        ticket.setTicketUpdatedBy(assignedBy);
+        ticket.setTicketUpdatedBy(admin.getEmployeeName());
         ticket.setTicketStatus(TicketStatus.IN_PROGRESS);
 
         return ticketRepository.save(ticket);
     }
 
-    public Ticket getTicket(Long ticketNumber) {
-        return ticketRepository.findById(ticketNumber)
+    public Ticket getTicket(Long ticketId) {
+        return ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new RuntimeException("Ticket not found"));
     }
 
@@ -50,30 +71,38 @@ public class AdminTicketServiceImpl implements AdminTicketService {
         return ticketRepository.findAll();
     }
 
-    public Ticket updateTicket(Long id,
+    public Ticket updateTicket(Long ticketId,
                                Ticket updatedTicket,
-                               String updatedBy) {
-        Ticket ticket = ticketRepository.findById(id)
+                               Long adminId) {
+        Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new RuntimeException("Ticket not found"));
+
+        Employee admin = employeeRepository.findById(adminId)
+                .orElseThrow(() -> new RuntimeException("Admin not found"));
+        checkIfAdmin(admin);
 
         ticket.setTicketTitle(updatedTicket.getTicketTitle());
         ticket.setTicketBody(updatedTicket.getTicketBody());
         ticket.setTicketAssignee(updatedTicket.getTicketAssignee());
         ticket.setTicketStatus(updatedTicket.getTicketStatus());
         ticket.setTicketRemarks(updatedTicket.getTicketRemarks());
-        ticket.setTicketUpdatedBy(updatedBy);
+        ticket.setTicketUpdatedBy(admin.getEmployeeName());
 
         return ticketRepository.save(ticket);
     }
 
-    public Ticket updateTicketStatus(Long ticketNumber,
+    public Ticket updateTicketStatus(Long ticketId,
                                      TicketStatus newStatus,
-                                     String updatedBy) {
-        Ticket ticket = ticketRepository.findById(ticketNumber)
+                                     Long adminId) {
+        Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new RuntimeException("Ticket not found"));
 
+        Employee admin = employeeRepository.findById(adminId)
+                .orElseThrow(() -> new RuntimeException("Admin not found"));
+        checkIfAdmin(admin);
+
         ticket.setTicketStatus(newStatus);
-        ticket.setTicketUpdatedBy(updatedBy);
+        ticket.setTicketUpdatedBy(admin.getEmployeeName());
 
         return ticketRepository.save(ticket);
     }

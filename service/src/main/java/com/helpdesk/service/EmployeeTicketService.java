@@ -6,15 +6,15 @@ import com.helpdesk.model.TicketStatus;
 import java.util.List;
 
 public interface EmployeeTicketService {
-    Ticket fileTicket(Ticket ticket, String createdBy);
+    Ticket fileTicket(Ticket ticket, Long employeeId);
 
     List<Ticket> viewAssignedTickets(Long employeeId);
 
-    Ticket updateOwnTicket(Long ticketNumber, Ticket updatedTicket, String employee);
+    Ticket updateOwnTicket(Long ticketId, Ticket updatedTicket, Long employeeId);
 
-    Ticket updateOwnTicketStatus(Long ticketNumber, TicketStatus newStatus, String employee);
+    Ticket updateOwnTicketStatus(Long ticketId, TicketStatus newStatus, Long employeeId);
 
     List<Ticket> getFiledTickets();
 
-    Ticket getFiledTicket(Long ticketNumber);
+    Ticket getFiledTicket(Long ticketId);
 }

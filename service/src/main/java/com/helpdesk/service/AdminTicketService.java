@@ -6,13 +6,13 @@ import com.helpdesk.model.TicketStatus;
 import java.util.List;
 
 public interface AdminTicketService {
-    Ticket assignTicket(Long ticketNumber, Long employeeId, String assignedBy);
+    Ticket assignTicket(Long ticketId, Long adminId, Long employeeId);
 
-    Ticket getTicket(Long ticketNumber);
+    Ticket getTicket(Long ticketId);
 
     List<Ticket> getAllTickets();
 
-    Ticket updateTicket(Long id, Ticket updatedTicket, String updatedBy);
+    Ticket updateTicket(Long ticketId, Ticket updatedTicket, Long adminId);
 
-    Ticket updateTicketStatus(Long ticketNumber, TicketStatus newStatus, String updatedBy);
+    Ticket updateTicketStatus(Long ticketId, TicketStatus newStatus, Long adminId);
 }
