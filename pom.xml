@@ -21,7 +21,6 @@
     <modules>
         <module>model</module>
         <module>repository</module>
-        <module>dto</module>
         <module>service</module>
         <module>controller</module>
         <module>app</module>

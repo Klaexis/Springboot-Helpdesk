@@ -1,4 +1,4 @@
-package com.helpdesk.dto;
+package com.helpdesk.model.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.helpdesk.model.TicketStatus;
