@@ -47,8 +47,8 @@ public class AdminTicketServiceImpl implements AdminTicketService {
                     .orElseThrow(() -> new RuntimeException("Employee not found"));
         employeeValidationService.validateActive(employee);
 
-        ticket.setTicketAssignee(employee.getEmployeeName());
-        ticket.setTicketUpdatedBy(admin.getEmployeeName());
+        ticket.setTicketAssignee(employee);
+        ticket.setTicketUpdatedBy(admin);
         ticket.setTicketStatus(TicketStatus.IN_PROGRESS);
 
         return ticketRepository.save(ticket);
@@ -91,7 +91,7 @@ public class AdminTicketServiceImpl implements AdminTicketService {
         ticket.setTicketAssignee(updatedTicket.getTicketAssignee());
         ticket.setTicketStatus(updatedTicket.getTicketStatus());
         ticket.setTicketRemarks(updatedTicket.getTicketRemarks());
-        ticket.setTicketUpdatedBy(admin.getEmployeeName());
+        ticket.setTicketUpdatedBy(admin);
 
         return ticketRepository.save(ticket);
     }
@@ -108,7 +108,7 @@ public class AdminTicketServiceImpl implements AdminTicketService {
         employeeValidationService.validateActive(admin);
 
         ticket.setTicketStatus(newStatus);
-        ticket.setTicketUpdatedBy(admin.getEmployeeName());
+        ticket.setTicketUpdatedBy(admin);
 
         return ticketRepository.save(ticket);
     }

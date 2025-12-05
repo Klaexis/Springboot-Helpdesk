@@ -11,21 +11,29 @@ import java.time.LocalDateTime;
 public class Ticket {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long ticketNumber;
+    private Long ticketId;
 
     private String ticketTitle;
     private String ticketBody;
-    private String ticketAssignee;
+
+    @ManyToOne
+    @JoinColumn(name = "ticket_assignee_id")
+    private Employee ticketAssignee;
 
     @CreationTimestamp
     private LocalDateTime ticketCreatedDate;
 
-    private String ticketCreatedBy;
+    @ManyToOne
+    @JoinColumn(name = "ticket_created_by_id")
+    private Employee ticketCreatedBy;
 
     @UpdateTimestamp
     private LocalDateTime ticketUpdatedDate;
 
-    private String ticketUpdatedBy;
+    @ManyToOne
+    @JoinColumn(name = "ticket_updated_by_id")
+    private Employee ticketUpdatedBy;
+
     private String ticketRemarks;
 
     @Enumerated(EnumType.STRING)
@@ -34,12 +42,12 @@ public class Ticket {
     // Constructors
     public Ticket() {}
 
-    public Ticket(Long ticketNumber,
+    public Ticket(Long ticketId,
                   String ticketTitle,
                   String ticketBody,
                   LocalDateTime ticketCreatedDate,
-                  String ticketCreatedBy) {
-        this.ticketNumber = ticketNumber;
+                  Employee ticketCreatedBy) {
+        this.ticketId = ticketId;
         this.ticketTitle = ticketTitle;
         this.ticketBody = ticketBody;
         this.ticketCreatedDate = ticketCreatedDate;
@@ -47,8 +55,8 @@ public class Ticket {
     }
 
     // Getters
-    public Long getTicketNumber() {
-        return ticketNumber;
+    public Long getTicketId() {
+        return ticketId;
     }
 
     public String getTicketTitle() {
@@ -59,7 +67,7 @@ public class Ticket {
         return ticketBody;
     }
 
-    public String getTicketAssignee() {
+    public Employee getTicketAssignee() {
         return ticketAssignee;
     }
 
@@ -67,7 +75,7 @@ public class Ticket {
         return ticketCreatedDate;
     }
 
-    public String getTicketCreatedBy() {
+    public Employee getTicketCreatedBy() {
         return ticketCreatedBy;
     }
 
@@ -75,7 +83,7 @@ public class Ticket {
         return ticketUpdatedDate;
     }
 
-    public String getTicketUpdatedBy() {
+    public Employee getTicketUpdatedBy() {
         return ticketUpdatedBy;
     }
 
@@ -88,8 +96,8 @@ public class Ticket {
     }
 
     // Setters
-    public void setTicketNumber(Long ticketNumber) {
-        this.ticketNumber = ticketNumber;
+    public void setTicketId(Long ticketId) {
+        this.ticketId = ticketId;
     }
 
     public void setTicketTitle(String ticketTitle) {
@@ -100,7 +108,7 @@ public class Ticket {
         this.ticketBody = ticketBody;
     }
 
-    public void setTicketAssignee(String ticketAssignee) {
+    public void setTicketAssignee(Employee ticketAssignee) {
         this.ticketAssignee = ticketAssignee;
     }
 
@@ -108,7 +116,7 @@ public class Ticket {
         this.ticketCreatedDate = ticketCreatedDate;
     }
 
-    public void setTicketCreatedBy(String ticketCreatedBy) {
+    public void setTicketCreatedBy(Employee ticketCreatedBy) {
         this.ticketCreatedBy = ticketCreatedBy;
     }
 
@@ -116,7 +124,7 @@ public class Ticket {
         this.ticketUpdatedDate = ticketUpdatedDate;
     }
 
-    public void setTicketUpdatedBy(String ticketUpdatedBy) {
+    public void setTicketUpdatedBy(Employee ticketUpdatedBy) {
         this.ticketUpdatedBy = ticketUpdatedBy;
     }
 

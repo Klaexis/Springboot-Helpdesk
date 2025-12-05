@@ -1,8 +1,11 @@
 package com.helpdesk.controller;
 
+import com.helpdesk.model.Employee;
 import com.helpdesk.model.Ticket;
 import com.helpdesk.model.TicketStatus;
+import com.helpdesk.repository.EmployeeRepository;
 import com.helpdesk.service.EmployeeTicketService;
+import com.helpdesk.service.impl.EmployeeValidationServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,62 +13,92 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/employee/tickets")
+@RequestMapping("/employee/{employeeId}/tickets")
 public class EmployeeTicketController {
     @Autowired
     private final EmployeeTicketService employeeTicketService;
+
+    @Autowired
+    private EmployeeRepository employeeRepository;
+
+    @Autowired
+    private EmployeeValidationServiceImpl employeeValidationService;
 
     public EmployeeTicketController(EmployeeTicketService employeeTicketService) {
         this.employeeTicketService = employeeTicketService;
     }
 
-    // POST /employee/tickets/file/{employeeId}
-    @PostMapping("/file/{employeeId}")
+    // POST /employee/{employeeId}/tickets/file
+    @PostMapping("/file")
     public ResponseEntity<Ticket> fileTicket(@RequestBody Ticket ticket,
                                              @PathVariable Long employeeId) {
+        Employee employee = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+        employeeValidationService.validateActive(employee);
+
         Ticket newTicket = employeeTicketService.fileTicket(ticket, employeeId);
         return ResponseEntity.ok(newTicket);
     }
 
-    // GET /employee/tickets/get/assignedTickets/{employeeId}
-    @GetMapping("/get/assignedTickets/{employeeId}")
+    // GET /employee/{employeeId}/tickets/get/assignedTickets
+    @GetMapping("/get/assignedTickets")
     public ResponseEntity<List<Ticket>> viewAssignedTickets(@PathVariable Long employeeId) {
+        Employee employee = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+        employeeValidationService.validateActive(employee);
+
         List<Ticket> tickets = employeeTicketService.viewAssignedTickets(employeeId);
         return ResponseEntity.ok(tickets);
     }
 
-    // PUT /employee/tickets/{employeeId}/update/{ticketId}
-    @PutMapping("/{employeeId}/update/{ticketId}")
+    // PUT /employee/{employeeId}/tickets/update/{ticketId}
+    @PutMapping("/update/{ticketId}")
     public ResponseEntity<Ticket> updateOwnTicket(@PathVariable Long ticketId,
                                                   @RequestBody Ticket ticket,
                                                   @PathVariable Long employeeId) {
+        Employee employee = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+        employeeValidationService.validateActive(employee);
+
         Ticket updatedTicket = employeeTicketService.updateOwnTicket(ticketId, ticket, employeeId);
 
         return ResponseEntity.ok(updatedTicket);
     }
 
-    // PUT /employee/tickets/{employeeId}/updateStatus/{ticketId}
-    @PutMapping("/{employeeId}/updateStatus/{ticketId}")
+    // PUT /employee/{employeeId}/tickets/updateStatus/{ticketId}
+    @PutMapping("/updateStatus/{ticketId}")
     public ResponseEntity<Ticket> updateOwnTicketStatus(@PathVariable Long ticketId,
                                                         @RequestBody TicketStatus status,
                                                         @PathVariable Long employeeId) {
+        Employee employee = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+        employeeValidationService.validateActive(employee);
+
         Ticket updatedTicketStatus = employeeTicketService.updateOwnTicketStatus(ticketId, status, employeeId);
 
         return ResponseEntity.ok(updatedTicketStatus);
     }
 
-    // GET /employee/tickets/get/filedTickets
+    // GET /employee/{employeeId}/tickets/get/filedTickets
     @GetMapping("/get/filedTickets")
-    public ResponseEntity<List<Ticket>> getAllFiledTickets() {
-        List<Ticket> filedTickets = employeeTicketService.getAllFiledTickets();
+    public ResponseEntity<List<Ticket>> getAllFiledTickets(@PathVariable Long employeeId) {
+        Employee employee = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+        employeeValidationService.validateActive(employee);
+
+        List<Ticket> filedTickets = employeeTicketService.getAllFiledTickets(employeeId);
 
         return ResponseEntity.ok(filedTickets);
     }
 
-    // GET /employee/tickets/get/filedTicket/{ticketId}
+    // GET /employee/{employeeId}/tickets/get/filedTicket/{ticketId}
     @GetMapping("/get/filedTicket/{ticketId}")
-    public ResponseEntity<Ticket> getFiledTicket(@PathVariable Long ticketId) {
-        Ticket filedTicket = employeeTicketService.getFiledTicket(ticketId);
+    public ResponseEntity<Ticket> getFiledTicket(@PathVariable Long employeeId, @PathVariable Long ticketId) {
+        Employee employee = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+        employeeValidationService.validateActive(employee);
+
+        Ticket filedTicket = employeeTicketService.getFiledTicket(employeeId, ticketId);
 
         return ResponseEntity.ok(filedTicket);
     }

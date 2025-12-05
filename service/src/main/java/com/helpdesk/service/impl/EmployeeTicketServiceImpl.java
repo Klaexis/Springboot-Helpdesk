@@ -38,12 +38,12 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
         employeeValidationService.validateActive(employee);
 
         ticket.setTicketStatus(TicketStatus.FILED);
-        ticket.setTicketCreatedBy(employee.getEmployeeName());
+        ticket.setTicketCreatedBy(employee);
         return ticketRepository.save(ticket);
     }
 
     public List<Ticket> viewAssignedTickets(Long employeeId) {
-        return ticketRepository.findByTicketAssigneeId(employeeId);
+        return ticketRepository.findByTicketAssigneeEmployeeId(employeeId);
     }
 
     public Ticket updateOwnTicket(Long ticketId, Ticket updatedTicket, Long employeeId) {
@@ -54,7 +54,7 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
         employeeValidationService.validateActive(employee);
 
-        if (!ticket.getTicketCreatedBy().equals(employee.getEmployeeName())) {
+        if (!ticket.getTicketCreatedBy().equals(employee)) {
             throw new RuntimeException("You can only update your own tickets");
         }
 
@@ -62,7 +62,7 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
         ticket.setTicketBody(updatedTicket.getTicketBody());
         ticket.setTicketRemarks(updatedTicket.getTicketRemarks());
         ticket.setTicketStatus(updatedTicket.getTicketStatus());
-        ticket.setTicketUpdatedBy(employee.getEmployeeName());
+        ticket.setTicketUpdatedBy(employee);
 
         return ticketRepository.save(ticket);
     }
@@ -75,21 +75,29 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
         employeeValidationService.validateActive(employee);
 
-        if (!ticket.getTicketAssignee().equals(employee.getEmployeeName())) {
+        if (!ticket.getTicketAssignee().equals(employee)) {
             throw new RuntimeException("You can only update your own tickets");
         }
 
         ticket.setTicketStatus(newStatus);
-        ticket.setTicketUpdatedBy(employee.getEmployeeName());
+        ticket.setTicketUpdatedBy(employee);
 
         return ticketRepository.save(ticket);
     }
 
-    public List<Ticket> getAllFiledTickets() {
+    public List<Ticket> getAllFiledTickets(Long employeeId) {
+        Employee employee = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+        employeeValidationService.validateActive(employee);
+
         return ticketRepository.findByTicketStatus(TicketStatus.FILED);
     }
 
-    public Ticket getFiledTicket(Long ticketId) {
+    public Ticket getFiledTicket(Long employeeId, Long ticketId) {
+        Employee employee = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+        employeeValidationService.validateActive(employee);
+
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new RuntimeException("Ticket not found"));
 

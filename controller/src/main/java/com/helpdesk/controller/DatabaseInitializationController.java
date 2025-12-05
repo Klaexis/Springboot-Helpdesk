@@ -14,6 +14,7 @@ public class DatabaseInitializationController {
     @Autowired
     private DatabaseInitializationService databaseInitializationService;
 
+    // POST /database/load
     @PostMapping("/load")
     public ResponseEntity<String> loadData() {
         databaseInitializationService.loadData();

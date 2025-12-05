@@ -21,10 +21,10 @@ public class EmployeePositionController {
         return employeePositionService.getAllPositions(adminId);
     }
 
-    // GET /admin/{adminId}/positions/{employeeId}
-    @GetMapping("/get/{employeeId}")
-    public EmployeePosition getPositionById(@PathVariable Long adminId, @PathVariable Long employeeId) {
-        return employeePositionService.findPosition(adminId, employeeId);
+    // GET /admin/{adminId}/positions/get/{positionId}
+    @GetMapping("/get/{positionId}")
+    public EmployeePosition getPositionById(@PathVariable Long adminId, @PathVariable Long positionId) {
+        return employeePositionService.findPosition(adminId, positionId);
     }
 
     // POST /admin/{adminId}/positions/create
@@ -33,15 +33,15 @@ public class EmployeePositionController {
         return employeePositionService.createPosition(adminId, positionTitle);
     }
 
-    // PUT /admin/{adminId}/positions/update/{employeeId}
-    @PutMapping("/update/{employeeId}")
-    public EmployeePosition updateEmployeePosition(@PathVariable Long adminId, @PathVariable Long employeeId, @RequestBody String positionTitle) {
-        return employeePositionService.updatePosition(adminId, employeeId, positionTitle);
+    // PUT /admin/{adminId}/positions/update/{positionId}
+    @PutMapping("/update/{positionId}")
+    public EmployeePosition updateEmployeePosition(@PathVariable Long adminId, @PathVariable Long positionId, @RequestBody String positionTitle) {
+        return employeePositionService.updatePosition(adminId, positionId, positionTitle);
     }
 
-    // DELETE /admin/{adminId}/positions/delete/{employeeId}
-    @DeleteMapping("/delete/{employeeId}")
-    public void deleteEmployeePosition(@PathVariable Long adminId, @PathVariable Long employeeId) {
-        employeePositionService.deletePosition(adminId, employeeId);
+    // DELETE /admin/{adminId}/positions/delete/{positionId}
+    @DeleteMapping("/delete/{positionId}")
+    public void deleteEmployeePosition(@PathVariable Long adminId, @PathVariable Long positionId) {
+        employeePositionService.deletePosition(adminId, positionId);
     }
 }

@@ -14,7 +14,7 @@ public interface EmployeeTicketService {
 
     Ticket updateOwnTicketStatus(Long ticketId, TicketStatus newStatus, Long employeeId);
 
-    List<Ticket> getAllFiledTickets();
+    List<Ticket> getAllFiledTickets(Long employeeId);
 
-    Ticket getFiledTicket(Long ticketId);
+    Ticket getFiledTicket(Long employeeId, Long ticketId);
 }

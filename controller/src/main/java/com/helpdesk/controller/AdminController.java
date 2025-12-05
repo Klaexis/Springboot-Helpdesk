@@ -23,7 +23,7 @@ public class AdminController {
 
     // GET /admin/{adminId}/employees/find/{employeeId}
     @GetMapping("/find/{employeeId}")
-    public Employee getEmployeeById(@PathVariable Long adminId, Long employeeId) {
+    public Employee getEmployeeById(@PathVariable Long adminId, @PathVariable Long employeeId) {
         return adminService.findEmployee(adminId, employeeId);
     }
 
@@ -45,7 +45,7 @@ public class AdminController {
         adminService.deleteEmployee(adminId, employeeId);
     }
 
-    // PUT /admin/{adminId}/employees/{employeeId}/assign-position?positionTitle=positionTitle
+    // PUT /admin/{adminId}/employees/assign-position/{employeeId}?positionTitle=positionTitle
     @PutMapping("/assign-position/{employeeId}")
     public Employee assignPosition(@PathVariable Long adminId,
                                    @PathVariable Long employeeId,
