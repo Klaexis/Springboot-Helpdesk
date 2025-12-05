@@ -59,6 +59,16 @@ public class EmployeeTicketController {
         return ResponseEntity.ok(updatedTicketStatus);
     }
 
+    // POST /employee/{employeeId}/tickets/addRemarks/{ticketId}?newStatus=STATUS
+    @PostMapping("/addRemarks/{ticketId}")
+    public ResponseEntity<Ticket> addTicketRemark(@PathVariable Long ticketId,
+                                                  @PathVariable Long employeeId,
+                                                  @RequestBody String remark,
+                                                  @RequestParam(required = false) TicketStatus newStatus) {
+        Ticket ticketRemarks = employeeTicketService.addRemarkToAssignedTicket(ticketId, employeeId, remark, newStatus);
+        return ResponseEntity.ok(ticketRemarks);
+    }
+
     // GET /employee/{employeeId}/tickets/get/filedTickets
     @GetMapping("/get/filedTickets")
     public ResponseEntity<List<Ticket>> getAllFiledTickets(@PathVariable Long employeeId) {

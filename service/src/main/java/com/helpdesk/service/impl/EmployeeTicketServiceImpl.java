@@ -2,13 +2,13 @@ package com.helpdesk.service.impl;
 
 import com.helpdesk.model.Employee;
 import com.helpdesk.model.Ticket;
+import com.helpdesk.model.TicketRemark;
 import com.helpdesk.model.TicketStatus;
 import com.helpdesk.repository.EmployeeRepository;
 import com.helpdesk.repository.TicketRepository;
 import com.helpdesk.service.EmployeeTicketService;
 import com.helpdesk.service.util.EmployeeValidationHelper;
 
-import com.helpdesk.service.util.TicketServiceHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,20 +25,16 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
     @Autowired
     private final EmployeeValidationHelper employeeValidationHelper;
 
-    @Autowired
-    private final TicketServiceHelper ticketServiceHelper;
-
     public EmployeeTicketServiceImpl(TicketRepository ticketRepository,
                                      EmployeeRepository employeeRepository,
-                                     EmployeeValidationHelper employeeValidationHelper,
-                                     TicketServiceHelper ticketServiceHelper) {
+                                     EmployeeValidationHelper employeeValidationHelper) {
         this.ticketRepository = ticketRepository;
         this.employeeRepository = employeeRepository;
         this.employeeValidationHelper = employeeValidationHelper;
-        this.ticketServiceHelper = ticketServiceHelper;
     }
 
-    public Ticket fileTicket(Ticket ticket, Long employeeId) {
+    public Ticket fileTicket(Ticket ticket,
+                             Long employeeId) {
         Employee employee = employeeRepository.findById(employeeId)
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
         employeeValidationHelper.validateActive(employee);
@@ -56,7 +52,9 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
         return ticketRepository.findByTicketAssigneeEmployeeId(employeeId);
     }
 
-    public Ticket updateOwnTicket(Long ticketId, Ticket updatedTicket, Long employeeId) {
+    public Ticket updateOwnTicket(Long ticketId,
+                                  Ticket updatedTicket,
+                                  Long employeeId) {
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new RuntimeException("Ticket not found"));
 
@@ -77,7 +75,9 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
         return ticketRepository.save(ticket);
     }
 
-    public Ticket updateOwnTicketStatus(Long ticketId, TicketStatus newStatus, Long employeeId) {
+    public Ticket updateOwnTicketStatus(Long ticketId,
+                                        TicketStatus newStatus,
+                                        Long employeeId) {
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new RuntimeException("Ticket not found"));
 
@@ -95,7 +95,10 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
         return ticketRepository.save(ticket);
     }
 
-    public Ticket addRemarkToAssignedTicket(Long ticketId, Long employeeId, String remark, TicketStatus newStatus) {
+    public Ticket addRemarkToAssignedTicket(Long ticketId,
+                                            Long employeeId,
+                                            String remark,
+                                            TicketStatus newStatus) {
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new RuntimeException("Ticket not found"));
 
@@ -107,7 +110,20 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
             throw new RuntimeException("You can only add remarks to tickets assigned to you");
         }
 
-        return ticketServiceHelper.addRemarkAndStatus(ticket, remark, newStatus, employee);
+        TicketRemark ticketRemark = new TicketRemark();
+        ticketRemark.setMessage(remark);
+        ticketRemark.setCreatedBy(employee);
+        ticketRemark.setTicket(ticket);
+
+        ticket.getTicketRemarks().add(ticketRemark);
+
+        if (newStatus != null) {
+            ticket.setTicketStatus(newStatus);
+        }
+
+        ticket.setTicketUpdatedBy(employee);
+
+        return ticketRepository.save(ticket);
     }
 
 
@@ -119,7 +135,8 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
         return ticketRepository.findByTicketStatus(TicketStatus.FILED);
     }
 
-    public Ticket getFiledTicket(Long employeeId, Long ticketId) {
+    public Ticket getFiledTicket(Long employeeId,
+                                 Long ticketId) {
         Employee employee = employeeRepository.findById(employeeId)
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
         employeeValidationHelper.validateActive(employee);

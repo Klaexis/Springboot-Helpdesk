@@ -2,13 +2,13 @@ package com.helpdesk.service.impl;
 
 import com.helpdesk.model.Employee;
 import com.helpdesk.model.Ticket;
+import com.helpdesk.model.TicketRemark;
 import com.helpdesk.model.TicketStatus;
 import com.helpdesk.repository.EmployeeRepository;
 import com.helpdesk.repository.TicketRepository;
 import com.helpdesk.service.AdminTicketService;
 import com.helpdesk.service.util.EmployeeValidationHelper;
 
-import com.helpdesk.service.util.TicketServiceHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,17 +25,12 @@ public class AdminTicketServiceImpl implements AdminTicketService {
     @Autowired
     private final EmployeeValidationHelper employeeValidationHelper;
 
-    @Autowired
-    private final TicketServiceHelper ticketServiceHelper;
-
     public AdminTicketServiceImpl(TicketRepository ticketRepository,
                                   EmployeeRepository employeeRepository,
-                                  EmployeeValidationHelper employeeValidationHelper,
-                                  TicketServiceHelper ticketServiceHelper) {
+                                  EmployeeValidationHelper employeeValidationHelper) {
         this.ticketRepository = ticketRepository;
         this.employeeRepository = employeeRepository;
         this.employeeValidationHelper = employeeValidationHelper;
-        this.ticketServiceHelper = ticketServiceHelper;
     }
 
     public Ticket assignTicket(Long ticketId,
@@ -60,7 +55,8 @@ public class AdminTicketServiceImpl implements AdminTicketService {
         return ticketRepository.save(ticket);
     }
 
-    public Ticket getTicket(Long adminId, Long ticketId) {
+    public Ticket getTicket(Long adminId,
+                            Long ticketId) {
         Employee admin = employeeRepository.findById(adminId)
                 .orElseThrow(() -> new RuntimeException("Admin not found"));
 
@@ -119,7 +115,10 @@ public class AdminTicketServiceImpl implements AdminTicketService {
         return ticketRepository.save(ticket);
     }
 
-    public Ticket addTicketRemark(Long ticketId, Long adminId, String remark, TicketStatus newStatus) {
+    public Ticket addTicketRemark(Long ticketId,
+                                  Long adminId,
+                                  String remark,
+                                  TicketStatus newStatus) {
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new RuntimeException("Ticket not found"));
 
@@ -129,7 +128,20 @@ public class AdminTicketServiceImpl implements AdminTicketService {
         employeeValidationHelper.validateAdmin(admin);
         employeeValidationHelper.validateActive(admin);
 
-        return ticketServiceHelper.addRemarkAndStatus(ticket, remark, newStatus, admin);
+        TicketRemark ticketRemark = new TicketRemark();
+        ticketRemark.setMessage(remark);
+        ticketRemark.setCreatedBy(admin);
+        ticketRemark.setTicket(ticket);
+
+        ticket.getTicketRemarks().add(ticketRemark);
+
+        if (newStatus != null) {
+            ticket.setTicketStatus(newStatus);
+        }
+
+        ticket.setTicketUpdatedBy(admin);
+
+        return ticketRepository.save(ticket);
     }
 
 }

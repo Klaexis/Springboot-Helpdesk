@@ -5,6 +5,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name="tickets")
@@ -34,7 +36,8 @@ public class Ticket {
     @JoinColumn(name = "ticket_updated_by_id")
     private Employee ticketUpdatedBy;
 
-    private String ticketRemarks;
+    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL)
+    private List<TicketRemark> ticketRemarks = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     private TicketStatus ticketStatus;
@@ -87,7 +90,7 @@ public class Ticket {
         return ticketUpdatedBy;
     }
 
-    public String getTicketRemarks() {
+    public List<TicketRemark> getTicketRemarks() {
         return ticketRemarks;
     }
 
@@ -128,7 +131,7 @@ public class Ticket {
         this.ticketUpdatedBy = ticketUpdatedBy;
     }
 
-    public void setTicketRemarks(String ticketRemarks) {
+    public void setTicketRemarks(List<TicketRemark> ticketRemarks) {
         this.ticketRemarks = ticketRemarks;
     }
 

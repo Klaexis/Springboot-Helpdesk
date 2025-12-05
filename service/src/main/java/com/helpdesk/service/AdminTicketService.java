@@ -15,4 +15,6 @@ public interface AdminTicketService {
     Ticket updateTicket(Long ticketId, Ticket updatedTicket, Long adminId);
 
     Ticket updateTicketStatus(Long ticketId, TicketStatus newStatus, Long adminId);
+
+    Ticket addTicketRemark(Long ticketId, Long adminId, String remark, TicketStatus newStatus);
 }

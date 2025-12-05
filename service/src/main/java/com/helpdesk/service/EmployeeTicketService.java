@@ -17,4 +17,6 @@ public interface EmployeeTicketService {
     List<Ticket> getAllFiledTickets(Long employeeId);
 
     Ticket getFiledTicket(Long employeeId, Long ticketId);
+
+    Ticket addRemarkToAssignedTicket(Long ticketId, Long employeeId, String remark, TicketStatus newStatus);
 }

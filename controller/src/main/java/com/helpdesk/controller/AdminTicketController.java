@@ -21,18 +21,17 @@ public class AdminTicketController {
 
     // PUT /admin/{adminId}/tickets/assign/{ticketId}/assignTo/{employeeId}
     @PutMapping("assign/{ticketId}/assignTo/{employeeId}")
-    public ResponseEntity<Ticket> assignTicket(
-            @PathVariable Long ticketId,
-            @PathVariable Long adminId,
-            @PathVariable Long employeeId) {
-
+    public ResponseEntity<Ticket> assignTicket(@PathVariable Long ticketId,
+                                               @PathVariable Long adminId,
+                                               @PathVariable Long employeeId) {
         Ticket updatedTicket = adminTicketService.assignTicket(ticketId, adminId, employeeId);
         return ResponseEntity.ok(updatedTicket);
     }
 
     // GET /admin/{adminId}/tickets/find/{ticketId}
     @GetMapping("/find/{ticketId}")
-    public ResponseEntity<Ticket> getTicket(@PathVariable Long adminId, @PathVariable Long ticketId) {
+    public ResponseEntity<Ticket> getTicket(@PathVariable Long adminId,
+                                            @PathVariable Long ticketId) {
         Ticket ticket = adminTicketService.getTicket(adminId, ticketId);
         return ResponseEntity.ok(ticket);
     }
@@ -46,23 +45,29 @@ public class AdminTicketController {
 
     // PUT /admin/{adminId}/tickets/update/{ticketId}
     @PutMapping("update/{ticketId}")
-    public ResponseEntity<Ticket> updateTicket(
-            @PathVariable Long ticketId,
-            @RequestBody Ticket updatedTicket,
-            @PathVariable Long adminId) {
-
+    public ResponseEntity<Ticket> updateTicket(@PathVariable Long ticketId,
+                                               @RequestBody Ticket updatedTicket,
+                                               @PathVariable Long adminId) {
         Ticket ticket = adminTicketService.updateTicket(ticketId, updatedTicket, adminId);
         return ResponseEntity.ok(ticket);
     }
 
     // PUT /admin/{adminId}/tickets/update/{ticketId}/status?newStatus=STATUS
     @PutMapping("/update/{ticketId}/status")
-    public ResponseEntity<Ticket> updateTicketStatus(
-            @PathVariable Long ticketId,
-            @RequestParam TicketStatus newStatus,
-            @PathVariable Long adminId) {
-
+    public ResponseEntity<Ticket> updateTicketStatus(@PathVariable Long ticketId,
+                                                     @RequestParam TicketStatus newStatus,
+                                                     @PathVariable Long adminId) {
         Ticket updatedTicket = adminTicketService.updateTicketStatus(ticketId, newStatus, adminId);
         return ResponseEntity.ok(updatedTicket);
+    }
+
+    // POST /admin/{adminId}/tickets/addRemarks/{ticketId}?newStatus=STATUS
+    @PostMapping("/addRemarks/{ticketId}")
+    public ResponseEntity<Ticket> addTicketRemark(@PathVariable Long ticketId,
+                                                  @PathVariable Long adminId,
+                                                  @RequestBody String remark,
+                                                  @RequestParam(required = false) TicketStatus newStatus) {
+        Ticket ticketRemarks = adminTicketService.addTicketRemark(ticketId, adminId, remark, newStatus);
+        return ResponseEntity.ok(ticketRemarks);
     }
 }
