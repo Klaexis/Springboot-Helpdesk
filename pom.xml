@@ -21,6 +21,7 @@
     <modules>
         <module>model</module>
         <module>repository</module>
+        <module>dto</module>
         <module>service</module>
         <module>controller</module>
         <module>app</module>
@@ -55,6 +56,14 @@
                 <artifactId>h2</artifactId>
                 <version>2.4.240</version>
                 <scope>runtime</scope>
+            </dependency>
+
+            <!-- Lombok -->
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>1.18.30</version>
+                <scope>provided</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
