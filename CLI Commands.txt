@@ -4,6 +4,9 @@ mvn clean install
 Skip tests and clean install
 mvn clean install -DskipTests
 
+Run the project (single module)
+mvn spring-boot:run
+
 Run the app module only
 mvn -pl app spring-boot:run
 
