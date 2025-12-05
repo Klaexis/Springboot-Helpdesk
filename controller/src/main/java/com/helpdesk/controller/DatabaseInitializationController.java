@@ -1,6 +1,6 @@
 package com.helpdesk.controller;
 
-import com.helpdesk.service.DatabaseInitializationService;
+import com.helpdesk.service.util.DatabaseInitializationHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,12 +12,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class DatabaseInitializationController {
 
     @Autowired
-    private DatabaseInitializationService databaseInitializationService;
+    private DatabaseInitializationHelper databaseInitializationHelper;
 
     // POST /database/load
     @PostMapping("/load")
     public ResponseEntity<String> loadData() {
-        databaseInitializationService.loadData();
+        databaseInitializationHelper.loadData();
         return ResponseEntity.ok("Data Loaded Successfully");
     }
 }

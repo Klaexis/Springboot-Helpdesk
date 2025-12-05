@@ -1,4 +1,4 @@
-package com.helpdesk.service;
+package com.helpdesk.service.util;
 
 import com.helpdesk.model.Employee;
 import com.helpdesk.model.EmployeePosition;
@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class DatabaseInitializationService {
+public class DatabaseInitializationHelper {
 
     @Autowired
     private EmployeeRepository employeeRepository;

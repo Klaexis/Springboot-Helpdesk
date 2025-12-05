@@ -5,7 +5,7 @@ import com.helpdesk.model.EmployeePosition;
 import com.helpdesk.repository.EmployeePositionRepository;
 import com.helpdesk.repository.EmployeeRepository;
 import com.helpdesk.service.AdminService;
-import com.helpdesk.service.EmployeeValidationService;
+import com.helpdesk.service.util.EmployeeValidationHelper;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,22 +22,22 @@ public class AdminServiceImpl implements AdminService {
     private final EmployeePositionRepository positionRepository;
 
     @Autowired
-    private final EmployeeValidationService employeeValidationService;
+    private final EmployeeValidationHelper employeeValidationHelper;
 
     public AdminServiceImpl(EmployeeRepository employeeRepository,
                             EmployeePositionRepository positionRepository,
-                            EmployeeValidationService employeeValidationService) {
+                            EmployeeValidationHelper employeeValidationHelper) {
         this.employeeRepository = employeeRepository;
         this.positionRepository = positionRepository;
-        this.employeeValidationService = employeeValidationService;
+        this.employeeValidationHelper = employeeValidationHelper;
     }
 
     public Employee findEmployee(Long adminId, Long employeeId) {
         Employee admin = employeeRepository.findById(adminId)
                 .orElseThrow(() -> new RuntimeException("Admin not found"));
 
-        employeeValidationService.validateAdmin(admin);
-        employeeValidationService.validateActive(admin);
+        employeeValidationHelper.validateAdmin(admin);
+        employeeValidationHelper.validateActive(admin);
 
         return employeeRepository.findById(employeeId)
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
@@ -47,8 +47,8 @@ public class AdminServiceImpl implements AdminService {
         Employee admin = employeeRepository.findById(adminId)
                 .orElseThrow(() -> new RuntimeException("Admin not found"));
 
-        employeeValidationService.validateAdmin(admin);
-        employeeValidationService.validateActive(admin);
+        employeeValidationHelper.validateAdmin(admin);
+        employeeValidationHelper.validateActive(admin);
 
         return employeeRepository.findAll();
     }
@@ -57,8 +57,8 @@ public class AdminServiceImpl implements AdminService {
         Employee admin = employeeRepository.findById(adminId)
                 .orElseThrow(() -> new RuntimeException("Admin not found"));
 
-        employeeValidationService.validateAdmin(admin);
-        employeeValidationService.validateActive(admin);
+        employeeValidationHelper.validateAdmin(admin);
+        employeeValidationHelper.validateActive(admin);
 
         EmployeePosition employeePosition = positionRepository.findByPositionTitle(employee.getEmployeePosition().getPositionTitle());
 
@@ -74,8 +74,8 @@ public class AdminServiceImpl implements AdminService {
         Employee admin = employeeRepository.findById(adminId)
                 .orElseThrow(() -> new RuntimeException("Admin not found"));
 
-        employeeValidationService.validateAdmin(admin);
-        employeeValidationService.validateActive(admin);
+        employeeValidationHelper.validateAdmin(admin);
+        employeeValidationHelper.validateActive(admin);
 
         Employee employee = employeeRepository.findById(employeeId)
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
@@ -94,8 +94,8 @@ public class AdminServiceImpl implements AdminService {
         Employee admin = employeeRepository.findById(adminId)
                 .orElseThrow(() -> new RuntimeException("Admin not found"));
 
-        employeeValidationService.validateAdmin(admin);
-        employeeValidationService.validateActive(admin);
+        employeeValidationHelper.validateAdmin(admin);
+        employeeValidationHelper.validateActive(admin);
 
         employeeRepository.deleteById(employeeId);
     }
@@ -104,8 +104,8 @@ public class AdminServiceImpl implements AdminService {
         Employee admin = employeeRepository.findById(adminId)
                 .orElseThrow(() -> new RuntimeException("Admin not found"));
 
-        employeeValidationService.validateAdmin(admin);
-        employeeValidationService.validateActive(admin);
+        employeeValidationHelper.validateAdmin(admin);
+        employeeValidationHelper.validateActive(admin);
 
         Employee employee = employeeRepository.findById(employeeId)
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
