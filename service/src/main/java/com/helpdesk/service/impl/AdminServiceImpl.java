@@ -32,7 +32,8 @@ public class AdminServiceImpl implements AdminService {
         this.employeeValidationHelper = employeeValidationHelper;
     }
 
-    public Employee findEmployee(Long adminId, Long employeeId) {
+    public Employee findEmployee(Long adminId,
+                                 Long employeeId) {
         Employee admin = employeeRepository.findById(adminId)
                 .orElseThrow(() -> new RuntimeException("Admin not found"));
 
@@ -53,7 +54,8 @@ public class AdminServiceImpl implements AdminService {
         return employeeRepository.findAll();
     }
 
-    public Employee createEmployee(Long adminId, Employee employee) {
+    public Employee createEmployee(Long adminId,
+                                   Employee employee) {
         Employee admin = employeeRepository.findById(adminId)
                 .orElseThrow(() -> new RuntimeException("Admin not found"));
 
@@ -70,7 +72,9 @@ public class AdminServiceImpl implements AdminService {
         return employeeRepository.save(employee);
     }
 
-    public Employee updateEmployee(Long adminId, Long employeeId, Employee newData) {
+    public Employee updateEmployee(Long adminId,
+                                   Long employeeId,
+                                   Employee newData) {
         Employee admin = employeeRepository.findById(adminId)
                 .orElseThrow(() -> new RuntimeException("Admin not found"));
 
@@ -90,7 +94,8 @@ public class AdminServiceImpl implements AdminService {
         return employeeRepository.save(employee);
     }
 
-    public void deleteEmployee(Long adminId, Long employeeId) {
+    public void deleteEmployee(Long adminId,
+                               Long employeeId) {
         Employee admin = employeeRepository.findById(adminId)
                 .orElseThrow(() -> new RuntimeException("Admin not found"));
 
@@ -100,7 +105,9 @@ public class AdminServiceImpl implements AdminService {
         employeeRepository.deleteById(employeeId);
     }
 
-    public Employee assignPositionToEmployee(Long adminId, Long employeeId, String positionTitle) {
+    public Employee assignPositionToEmployee(Long adminId,
+                                             Long employeeId,
+                                             String positionTitle) {
         Employee admin = employeeRepository.findById(adminId)
                 .orElseThrow(() -> new RuntimeException("Admin not found"));
 

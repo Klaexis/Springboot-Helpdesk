@@ -18,7 +18,6 @@ public class DatabaseInitializationHelper {
     private EmployeePositionRepository employeePositionRepository;
 
     public void loadData() {
-        // Create example positions
         EmployeePosition adminPosition = new EmployeePosition("Admin");
         EmployeePosition userPosition = new EmployeePosition("Employee");
 

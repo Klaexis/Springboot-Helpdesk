@@ -31,7 +31,8 @@ public class EmployeePositionServiceImpl implements EmployeePositionService {
         this.employeeValidationHelper = employeeValidationHelper;
     }
 
-    public EmployeePosition findPosition(Long adminId, Long positionId) {
+    public EmployeePosition findPosition(Long adminId,
+                                         Long positionId) {
         Employee admin = employeeRepository.findById(adminId)
                 .orElseThrow(() -> new RuntimeException("Admin not found"));
 
@@ -52,7 +53,8 @@ public class EmployeePositionServiceImpl implements EmployeePositionService {
         return positionRepository.findAll();
     }
 
-    public EmployeePosition createPosition(Long adminId, String positionTitle) {
+    public EmployeePosition createPosition(Long adminId,
+                                           String positionTitle) {
         Employee admin = employeeRepository.findById(adminId)
                 .orElseThrow(() -> new RuntimeException("Admin not found"));
 
@@ -64,7 +66,9 @@ public class EmployeePositionServiceImpl implements EmployeePositionService {
         return positionRepository.save(position);
     }
 
-    public EmployeePosition updatePosition(Long adminId, Long positionId, String positionTitle) {
+    public EmployeePosition updatePosition(Long adminId,
+                                           Long positionId,
+                                           String positionTitle) {
         Employee admin = employeeRepository.findById(adminId)
                 .orElseThrow(() -> new RuntimeException("Admin not found"));
 
@@ -76,7 +80,8 @@ public class EmployeePositionServiceImpl implements EmployeePositionService {
         return positionRepository.save(position);
     }
 
-    public void deletePosition(Long adminId, Long positionId) {
+    public void deletePosition(Long adminId,
+                               Long positionId) {
         Employee admin = employeeRepository.findById(adminId)
                 .orElseThrow(() -> new RuntimeException("Admin not found"));
 
