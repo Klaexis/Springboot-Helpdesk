@@ -1,5 +1,6 @@
 package com.helpdesk.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -36,7 +37,8 @@ public class Ticket {
     @JoinColumn(name = "ticket_updated_by_id")
     private Employee ticketUpdatedBy;
 
-    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<TicketRemark> ticketRemarks = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
