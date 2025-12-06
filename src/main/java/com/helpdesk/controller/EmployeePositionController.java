@@ -1,7 +1,9 @@
 package com.helpdesk.controller;
 
+import com.helpdesk.model.Employee;
 import com.helpdesk.model.EmployeePosition;
 import com.helpdesk.service.EmployeePositionService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,36 +19,56 @@ public class EmployeePositionController {
 
     // GET /admin/{adminId}/positions
     @GetMapping
-    public List<EmployeePosition> getAllPositions(@PathVariable Long adminId) {
-        return employeePositionService.getAllPositions(adminId);
+    public ResponseEntity<List<EmployeePosition>>  getAllPositions(@PathVariable Long adminId) {
+        List<EmployeePosition> employeePositions = employeePositionService.getAllPositions(
+                adminId
+        );
+        return ResponseEntity.ok(employeePositions);
     }
 
     // GET /admin/{adminId}/positions/get/{positionId}
     @GetMapping("/get/{positionId}")
-    public EmployeePosition getPositionById(@PathVariable Long adminId,
-                                            @PathVariable Long positionId) {
-        return employeePositionService.findPosition(adminId, positionId);
+    public ResponseEntity<EmployeePosition> getPositionById(@PathVariable Long adminId,
+                                                            @PathVariable Long positionId) {
+        EmployeePosition employeePosition = employeePositionService.findPosition(
+                adminId,
+                positionId
+        );
+        return ResponseEntity.ok(employeePosition);
     }
 
     // POST /admin/{adminId}/positions/create
     @PostMapping("/create")
-    public EmployeePosition createEmployeePosition(@PathVariable Long adminId,
-                                                   @RequestBody String positionTitle) {
-        return employeePositionService.createPosition(adminId, positionTitle);
+    public ResponseEntity<EmployeePosition> createEmployeePosition(@PathVariable Long adminId,
+                                                                   @RequestBody String positionTitle) {
+        EmployeePosition createdEmployeePosition = employeePositionService.createPosition(
+                adminId,
+                positionTitle
+        );
+        return ResponseEntity.ok(createdEmployeePosition);
     }
 
-    // PUT /admin/{adminId}/positions/update/{positionId}
-    @PutMapping("/update/{positionId}")
-    public EmployeePosition updateEmployeePosition(@PathVariable Long adminId,
-                                                   @PathVariable Long positionId,
-                                                   @RequestBody String positionTitle) {
-        return employeePositionService.updatePosition(adminId, positionId, positionTitle);
+    // PATCH /admin/{adminId}/positions/update/{positionId}
+    @PatchMapping("/update/{positionId}")
+    public ResponseEntity<EmployeePosition> updateEmployeePosition(@PathVariable Long adminId,
+                                                                   @PathVariable Long positionId,
+                                                                   @RequestBody String positionTitle) {
+        EmployeePosition updatedEmployeePosition = employeePositionService.updatePosition(
+                adminId,
+                positionId,
+                positionTitle
+        );
+        return ResponseEntity.ok(updatedEmployeePosition);
     }
 
     // DELETE /admin/{adminId}/positions/delete/{positionId}
     @DeleteMapping("/delete/{positionId}")
-    public void deleteEmployeePosition(@PathVariable Long adminId,
-                                       @PathVariable Long positionId) {
-        employeePositionService.deletePosition(adminId, positionId);
+    public ResponseEntity<Void> deleteEmployeePosition(@PathVariable Long adminId,
+                                                       @PathVariable Long positionId) {
+        employeePositionService.deletePosition(
+                adminId,
+                positionId
+        );
+        return ResponseEntity.noContent().build(); // 204 No Content
     }
 }

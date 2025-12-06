@@ -2,6 +2,7 @@ package com.helpdesk.controller;
 
 import com.helpdesk.model.Employee;
 import com.helpdesk.service.AdminService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,44 +18,69 @@ public class AdminController {
 
     // GET /admin/{adminId}/employees
     @GetMapping
-    public List<Employee> getAllEmployees(@PathVariable Long adminId) {
-        return adminService.getAllEmployees(adminId);
+    public ResponseEntity<List<Employee>> getAllEmployees(@PathVariable Long adminId) {
+        List<Employee> employee = adminService.getAllEmployees(
+                adminId
+        );
+        return ResponseEntity.ok(employee);
     }
 
     // GET /admin/{adminId}/employees/find/{employeeId}
     @GetMapping("/find/{employeeId}")
-    public Employee getEmployeeById(@PathVariable Long adminId,
-                                    @PathVariable Long employeeId) {
-        return adminService.findEmployee(adminId, employeeId);
+    public ResponseEntity<Employee> getEmployeeById(@PathVariable Long adminId,
+                                                    @PathVariable Long employeeId) {
+        Employee employee = adminService.findEmployee(
+                adminId,
+                employeeId
+        );
+        return ResponseEntity.ok(employee);
     }
 
     // POST /admin/{adminId}/employees/create
     @PostMapping("/create")
-    public Employee createEmployee(@PathVariable Long adminId,
-                                   @RequestBody Employee employee) {
-        return adminService.createEmployee(adminId, employee);
+    public ResponseEntity<Employee> createEmployee(@PathVariable Long adminId,
+                                                   @RequestBody Employee employee) {
+        Employee createdEmployee = adminService.createEmployee(
+                adminId,
+                employee
+        );
+        return ResponseEntity.ok(createdEmployee);
     }
 
-    // PUT /admin/{adminId}/employees/update/{employeeId}
-    @PutMapping("/update/{employeeId}")
-    public Employee updateEmployee(@PathVariable Long adminId,
-                                   @PathVariable Long employeeId,
-                                   @RequestBody Employee employee) {
-        return adminService.updateEmployee(adminId, employeeId, employee);
+    // PATCH /admin/{adminId}/employees/update/{employeeId}
+    @PatchMapping("/update/{employeeId}")
+    public ResponseEntity<Employee> updateEmployee(@PathVariable Long adminId,
+                                                   @PathVariable Long employeeId,
+                                                   @RequestBody Employee employee) {
+        Employee updatedEmployee = adminService.updateEmployee(
+                adminId,
+                employeeId,
+                employee
+        );
+        return ResponseEntity.ok(updatedEmployee);
     }
 
     // DELETE /admin/{adminId}/employees/delete/{employeeId}
     @DeleteMapping("/delete/{employeeId}")
-    public void deleteEmployee(@PathVariable Long adminId,
-                               @PathVariable Long employeeId) {
-        adminService.deleteEmployee(adminId, employeeId);
+    public ResponseEntity<Void> deleteEmployee(@PathVariable Long adminId,
+                                               @PathVariable Long employeeId) {
+        adminService.deleteEmployee(
+                adminId,
+                employeeId
+        );
+        return ResponseEntity.noContent().build(); // 204 No Content
     }
 
-    // PUT /admin/{adminId}/employees/assign-position/{employeeId}?positionTitle=positionTitle
-    @PutMapping("/assign-position/{employeeId}")
-    public Employee assignPosition(@PathVariable Long adminId,
-                                   @PathVariable Long employeeId,
-                                   @RequestParam String positionTitle) {
-        return adminService.assignPositionToEmployee(adminId, employeeId, positionTitle);
+    // PATCH /admin/{adminId}/employees/assign-position/{employeeId}
+    @PatchMapping("/assign-position/{employeeId}")
+    public ResponseEntity<Employee> assignPosition(@PathVariable Long adminId,
+                                                   @PathVariable Long employeeId,
+                                                   @RequestBody String positionTitle) {
+        Employee employee = adminService.assignPositionToEmployee(
+                adminId,
+                employeeId,
+                positionTitle
+        );
+        return ResponseEntity.ok(employee);
     }
 }

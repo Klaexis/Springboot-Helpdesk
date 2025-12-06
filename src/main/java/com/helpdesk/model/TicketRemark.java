@@ -1,5 +1,6 @@
 package com.helpdesk.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
@@ -22,6 +23,7 @@ public class TicketRemark {
 
     @ManyToOne
     @JoinColumn(name = "ticket_id")
+    @JsonBackReference
     private Ticket ticket;
 
     // Constructors
