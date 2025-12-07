@@ -9,7 +9,7 @@ public interface AdminService {
 
     List<Employee> getAllEmployees(Long adminId);
 
-    Employee createEmployee(Long adminId, Employee employee);
+    Employee createEmployee(Long adminId, Employee employee, String positionTitle);
 
     Employee updateEmployee(Long adminId, Long employeeId, Employee newData);
 

@@ -55,18 +55,23 @@ public class AdminServiceImpl implements AdminService {
     }
 
     public Employee createEmployee(Long adminId,
-                                   Employee employee) {
+                                   Employee employee,
+                                   String positionTitle) {
         Employee admin = employeeRepository.findById(adminId)
                 .orElseThrow(() -> new RuntimeException("Admin not found"));
 
         employeeValidationHelper.validateAdmin(admin);
         employeeValidationHelper.validateActive(admin);
 
-        EmployeePosition employeePosition = positionRepository.findByPositionTitle(employee.getEmployeePosition().getPositionTitle());
+        if (positionTitle == null || positionTitle.isBlank()) {
+            throw new RuntimeException("Position title must be provided");
+        }
 
+        EmployeePosition employeePosition = positionRepository.findByPositionTitle(positionTitle);
         if (employeePosition == null) {
             throw new RuntimeException("Employee position not found");
         }
+
 
         employee.setEmployeePosition(employeePosition);  // Assign the position to the employee
         return employeeRepository.save(employee);
