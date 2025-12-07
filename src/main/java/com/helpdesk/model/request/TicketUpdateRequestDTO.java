@@ -1,20 +1,17 @@
-package com.helpdesk.model.response;
+package com.helpdesk.model.request;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.helpdesk.model.TicketStatus;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Optional;
 
-@Setter
 @Getter
-@JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class TicketUpdateDTO {
+@Setter
+public class TicketUpdateRequestDTO {
     private Optional<String> ticketTitle = Optional.empty();
     private Optional<String> ticketBody = Optional.empty();
     private Optional<Long> ticketAssigneeId = Optional.empty();
     private Optional<TicketStatus> ticketStatus = Optional.empty();
-    private Optional<String> ticketRemarks = Optional.empty();
-
+    private Optional<String> remarkToAdd = Optional.empty();
 }

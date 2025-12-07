@@ -2,7 +2,8 @@ package com.helpdesk.controller;
 
 import com.helpdesk.model.Ticket;
 import com.helpdesk.model.TicketStatus;
-import com.helpdesk.model.request.AddTicketRemarkRequest;
+import com.helpdesk.model.request.AddTicketRemarkRequestDTO;
+import com.helpdesk.model.request.TicketUpdateRequestDTO;
 import com.helpdesk.service.AdminTicketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -56,7 +57,7 @@ public class AdminTicketController {
     // PATCH /admin/{adminId}/tickets/update/{ticketId}
     @PatchMapping("update/{ticketId}")
     public ResponseEntity<Ticket> updateTicket(@PathVariable Long adminId,
-                                               @RequestBody Ticket updatedTicket,
+                                               @RequestBody TicketUpdateRequestDTO updatedTicket,
                                                @PathVariable Long ticketId) {
         Ticket newTicket = adminTicketService.updateTicket(
                 ticketId,
@@ -83,7 +84,7 @@ public class AdminTicketController {
     @PatchMapping("/addRemarks/{ticketId}")
     public ResponseEntity<Ticket> addTicketRemark(@PathVariable Long adminId,
                                                   @PathVariable Long ticketId,
-                                                  @RequestBody AddTicketRemarkRequest request) {
+                                                  @RequestBody AddTicketRemarkRequestDTO request) {
         Ticket ticketRemarks = adminTicketService.addTicketRemark(
                 ticketId,
                 adminId,

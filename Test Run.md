@@ -58,7 +58,7 @@ Delete a position (Admin Only) (DELETE)
 
 ***<---------- ADMIN FUNCTIONS ---------->***
 
-Get all Employees (Admin Only) (GET) 
+Get all Employees (Admin Only) (GET)
 
 **http://localhost:8080/admin/{adminId}/employees**
 
@@ -82,23 +82,23 @@ Create an employee (Admin Only) (POST) (JSON)
 
 {
 
-&nbsp;   "employeeName": "John Doe",
+&nbsp; "employeeName": "John Doe",
 
-&nbsp;   "employeeAge": 30,
+&nbsp; "employeeAge": 30,
 
-&nbsp;   "employeeAddress": "123 Main St, Cityville",
+&nbsp; "employeeAddress": "123 Main St, Cityville",
 
-&nbsp;   "employeeContactNumber": "555-1234",
+&nbsp; "employeeContactNumber": "555-1234",
 
-&nbsp;   "employeeEmail": "john.doe@example.com",
+&nbsp; "employeeEmail": "john.doe@example.com",
 
-&nbsp;   "employmentStatus": "ACTIVE",
+&nbsp; "employmentStatus": "ACTIVE",
 
-&nbsp;   "employeePosition": {
+&nbsp; "employeePosition": {
 
-&nbsp;       "positionTitle": "Software Engineer"
+&nbsp;   "positionTitle": "Software Engineer"
 
-&nbsp;   }
+&nbsp; }
 
 }
 
@@ -136,13 +136,13 @@ Update an employee (Admin Only) (PATCH) (JSON)
 
 {
 
-&nbsp;   "employeeName": "John McDoenalds",
+    "employeeName": "John McDoenalds",
 
-&nbsp;   "employeeAddress": "456 Second St, New City",
+    "employeeAddress": "456 Second St, New City",
 
-&nbsp;   "employeeContactNumber": "123-4567",
+    "employeeContactNumber": "123-4567",
 
-&nbsp;   "employeeEmail": "john.mcdoenalds@example.com"
+    "employeeEmail": "john.mcdoenalds@example.com"
 
 }
 
@@ -176,9 +176,9 @@ File a ticket (POST) (JSON)
 
 {
 
-&nbsp;   "ticketTitle": "Fix Bugs",
+    "ticketTitle": "Fix Bugs",
 
-&nbsp;   "ticketBody": "Fix bugs in project A"
+    "ticketBody": "Fix bugs in project A"
 
 }
 
@@ -186,9 +186,9 @@ File a ticket (POST) (JSON)
 
 {
 
-&nbsp;   "ticketTitle": "Add Feature",
+    "ticketTitle": "Add Feature",
 
-&nbsp;   "ticketBody": "Add new feature in project B"
+    "ticketBody": "Add new feature in project B"
 
 }
 
@@ -228,9 +228,9 @@ Update ticket (Admin Only) (PATCH)
 
 {
 
-&nbsp;   "ticketTitle": "\[URGENT] Fix Bugs",
+    "ticketTitle": "\[URGENT] Fix Bugs",
 
-&nbsp;   "ticketBody": "Fix Bugs in project A ASAP"
+    "ticketBody": "Fix Bugs in project A ASAP"
 
 }
 
@@ -254,9 +254,9 @@ Add Remarks for Admin (Admin Only) (PATCH) (JSON)
 
 {
 
-&nbsp; "remark": "Employee is fixing the bugs",
+  "remark": "Employee is fixing the bugs",
 
-&nbsp; "newStatus": "IN\_PROGRESS"
+  "newStatus": "IN\_PROGRESS"
 
 }
 
@@ -264,7 +264,7 @@ Add Remarks for Admin (Admin Only) (PATCH) (JSON)
 
 {
 
-&nbsp; "remark": "This ticket is now in review"
+  "remark": "This ticket is now in review"
 
 }
 
@@ -280,7 +280,7 @@ Get all assigned tickets (PATCH)
 
 
 
-Update own filed ticket (PATCH) (JSON) **\[NOT WORKING]**
+Update own filed ticket (PATCH) (JSON)
 
 **http://localhost:8080/employee/{employeeId}/tickets/update/{ticketId}**
 
@@ -310,7 +310,7 @@ Update assigned ticket status (PATCH) (TEXT)
 
 
 
-Add remarks to assigned ticket (PATCH) (JSON) **\[NOT WORKING]**
+Add remarks to assigned ticket (PATCH) (JSON)
 
 **http://localhost:8080/employee/{employeeId}/tickets/addRemarks/{ticketId}**
 
@@ -328,7 +328,7 @@ Add remarks to assigned ticket (PATCH) (JSON) **\[NOT WORKING]**
 
 {
 
-  "remark": "Currently fixing the bugs",
+  "remark": "Currently fixing the bugs"
 
 }
 
@@ -347,6 +347,4 @@ Get a filed ticket (GET)
 **http://localhost:8080/employee/{employeeId}/tickets/get/filedTicket/{ticketId}**
 
 **http://localhost:8080/employee/2/tickets/get/filedTicket/1**
-
-
 

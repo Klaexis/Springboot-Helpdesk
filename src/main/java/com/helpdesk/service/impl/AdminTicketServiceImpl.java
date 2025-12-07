@@ -4,6 +4,7 @@ import com.helpdesk.model.Employee;
 import com.helpdesk.model.Ticket;
 import com.helpdesk.model.TicketRemark;
 import com.helpdesk.model.TicketStatus;
+import com.helpdesk.model.request.TicketUpdateRequestDTO;
 import com.helpdesk.repository.EmployeeRepository;
 import com.helpdesk.repository.TicketRepository;
 import com.helpdesk.service.AdminTicketService;
@@ -78,7 +79,7 @@ public class AdminTicketServiceImpl implements AdminTicketService {
     }
 
     public Ticket updateTicket(Long ticketId,
-                               Ticket updatedTicket,
+                               TicketUpdateRequestDTO updatedTicket,
                                Long adminId) {
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new RuntimeException("Ticket not found"));
@@ -88,11 +89,22 @@ public class AdminTicketServiceImpl implements AdminTicketService {
         employeeValidationHelper.validateAdmin(admin);
         employeeValidationHelper.validateActive(admin);
 
-        ticket.setTicketTitle(updatedTicket.getTicketTitle());
-        ticket.setTicketBody(updatedTicket.getTicketBody());
-        ticket.setTicketAssignee(updatedTicket.getTicketAssignee());
-        ticket.setTicketStatus(updatedTicket.getTicketStatus());
-        ticket.setTicketRemarks(updatedTicket.getTicketRemarks());
+        updatedTicket.getTicketTitle().ifPresent(ticket::setTicketTitle);
+        updatedTicket.getTicketBody().ifPresent(ticket::setTicketBody);
+
+        updatedTicket.getTicketAssigneeId().ifPresent(assigneeId -> {
+            Employee assignee = employeeRepository.findById(assigneeId)
+                    .orElseThrow(() -> new RuntimeException("Assignee not found"));
+            ticket.setTicketAssignee(assignee);
+        });
+
+        updatedTicket.getTicketStatus().ifPresent(ticket::setTicketStatus);
+
+        updatedTicket.getRemarkToAdd().ifPresent(text -> {
+            TicketRemark remark = new TicketRemark(text, admin, ticket );
+            ticket.getTicketRemarks().add(remark);
+        });
+
         ticket.setTicketUpdatedBy(admin);
 
         return ticketRepository.save(ticket);

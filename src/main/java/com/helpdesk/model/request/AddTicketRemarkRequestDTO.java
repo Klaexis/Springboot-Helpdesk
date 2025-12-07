@@ -2,7 +2,7 @@ package com.helpdesk.model.request;
 
 import com.helpdesk.model.TicketStatus;
 
-public class AddTicketRemarkRequest {
+public class AddTicketRemarkRequestDTO {
     private String remark;
     private TicketStatus newStatus;
 

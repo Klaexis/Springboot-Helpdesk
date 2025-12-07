@@ -2,6 +2,7 @@ package com.helpdesk.service;
 
 import com.helpdesk.model.Ticket;
 import com.helpdesk.model.TicketStatus;
+import com.helpdesk.model.request.TicketUpdateRequestDTO;
 
 import java.util.List;
 
@@ -12,7 +13,7 @@ public interface AdminTicketService {
 
     List<Ticket> getAllTickets(Long adminId);
 
-    Ticket updateTicket(Long ticketId, Ticket updatedTicket, Long adminId);
+    Ticket updateTicket(Long ticketId, TicketUpdateRequestDTO updatedTicket, Long adminId);
 
     Ticket updateTicketStatus(Long ticketId, TicketStatus newStatus, Long adminId);
 

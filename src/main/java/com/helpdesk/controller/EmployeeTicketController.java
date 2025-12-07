@@ -2,7 +2,8 @@ package com.helpdesk.controller;
 
 import com.helpdesk.model.Ticket;
 import com.helpdesk.model.TicketStatus;
-import com.helpdesk.model.request.AddTicketRemarkRequest;
+import com.helpdesk.model.request.AddTicketRemarkRequestDTO;
+import com.helpdesk.model.request.TicketUpdateRequestDTO;
 import com.helpdesk.repository.EmployeeRepository;
 import com.helpdesk.service.EmployeeTicketService;
 
@@ -48,7 +49,7 @@ public class EmployeeTicketController {
     // PATCH /employee/{employeeId}/tickets/update/{ticketId}
     @PatchMapping("/update/{ticketId}")
     public ResponseEntity<Ticket> updateOwnTicket(@PathVariable Long employeeId,
-                                                  @RequestBody Ticket ticket,
+                                                  @RequestBody TicketUpdateRequestDTO ticket,
                                                   @PathVariable Long ticketId) {
         Ticket updatedTicket = employeeTicketService.updateOwnTicket(
                 ticketId,
@@ -75,7 +76,7 @@ public class EmployeeTicketController {
     @PatchMapping("/addRemarks/{ticketId}")
     public ResponseEntity<Ticket> addTicketRemark(@PathVariable Long employeeId,
                                                   @PathVariable Long ticketId,
-                                                  @RequestBody AddTicketRemarkRequest request) {
+                                                  @RequestBody AddTicketRemarkRequestDTO request) {
         Ticket ticketRemarks = employeeTicketService.addRemarkToAssignedTicket(
                 ticketId,
                 employeeId,

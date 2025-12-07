@@ -4,6 +4,7 @@ import com.helpdesk.model.Employee;
 import com.helpdesk.model.Ticket;
 import com.helpdesk.model.TicketRemark;
 import com.helpdesk.model.TicketStatus;
+import com.helpdesk.model.request.TicketUpdateRequestDTO;
 import com.helpdesk.repository.EmployeeRepository;
 import com.helpdesk.repository.TicketRepository;
 import com.helpdesk.service.EmployeeTicketService;
@@ -53,7 +54,7 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
     }
 
     public Ticket updateOwnTicket(Long ticketId,
-                                  Ticket updatedTicket,
+                                  TicketUpdateRequestDTO updatedTicket,
                                   Long employeeId) {
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new RuntimeException("Ticket not found"));
@@ -62,14 +63,19 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
         employeeValidationHelper.validateActive(employee);
 
-        if (!ticket.getTicketCreatedBy().equals(employee)) {
+        if (!ticket.getTicketCreatedBy().getEmployeeId().equals(employeeId)) {
             throw new RuntimeException("You can only update your own tickets");
         }
 
-        ticket.setTicketTitle(updatedTicket.getTicketTitle());
-        ticket.setTicketBody(updatedTicket.getTicketBody());
-        ticket.setTicketRemarks(updatedTicket.getTicketRemarks());
-        ticket.setTicketStatus(updatedTicket.getTicketStatus());
+        updatedTicket.getTicketTitle().ifPresent(ticket::setTicketTitle);
+        updatedTicket.getTicketBody().ifPresent(ticket::setTicketBody);
+        updatedTicket.getTicketStatus().ifPresent(ticket::setTicketStatus);
+
+        updatedTicket.getRemarkToAdd().ifPresent(text -> {
+            TicketRemark remark = new TicketRemark(text, employee, ticket);
+            ticket.getTicketRemarks().add(remark);
+        });
+
         ticket.setTicketUpdatedBy(employee);
 
         return ticketRepository.save(ticket);
@@ -85,7 +91,7 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
         employeeValidationHelper.validateActive(employee);
 
-        if (!ticket.getTicketAssignee().equals(employee)) {
+        if (!ticket.getTicketAssignee().getEmployeeId().equals(employeeId)) {
             throw new RuntimeException("You can only update your own tickets");
         }
 
@@ -106,7 +112,7 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
         employeeValidationHelper.validateActive(employee);
 
-        if (!ticket.getTicketAssignee().equals(employee)) {
+        if (!ticket.getTicketAssignee().getEmployeeId().equals(employeeId)) {
             throw new RuntimeException("You can only add remarks to tickets assigned to you");
         }
 
