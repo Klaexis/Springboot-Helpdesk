@@ -1,6 +1,5 @@
 package com.helpdesk.model.request;
 
-import com.helpdesk.model.TicketStatus;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -8,10 +7,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class TicketUpdateRequestDTO {
+public class TicketCreateRequestDTO {
     private String ticketTitle;
     private String ticketBody;
     private Long ticketAssigneeId;
-    private TicketStatus ticketStatus;
-    private String remarkToAdd;
 }

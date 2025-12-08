@@ -5,15 +5,18 @@ import com.helpdesk.model.Ticket;
 import com.helpdesk.model.TicketRemark;
 import com.helpdesk.model.TicketStatus;
 import com.helpdesk.model.request.TicketUpdateRequestDTO;
+import com.helpdesk.model.response.TicketResponseDTO;
 import com.helpdesk.repository.EmployeeRepository;
 import com.helpdesk.repository.TicketRepository;
 import com.helpdesk.service.AdminTicketService;
+import com.helpdesk.service.mapper.TicketMapper;
 import com.helpdesk.service.util.EmployeeValidationHelper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AdminTicketServiceImpl implements AdminTicketService {
@@ -52,9 +55,9 @@ public class AdminTicketServiceImpl implements AdminTicketService {
                 .orElseThrow(() -> new RuntimeException("Ticket not found"));
     }
 
-    public Ticket assignTicket(Long ticketId,
-                               Long adminId,
-                               Long employeeId) {
+    public TicketResponseDTO assignTicket(Long ticketId,
+                                          Long adminId,
+                                          Long employeeId) {
         Ticket ticket = getTicketOrThrow(ticketId);
         Employee admin = validateAdmin(adminId);
         Employee employee = getEmployeeOrThrow(employeeId);
@@ -63,81 +66,67 @@ public class AdminTicketServiceImpl implements AdminTicketService {
         ticket.setTicketUpdatedBy(admin);
         ticket.setTicketStatus(TicketStatus.IN_PROGRESS);
 
-        return ticketRepository.save(ticket);
+        return TicketMapper.toTicketDTO(ticketRepository.save(ticket));
     }
 
-    public Ticket getTicket(Long adminId,
-                            Long ticketId) {
+    public TicketResponseDTO getTicket(Long adminId,
+                                       Long ticketId) {
         validateAdmin(adminId);
 
-        return getTicketOrThrow(ticketId);
+        return TicketMapper.toTicketDTO(getTicketOrThrow(ticketId));
     }
 
-    public List<Ticket> getAllTickets(Long adminId) {
+    public List<TicketResponseDTO> getAllTickets(Long adminId) {
         validateAdmin(adminId);
 
-        return ticketRepository.findAll();
+        return ticketRepository.findAll()
+                .stream()
+                .map(TicketMapper::toTicketDTO)
+                .collect(Collectors.toList());
     }
 
-    public Ticket updateTicket(Long ticketId,
-                               TicketUpdateRequestDTO updatedTicket,
-                               Long adminId) {
+    public TicketResponseDTO updateTicket(Long ticketId,
+                                          TicketUpdateRequestDTO updatedTicket,
+                                          Long adminId) {
         Ticket ticket = getTicketOrThrow(ticketId);
         Employee admin = validateAdmin(adminId);
 
-        updatedTicket.getTicketTitle().ifPresent(ticket::setTicketTitle);
-        updatedTicket.getTicketBody().ifPresent(ticket::setTicketBody);
+        Employee assignee = null;
+        if (updatedTicket.getTicketAssigneeId() != null) {
+            assignee = getEmployeeOrThrow(updatedTicket.getTicketAssigneeId());
+        }
 
-        updatedTicket.getTicketAssigneeId().ifPresent(assigneeId -> {
-            Employee assignee = employeeRepository.findById(assigneeId)
-                    .orElseThrow(() -> new RuntimeException("Assignee not found"));
-            ticket.setTicketAssignee(assignee);
-        });
-
-        updatedTicket.getTicketStatus().ifPresent(ticket::setTicketStatus);
-
-        updatedTicket.getRemarkToAdd().ifPresent(text -> {
-            TicketRemark remark = new TicketRemark(text, admin, ticket );
-            ticket.getTicketRemarks().add(remark);
-        });
-
+        TicketMapper.updateEntityFromDTO(updatedTicket, ticket, admin, assignee);
         ticket.setTicketUpdatedBy(admin);
 
-        return ticketRepository.save(ticket);
+        return TicketMapper.toTicketDTO(ticketRepository.save(ticket));
     }
 
-    public Ticket updateTicketStatus(Long ticketId,
-                                     TicketStatus newStatus,
-                                     Long adminId) {
+    public TicketResponseDTO updateTicketStatus(Long ticketId,
+                                                TicketStatus newStatus,
+                                                Long adminId) {
         Ticket ticket = getTicketOrThrow(ticketId);
         Employee admin = validateAdmin(adminId);
 
         ticket.setTicketStatus(newStatus);
         ticket.setTicketUpdatedBy(admin);
 
-        return ticketRepository.save(ticket);
+        return TicketMapper.toTicketDTO(ticketRepository.save(ticket));
     }
 
-    public Ticket addTicketRemark(Long ticketId,
-                                  Long adminId,
-                                  String remark,
-                                  TicketStatus newStatus) {
+    public TicketResponseDTO addTicketRemark(Long ticketId,
+                                             Long adminId,
+                                             String remark,
+                                             TicketStatus newStatus) {
         Ticket ticket = getTicketOrThrow(ticketId);
         Employee admin = validateAdmin(adminId);
 
-        TicketRemark ticketRemark = new TicketRemark();
-        ticketRemark.setMessage(remark);
-        ticketRemark.setCreatedBy(admin);
-        ticketRemark.setTicket(ticket);
-
+        TicketRemark ticketRemark = new TicketRemark(remark, admin, ticket);
         ticket.getTicketRemarks().add(ticketRemark);
 
-        if (newStatus != null) {
-            ticket.setTicketStatus(newStatus);
-        }
-
+        if (newStatus != null) ticket.setTicketStatus(newStatus);
         ticket.setTicketUpdatedBy(admin);
 
-        return ticketRepository.save(ticket);
+        return TicketMapper.toTicketDTO(ticketRepository.save(ticket));
     }
 }

@@ -5,15 +5,18 @@ import com.helpdesk.model.Ticket;
 import com.helpdesk.model.TicketRemark;
 import com.helpdesk.model.TicketStatus;
 import com.helpdesk.model.request.TicketUpdateRequestDTO;
+import com.helpdesk.model.response.TicketResponseDTO;
 import com.helpdesk.repository.EmployeeRepository;
 import com.helpdesk.repository.TicketRepository;
 import com.helpdesk.service.EmployeeTicketService;
+import com.helpdesk.service.mapper.TicketMapper;
 import com.helpdesk.service.util.EmployeeValidationHelper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class EmployeeTicketServiceImpl implements EmployeeTicketService {
@@ -46,48 +49,42 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
                 .orElseThrow(() -> new RuntimeException("Ticket not found"));
     }
 
-    public Ticket fileTicket(Ticket ticket,
-                             Long employeeId) {
+    public TicketResponseDTO fileTicket(Ticket ticket,
+                                        Long employeeId) {
         Employee employee = validateEmployee(employeeId);
 
         ticket.setTicketStatus(TicketStatus.FILED);
         ticket.setTicketCreatedBy(employee);
-        return ticketRepository.save(ticket);
+        return TicketMapper.toTicketDTO(ticketRepository.save(ticket));
     }
 
-    public List<Ticket> viewAssignedTickets(Long employeeId) {
+    public List<TicketResponseDTO> viewAssignedTickets(Long employeeId) {
         validateEmployee(employeeId);
 
-        return ticketRepository.findByTicketAssigneeEmployeeId(employeeId);
+        return ticketRepository.findByTicketAssigneeEmployeeId(employeeId)
+                .stream()
+                .map(TicketMapper::toTicketDTO)
+                .collect(Collectors.toList());
     }
 
-    public Ticket updateOwnTicket(Long ticketId,
-                                  TicketUpdateRequestDTO updatedTicket,
-                                  Long employeeId) {
+    public TicketResponseDTO updateOwnTicket(Long ticketId,
+                                             TicketUpdateRequestDTO updatedTicket,
+                                             Long employeeId) {
         Ticket ticket = getTicketOrThrow(ticketId);
         Employee employee = validateEmployee(employeeId);
 
-        if (!ticket.getTicketCreatedBy().getEmployeeId().equals(employeeId)) {
+        if (!ticket.getTicketCreatedBy().getEmployeeId().equals(employeeId))
             throw new RuntimeException("You can only update your own tickets");
-        }
 
-        updatedTicket.getTicketTitle().ifPresent(ticket::setTicketTitle);
-        updatedTicket.getTicketBody().ifPresent(ticket::setTicketBody);
-        updatedTicket.getTicketStatus().ifPresent(ticket::setTicketStatus);
-
-        updatedTicket.getRemarkToAdd().ifPresent(text -> {
-            TicketRemark remark = new TicketRemark(text, employee, ticket);
-            ticket.getTicketRemarks().add(remark);
-        });
-
+        TicketMapper.updateEntityFromDTO(updatedTicket, ticket, employee, null);
         ticket.setTicketUpdatedBy(employee);
 
-        return ticketRepository.save(ticket);
+        return TicketMapper.toTicketDTO(ticketRepository.save(ticket));
     }
 
-    public Ticket updateOwnTicketStatus(Long ticketId,
-                                        TicketStatus newStatus,
-                                        Long employeeId) {
+    public TicketResponseDTO updateOwnTicketStatus(Long ticketId,
+                                                   TicketStatus newStatus,
+                                                   Long employeeId) {
         Ticket ticket = getTicketOrThrow(ticketId);
         Employee employee = validateEmployee(employeeId);
 
@@ -98,44 +95,38 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
         ticket.setTicketStatus(newStatus);
         ticket.setTicketUpdatedBy(employee);
 
-        return ticketRepository.save(ticket);
+        return TicketMapper.toTicketDTO(ticketRepository.save(ticket));
     }
 
-    public Ticket addRemarkToAssignedTicket(Long ticketId,
-                                            Long employeeId,
-                                            String remark,
-                                            TicketStatus newStatus) {
+    public TicketResponseDTO addRemarkToAssignedTicket(Long ticketId,
+                                                       Long employeeId,
+                                                       String remark,
+                                                       TicketStatus newStatus) {
         Ticket ticket = getTicketOrThrow(ticketId);
         Employee employee = validateEmployee(employeeId);
 
-        if (!ticket.getTicketAssignee().getEmployeeId().equals(employeeId)) {
+        if (!ticket.getTicketAssignee().getEmployeeId().equals(employeeId))
             throw new RuntimeException("You can only add remarks to tickets assigned to you");
-        }
 
-        TicketRemark ticketRemark = new TicketRemark();
-        ticketRemark.setMessage(remark);
-        ticketRemark.setCreatedBy(employee);
-        ticketRemark.setTicket(ticket);
-
-        ticket.getTicketRemarks().add(ticketRemark);
-
-        if (newStatus != null) {
-            ticket.setTicketStatus(newStatus);
-        }
-
+        ticket.getTicketRemarks().add(new TicketRemark(remark, employee, ticket));
+        if (newStatus != null) ticket.setTicketStatus(newStatus);
         ticket.setTicketUpdatedBy(employee);
 
-        return ticketRepository.save(ticket);
+        return TicketMapper.toTicketDTO(ticketRepository.save(ticket));
     }
 
 
-    public List<Ticket> getAllFiledTickets(Long employeeId) {
+    public List<TicketResponseDTO> getAllFiledTickets(Long employeeId) {
         validateEmployee(employeeId);
 
-        return ticketRepository.findByTicketStatus(TicketStatus.FILED);
+        List<Ticket> filedTickets = ticketRepository.findByTicketStatus(TicketStatus.FILED);
+
+        return filedTickets.stream()
+                .map(TicketMapper::toTicketDTO)
+                .collect(Collectors.toList());
     }
 
-    public Ticket getFiledTicket(Long employeeId,
+    public TicketResponseDTO getFiledTicket(Long employeeId,
                                  Long ticketId) {
         validateEmployee(employeeId);
         Ticket ticket = getTicketOrThrow(ticketId);
@@ -144,6 +135,6 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
             throw new RuntimeException("Ticket is not in FILED status");
         }
 
-        return ticket;
+        return TicketMapper.toTicketDTO(ticketRepository.save(ticket));
     }
 }
