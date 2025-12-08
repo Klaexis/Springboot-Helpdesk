@@ -6,6 +6,7 @@ import com.helpdesk.model.request.AdminRequestDTO;
 import com.helpdesk.model.response.AdminResponseDTO;
 import com.helpdesk.repository.EmployeePositionRepository;
 import com.helpdesk.repository.EmployeeRepository;
+import com.helpdesk.repository.TicketRepository;
 import com.helpdesk.service.AdminService;
 import com.helpdesk.service.mapper.AdminMapper;
 import com.helpdesk.service.util.EmployeeValidationHelper;
@@ -22,14 +23,18 @@ public class AdminServiceImpl implements AdminService {
 
     private final EmployeePositionRepository positionRepository;
 
+    private final TicketRepository ticketRepository;
+
     private final EmployeeValidationHelper employeeValidationHelper;
 
     @Autowired
     public AdminServiceImpl(EmployeeRepository employeeRepository,
                             EmployeePositionRepository positionRepository,
+                            TicketRepository ticketRepository,
                             EmployeeValidationHelper employeeValidationHelper) {
         this.employeeRepository = employeeRepository;
         this.positionRepository = positionRepository;
+        this.ticketRepository = ticketRepository;
         this.employeeValidationHelper = employeeValidationHelper;
     }
 
@@ -112,7 +117,11 @@ public class AdminServiceImpl implements AdminService {
     public void deleteEmployee(Long adminId,
                                Long employeeId) {
         validateAdmin(adminId);
-        getEmployeeOrThrow(employeeId);
+        Employee employee = getEmployeeOrThrow(employeeId);
+
+        employee.getAssignedTickets().forEach(ticket -> ticket.setTicketAssignee(null));
+        ticketRepository.saveAll(employee.getAssignedTickets());
+
         employeeRepository.deleteById(employeeId);
     }
 

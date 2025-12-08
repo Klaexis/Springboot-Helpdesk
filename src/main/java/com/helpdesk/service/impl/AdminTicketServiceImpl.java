@@ -55,6 +55,15 @@ public class AdminTicketServiceImpl implements AdminTicketService {
                 .orElseThrow(() -> new RuntimeException("Ticket not found"));
     }
 
+    private void handleTicketClosure(Ticket ticket) {
+        if (ticket.getTicketStatus() == TicketStatus.CLOSED && ticket.getTicketAssignee() != null) {
+            Employee assignee = ticket.getTicketAssignee();
+            assignee.getAssignedTickets().remove(ticket); // remove ticket from employee
+            ticket.setTicketAssignee(null); // optional: clear assignee
+            employeeRepository.save(assignee); // persist change
+        }
+    }
+
     public TicketResponseDTO assignTicket(Long ticketId,
                                           Long adminId,
                                           Long employeeId) {
@@ -65,6 +74,12 @@ public class AdminTicketServiceImpl implements AdminTicketService {
         ticket.setTicketAssignee(employee);
         ticket.setTicketUpdatedBy(admin);
         ticket.setTicketStatus(TicketStatus.IN_PROGRESS);
+
+        if (!employee.getAssignedTickets().contains(ticket)) {
+            employee.getAssignedTickets().add(ticket);
+        }
+
+        employeeRepository.save(employee);
 
         return TicketMapper.toTicketDTO(ticketRepository.save(ticket));
     }
@@ -99,6 +114,8 @@ public class AdminTicketServiceImpl implements AdminTicketService {
         TicketMapper.updateEntityFromDTO(updatedTicket, ticket, admin, assignee);
         ticket.setTicketUpdatedBy(admin);
 
+        handleTicketClosure(ticket);
+
         return TicketMapper.toTicketDTO(ticketRepository.save(ticket));
     }
 
@@ -110,6 +127,8 @@ public class AdminTicketServiceImpl implements AdminTicketService {
 
         ticket.setTicketStatus(newStatus);
         ticket.setTicketUpdatedBy(admin);
+
+        handleTicketClosure(ticket);
 
         return TicketMapper.toTicketDTO(ticketRepository.save(ticket));
     }
@@ -124,8 +143,12 @@ public class AdminTicketServiceImpl implements AdminTicketService {
         TicketRemark ticketRemark = new TicketRemark(remark, admin, ticket);
         ticket.getTicketRemarks().add(ticketRemark);
 
-        if (newStatus != null) ticket.setTicketStatus(newStatus);
+        if (newStatus != null) {
+            ticket.setTicketStatus(newStatus);
+        }
         ticket.setTicketUpdatedBy(admin);
+
+        handleTicketClosure(ticket);
 
         return TicketMapper.toTicketDTO(ticketRepository.save(ticket));
     }

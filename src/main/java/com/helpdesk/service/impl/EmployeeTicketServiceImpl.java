@@ -49,12 +49,22 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
                 .orElseThrow(() -> new RuntimeException("Ticket not found"));
     }
 
+    private void handleTicketClosure(Ticket ticket) {
+        if (ticket.getTicketStatus() == TicketStatus.CLOSED && ticket.getTicketAssignee() != null) {
+            Employee assignee = ticket.getTicketAssignee();
+            assignee.getAssignedTickets().remove(ticket); // remove ticket from employee
+            ticket.setTicketAssignee(null); // clear assignee
+            employeeRepository.save(assignee);
+        }
+    }
+
     public TicketResponseDTO fileTicket(Ticket ticket,
                                         Long employeeId) {
         Employee employee = validateEmployee(employeeId);
 
         ticket.setTicketStatus(TicketStatus.FILED);
         ticket.setTicketCreatedBy(employee);
+
         return TicketMapper.toTicketDTO(ticketRepository.save(ticket));
     }
 
@@ -73,11 +83,14 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
         Ticket ticket = getTicketOrThrow(ticketId);
         Employee employee = validateEmployee(employeeId);
 
-        if (!ticket.getTicketCreatedBy().getEmployeeId().equals(employeeId))
+        if (!ticket.getTicketCreatedBy().getEmployeeId().equals(employeeId)) {
             throw new RuntimeException("You can only update your own tickets");
+        }
 
         TicketMapper.updateEntityFromDTO(updatedTicket, ticket, employee, null);
         ticket.setTicketUpdatedBy(employee);
+
+        handleTicketClosure(ticket);
 
         return TicketMapper.toTicketDTO(ticketRepository.save(ticket));
     }
@@ -95,6 +108,8 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
         ticket.setTicketStatus(newStatus);
         ticket.setTicketUpdatedBy(employee);
 
+        handleTicketClosure(ticket);
+
         return TicketMapper.toTicketDTO(ticketRepository.save(ticket));
     }
 
@@ -105,12 +120,18 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
         Ticket ticket = getTicketOrThrow(ticketId);
         Employee employee = validateEmployee(employeeId);
 
-        if (!ticket.getTicketAssignee().getEmployeeId().equals(employeeId))
+        if (!ticket.getTicketAssignee().getEmployeeId().equals(employeeId)) {
             throw new RuntimeException("You can only add remarks to tickets assigned to you");
+        }
 
         ticket.getTicketRemarks().add(new TicketRemark(remark, employee, ticket));
-        if (newStatus != null) ticket.setTicketStatus(newStatus);
+        if (newStatus != null) {
+            ticket.setTicketStatus(newStatus);
+        }
+
         ticket.setTicketUpdatedBy(employee);
+
+        handleTicketClosure(ticket);
 
         return TicketMapper.toTicketDTO(ticketRepository.save(ticket));
     }

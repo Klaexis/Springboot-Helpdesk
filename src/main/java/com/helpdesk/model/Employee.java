@@ -2,6 +2,9 @@ package com.helpdesk.model;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "employees")
 public class Employee {
@@ -21,6 +24,9 @@ public class Employee {
 
     @Enumerated(EnumType.STRING)
     private EmploymentStatus employmentStatus;
+
+    @OneToMany(mappedBy = "ticketAssignee", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Ticket> assignedTickets = new ArrayList<>();
 
     // Constructors
     public Employee() {}
@@ -70,6 +76,9 @@ public class Employee {
         return employeePosition;
     }
 
+    public List<Ticket> getAssignedTickets() {
+        return assignedTickets;
+    }
     // Setters
     public void setEmployeeId(Long employeeId) {
         this.employeeId = employeeId;
@@ -101,5 +110,9 @@ public class Employee {
 
     public void setEmployeePosition(EmployeePosition employeePosition) {
         this.employeePosition = employeePosition;
+    }
+
+    public void setAssignedTickets(List<Ticket> assignedTickets) {
+        this.assignedTickets = assignedTickets;
     }
 }
