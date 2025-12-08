@@ -25,7 +25,7 @@ public class Employee {
     @Enumerated(EnumType.STRING)
     private EmploymentStatus employmentStatus;
 
-    @OneToMany(mappedBy = "ticketAssignee", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "ticketAssignee")
     private List<Ticket> assignedTickets = new ArrayList<>();
 
     // Constructors
