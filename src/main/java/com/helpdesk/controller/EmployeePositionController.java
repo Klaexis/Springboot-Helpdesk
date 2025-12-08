@@ -20,32 +20,29 @@ public class EmployeePositionController {
     // GET /admin/{adminId}/positions
     @GetMapping
     public ResponseEntity<List<EmployeePosition>>  getAllPositions(@PathVariable Long adminId) {
-        List<EmployeePosition> employeePositions = employeePositionService.getAllPositions(
+        return ResponseEntity.ok(employeePositionService.getAllPositions(
                 adminId
-        );
-        return ResponseEntity.ok(employeePositions);
+        ));
     }
 
     // GET /admin/{adminId}/positions/get/{positionId}
     @GetMapping("/get/{positionId}")
     public ResponseEntity<EmployeePosition> getPositionById(@PathVariable Long adminId,
                                                             @PathVariable Long positionId) {
-        EmployeePosition employeePosition = employeePositionService.findPosition(
+        return ResponseEntity.ok(employeePositionService.findPosition(
                 adminId,
                 positionId
-        );
-        return ResponseEntity.ok(employeePosition);
+        ));
     }
 
     // POST /admin/{adminId}/positions/create
     @PostMapping("/create")
     public ResponseEntity<EmployeePosition> createEmployeePosition(@PathVariable Long adminId,
                                                                    @RequestBody String positionTitle) {
-        EmployeePosition createdEmployeePosition = employeePositionService.createPosition(
+        return ResponseEntity.ok(employeePositionService.createPosition(
                 adminId,
                 positionTitle
-        );
-        return ResponseEntity.ok(createdEmployeePosition);
+        ));
     }
 
     // PATCH /admin/{adminId}/positions/update/{positionId}
@@ -53,12 +50,11 @@ public class EmployeePositionController {
     public ResponseEntity<EmployeePosition> updateEmployeePosition(@PathVariable Long adminId,
                                                                    @PathVariable Long positionId,
                                                                    @RequestBody String positionTitle) {
-        EmployeePosition updatedEmployeePosition = employeePositionService.updatePosition(
+        return ResponseEntity.ok(employeePositionService.updatePosition(
                 adminId,
                 positionId,
                 positionTitle
-        );
-        return ResponseEntity.ok(updatedEmployeePosition);
+        ));
     }
 
     // DELETE /admin/{adminId}/positions/delete/{positionId}

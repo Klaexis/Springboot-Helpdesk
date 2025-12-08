@@ -3,13 +3,15 @@ package com.helpdesk.service.impl;
 import com.helpdesk.model.Employee;
 import com.helpdesk.model.EmployeePosition;
 import com.helpdesk.model.request.AdminRequestDTO;
+import com.helpdesk.model.response.AdminResponseDTO;
 import com.helpdesk.repository.EmployeePositionRepository;
 import com.helpdesk.repository.EmployeeRepository;
 import com.helpdesk.service.AdminService;
-import com.helpdesk.service.mapper.EmployeeMapper;
+import com.helpdesk.service.mapper.AdminMapper;
 import com.helpdesk.service.util.EmployeeValidationHelper;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -46,23 +48,26 @@ public class AdminServiceImpl implements AdminService {
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
     }
 
-    public Employee findEmployee(Long adminId,
-                                 Long employeeId) {
+    public AdminResponseDTO findEmployee(Long adminId,
+                                         Long employeeId) {
         validateAdmin(adminId);
-
-        return getEmployeeOrThrow(employeeId);
+        Employee employee = getEmployeeOrThrow(employeeId);
+        return AdminMapper.toDTO(employee);
     }
 
-    public List<Employee> getAllEmployees(Long adminId) {
+    public List<AdminResponseDTO> getAllEmployees(Long adminId) {
         validateAdmin(adminId);
 
-        return employeeRepository.findAll();
+        return employeeRepository.findAll()
+                .stream()
+                .map(AdminMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
-    public Employee createEmployee(Long adminId,
-                                   AdminRequestDTO dto) {
+    public AdminResponseDTO createEmployee(Long adminId,
+                                           AdminRequestDTO dto) {
         validateAdmin(adminId);
-        Employee employee = EmployeeMapper.fromDTO(dto);
+        Employee employee = AdminMapper.fromDTO(dto);
 
         if (employee.getEmploymentStatus() == null) {
             throw new RuntimeException("Employment status is required.");
@@ -79,16 +84,16 @@ public class AdminServiceImpl implements AdminService {
             employee.setEmployeePosition(position);
         }
 
-        return employeeRepository.save(employee);
+        return AdminMapper.toDTO(employeeRepository.save(employee));
     }
 
-    public Employee updateEmployee(Long adminId,
-                                   Long employeeId,
-                                   AdminRequestDTO dto) {
+    public AdminResponseDTO updateEmployee(Long adminId,
+                                           Long employeeId,
+                                           AdminRequestDTO dto) {
         validateAdmin(adminId);
         Employee employee = getEmployeeOrThrow(employeeId);
 
-        EmployeeMapper.updateEntityFromDTO(dto, employee);
+        AdminMapper.updateEntityFromDTO(dto, employee);
 
         if (dto.getPositionTitle() != null) {
             EmployeePosition position =
@@ -101,7 +106,7 @@ public class AdminServiceImpl implements AdminService {
             employee.setEmployeePosition(position);
         }
 
-        return employeeRepository.save(employee);
+        return AdminMapper.toDTO(employeeRepository.save(employee));
     }
 
     public void deleteEmployee(Long adminId,
@@ -111,7 +116,7 @@ public class AdminServiceImpl implements AdminService {
         employeeRepository.deleteById(employeeId);
     }
 
-    public Employee assignPositionToEmployee(Long adminId,
+    public AdminResponseDTO assignPositionToEmployee(Long adminId,
                                              Long employeeId,
                                              String positionTitle) {
         validateAdmin(adminId);
@@ -125,6 +130,6 @@ public class AdminServiceImpl implements AdminService {
         }
 
         employee.setEmployeePosition(position);
-        return employeeRepository.save(employee);
+        return AdminMapper.toDTO(employeeRepository.save(employee));
     }
 }

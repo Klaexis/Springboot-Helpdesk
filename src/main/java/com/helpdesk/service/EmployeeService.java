@@ -1,7 +1,7 @@
 package com.helpdesk.service;
 
-import com.helpdesk.model.Employee;
+import com.helpdesk.model.response.EmployeeProfileResponseDTO;
 
 public interface EmployeeService {
-    Employee viewProfile(Long employeeId);
+    EmployeeProfileResponseDTO viewOwnProfile(Long employeeId);
 }

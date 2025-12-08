@@ -1,10 +1,8 @@
 package com.helpdesk.controller;
 
-import com.helpdesk.model.Employee;
 import com.helpdesk.model.request.AdminRequestDTO;
 import com.helpdesk.model.response.AdminResponseDTO;
 import com.helpdesk.service.AdminService;
-import com.helpdesk.service.mapper.EmployeeMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,30 +21,28 @@ public class AdminController {
     // GET /admin/{adminId}/employees
     @GetMapping
     public ResponseEntity<List<AdminResponseDTO>> getAllEmployees(@PathVariable Long adminId) {
-        List<AdminResponseDTO> list = adminService.getAllEmployees(adminId)
-                .stream()
-                .map(EmployeeMapper::toDTO)
-                .toList();
-
-        return ResponseEntity.ok(list);
+        return ResponseEntity.ok(adminService.getAllEmployees(
+                adminId
+        ));
     }
 
     // GET /admin/{adminId}/employees/find/{employeeId}
     @GetMapping("/find/{employeeId}")
     public ResponseEntity<AdminResponseDTO> getEmployeeById(@PathVariable Long adminId,
                                                             @PathVariable Long employeeId) {
-        return ResponseEntity.ok(
-                EmployeeMapper.toDTO(adminService.findEmployee(adminId, employeeId))
-        );
+        return ResponseEntity.ok(adminService.findEmployee(
+                adminId, employeeId
+        ));
     }
 
     // POST /admin/{adminId}/employees/create
     @PostMapping("/create")
     public ResponseEntity<AdminResponseDTO> createEmployee(@PathVariable Long adminId,
                                                            @RequestBody AdminRequestDTO request) {
-
-        Employee created = adminService.createEmployee(adminId, request);
-        return ResponseEntity.ok(EmployeeMapper.toDTO(created));
+        return ResponseEntity.ok(adminService.createEmployee(
+                adminId,
+                request
+        ));
     }
 
     // PATCH /admin/{adminId}/employees/update/{employeeId}
@@ -54,8 +50,11 @@ public class AdminController {
     public ResponseEntity<AdminResponseDTO> updateEmployee(@PathVariable Long adminId,
                                                            @PathVariable Long employeeId,
                                                            @RequestBody AdminRequestDTO request) {
-        Employee updated = adminService.updateEmployee(adminId, employeeId, request);
-        return ResponseEntity.ok(EmployeeMapper.toDTO(updated));
+        return ResponseEntity.ok(adminService.updateEmployee(
+                adminId,
+                employeeId,
+                request
+        ));
     }
 
     // DELETE /admin/{adminId}/employees/delete/{employeeId}
@@ -71,7 +70,10 @@ public class AdminController {
     public ResponseEntity<AdminResponseDTO> assignPosition(@PathVariable Long adminId,
                                                            @PathVariable Long employeeId,
                                                            @RequestBody String positionTitle) {
-        Employee employee = adminService.assignPositionToEmployee(adminId, employeeId, positionTitle);
-        return ResponseEntity.ok(EmployeeMapper.toDTO(employee));
+        return ResponseEntity.ok(adminService.assignPositionToEmployee(
+                adminId,
+                employeeId,
+                positionTitle
+        ));
     }
 }
