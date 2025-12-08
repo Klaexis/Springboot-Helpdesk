@@ -1,53 +1,67 @@
 package com.helpdesk.service.mapper;
 
 import com.helpdesk.model.Employee;
+import com.helpdesk.model.EmployeePosition;
+import com.helpdesk.model.EmploymentStatus;
 import com.helpdesk.model.request.AdminRequestDTO;
 import com.helpdesk.model.response.AdminResponseDTO;
-import com.helpdesk.model.response.EmployeePositionResponseDTO;
 
 public class EmployeeMapper {
 
+    /** For GET operations (and after create/update) */
     public static AdminResponseDTO toDTO(Employee employee) {
-        EmployeePositionResponseDTO positionDTO = null;
-        if (employee.getEmployeePosition() != null) {
-            positionDTO = new EmployeePositionResponseDTO(
-                    employee.getEmployeePosition().getPositionId(),
-                    employee.getEmployeePosition().getPositionTitle()
-            );
-        }
+        if (employee == null) return null;
 
-        return new AdminResponseDTO(
-                employee.getEmployeeId(),
-                employee.getEmployeeName(),
-                employee.getEmployeeAge(),
-                employee.getEmployeeAddress(),
-                employee.getEmployeeContactNumber(),
-                employee.getEmployeeEmail(),
-                positionDTO,
-                employee.getEmploymentStatus()
+        AdminResponseDTO dto = new AdminResponseDTO();
+        dto.setEmployeeId(employee.getEmployeeId());
+        dto.setEmployeeName(employee.getEmployeeName());
+        dto.setEmployeeAge(employee.getEmployeeAge());
+        dto.setEmployeeAddress(employee.getEmployeeAddress());
+        dto.setEmployeeContactNumber(employee.getEmployeeContactNumber());
+        dto.setEmployeeEmail(employee.getEmployeeEmail());
+        dto.setEmploymentStatus(
+                employee.getEmploymentStatus() != null ? employee.getEmploymentStatus().name() : null
         );
+
+        EmployeePosition pos = employee.getEmployeePosition();
+        dto.setPositionTitle(pos != null ? pos.getPositionTitle() : null);
+
+        return dto;
     }
 
+    /** For CREATE: map basic fields; position is ignored here (set via service) */
     public static Employee fromDTO(AdminRequestDTO dto) {
+        if (dto == null) return null;
+
         Employee employee = new Employee();
         employee.setEmployeeName(dto.getEmployeeName());
         employee.setEmployeeAge(dto.getEmployeeAge());
         employee.setEmployeeAddress(dto.getEmployeeAddress());
         employee.setEmployeeContactNumber(dto.getEmployeeContactNumber());
         employee.setEmployeeEmail(dto.getEmployeeEmail());
-        employee.setEmploymentStatus(dto.getEmploymentStatus());
 
-        // service will fetch by title or ID of employee position
+        if (dto.getEmploymentStatus() != null) {
+            employee.setEmploymentStatus(
+                    EmploymentStatus.valueOf(dto.getEmploymentStatus())
+            );
+        }
+
         return employee;
     }
 
-    public static void updateEmployeeFromDTO(Employee employee, AdminRequestDTO dto) {
+    /** For UPDATE: apply only non-null fields (except position) */
+    public static void updateEntityFromDTO(AdminRequestDTO dto, Employee employee) {
         if (dto.getEmployeeName() != null) employee.setEmployeeName(dto.getEmployeeName());
         if (dto.getEmployeeAge() != null) employee.setEmployeeAge(dto.getEmployeeAge());
         if (dto.getEmployeeAddress() != null) employee.setEmployeeAddress(dto.getEmployeeAddress());
         if (dto.getEmployeeContactNumber() != null) employee.setEmployeeContactNumber(dto.getEmployeeContactNumber());
         if (dto.getEmployeeEmail() != null) employee.setEmployeeEmail(dto.getEmployeeEmail());
-        if (dto.getEmploymentStatus() != null) employee.setEmploymentStatus(dto.getEmploymentStatus());
-        // Position will be handled in service
+
+        if (dto.getEmploymentStatus() != null) {
+            employee.setEmploymentStatus(
+                    EmploymentStatus.valueOf(dto.getEmploymentStatus())
+            );
+        }
     }
 }
+

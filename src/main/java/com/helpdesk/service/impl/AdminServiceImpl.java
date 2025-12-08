@@ -2,28 +2,27 @@ package com.helpdesk.service.impl;
 
 import com.helpdesk.model.Employee;
 import com.helpdesk.model.EmployeePosition;
+import com.helpdesk.model.request.AdminRequestDTO;
 import com.helpdesk.repository.EmployeePositionRepository;
 import com.helpdesk.repository.EmployeeRepository;
 import com.helpdesk.service.AdminService;
+import com.helpdesk.service.mapper.EmployeeMapper;
 import com.helpdesk.service.util.EmployeeValidationHelper;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AdminServiceImpl implements AdminService {
-    @Autowired
     private final EmployeeRepository employeeRepository;
 
-    @Autowired
     private final EmployeePositionRepository positionRepository;
 
-    @Autowired
     private final EmployeeValidationHelper employeeValidationHelper;
 
+    @Autowired
     public AdminServiceImpl(EmployeeRepository employeeRepository,
                             EmployeePositionRepository positionRepository,
                             EmployeeValidationHelper employeeValidationHelper) {
@@ -32,100 +31,99 @@ public class AdminServiceImpl implements AdminService {
         this.employeeValidationHelper = employeeValidationHelper;
     }
 
-    public Employee findEmployee(Long adminId,
-                                 Long employeeId) {
+    private Employee validateAdmin(Long adminId) {
         Employee admin = employeeRepository.findById(adminId)
                 .orElseThrow(() -> new RuntimeException("Admin not found"));
 
         employeeValidationHelper.validateAdmin(admin);
         employeeValidationHelper.validateActive(admin);
 
+        return admin;
+    }
+
+    private Employee getEmployeeOrThrow(Long employeeId) {
         return employeeRepository.findById(employeeId)
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
     }
 
-    public List<Employee> getAllEmployees(Long adminId) {
-        Employee admin = employeeRepository.findById(adminId)
-                .orElseThrow(() -> new RuntimeException("Admin not found"));
+    public Employee findEmployee(Long adminId,
+                                 Long employeeId) {
+        validateAdmin(adminId);
+        return getEmployeeOrThrow(employeeId);
+    }
 
-        employeeValidationHelper.validateAdmin(admin);
-        employeeValidationHelper.validateActive(admin);
+    public List<Employee> getAllEmployees(Long adminId) {
+        validateAdmin(adminId);
 
         return employeeRepository.findAll();
     }
 
     public Employee createEmployee(Long adminId,
-                                   Employee employee,
-                                   String positionTitle) {
-        Employee admin = employeeRepository.findById(adminId)
-                .orElseThrow(() -> new RuntimeException("Admin not found"));
+                                   AdminRequestDTO dto) {
+        validateAdmin(adminId);
 
-        employeeValidationHelper.validateAdmin(admin);
-        employeeValidationHelper.validateActive(admin);
+        Employee employee = EmployeeMapper.fromDTO(dto);
 
-        if (positionTitle == null || positionTitle.isBlank()) {
-            throw new RuntimeException("Position title must be provided");
+        if (employee.getEmploymentStatus() == null) {
+            throw new RuntimeException("Employment status is required.");
         }
 
-        EmployeePosition employeePosition = positionRepository.findByPositionTitle(positionTitle);
-        if (employeePosition == null) {
-            throw new RuntimeException("Employee position not found");
+        if (dto.getPositionTitle() != null && !dto.getPositionTitle().isBlank()) {
+            EmployeePosition position =
+                    positionRepository.findByPositionTitle(dto.getPositionTitle());
+
+            if (position == null) {
+                throw new RuntimeException("Position not found");
+            }
+
+            employee.setEmployeePosition(position);
         }
 
-
-        employee.setEmployeePosition(employeePosition);  // Assign the position to the employee
         return employeeRepository.save(employee);
     }
 
     public Employee updateEmployee(Long adminId,
                                    Long employeeId,
-                                   Employee newData) {
-        Employee admin = employeeRepository.findById(adminId)
-                .orElseThrow(() -> new RuntimeException("Admin not found"));
+                                   AdminRequestDTO dto) {
+        validateAdmin(adminId);
 
-        employeeValidationHelper.validateAdmin(admin);
-        employeeValidationHelper.validateActive(admin);
+        Employee employee = getEmployeeOrThrow(employeeId);
 
-        Employee employee = employeeRepository.findById(employeeId)
-                .orElseThrow(() -> new RuntimeException("Employee not found"));
+        EmployeeMapper.updateEntityFromDTO(dto, employee);
 
-        Optional.ofNullable(newData.getEmployeeName()).ifPresent(employee::setEmployeeName);
-        Optional.ofNullable(newData.getEmployeeAge()).ifPresent(employee::setEmployeeAge);
-        Optional.ofNullable(newData.getEmployeeAddress()).ifPresent(employee::setEmployeeAddress);
-        Optional.ofNullable(newData.getEmployeeContactNumber()).ifPresent(employee::setEmployeeContactNumber);
-        Optional.ofNullable(newData.getEmployeeEmail()).ifPresent(employee::setEmployeeEmail);
-        Optional.ofNullable(newData.getEmploymentStatus()).ifPresent(employee::setEmploymentStatus);
+        if (dto.getPositionTitle() != null) {
+            EmployeePosition position =
+                    positionRepository.findByPositionTitle(dto.getPositionTitle());
+
+            if (position == null) {
+                throw new RuntimeException("Position not found");
+            }
+
+            employee.setEmployeePosition(position);
+        }
 
         return employeeRepository.save(employee);
     }
 
     public void deleteEmployee(Long adminId,
                                Long employeeId) {
-        Employee admin = employeeRepository.findById(adminId)
-                .orElseThrow(() -> new RuntimeException("Admin not found"));
-
-        employeeValidationHelper.validateAdmin(admin);
-        employeeValidationHelper.validateActive(admin);
-
+        validateAdmin(adminId);
+        getEmployeeOrThrow(employeeId);
         employeeRepository.deleteById(employeeId);
     }
 
     public Employee assignPositionToEmployee(Long adminId,
                                              Long employeeId,
                                              String positionTitle) {
-        Employee admin = employeeRepository.findById(adminId)
-                .orElseThrow(() -> new RuntimeException("Admin not found"));
+        validateAdmin(adminId);
 
-        employeeValidationHelper.validateAdmin(admin);
-        employeeValidationHelper.validateActive(admin);
+        Employee employee = getEmployeeOrThrow(employeeId);
 
-        Employee employee = employeeRepository.findById(employeeId)
-                .orElseThrow(() -> new RuntimeException("Employee not found"));
-
-        EmployeePosition position = positionRepository.findByPositionTitle(positionTitle);
+        EmployeePosition position =
+                positionRepository.findByPositionTitle(positionTitle);
 
         if (position == null) {
-            throw new RuntimeException("Position '" + positionTitle + "' not found");
+            throw new RuntimeException("Position not found");
         }
 
         employee.setEmployeePosition(position);

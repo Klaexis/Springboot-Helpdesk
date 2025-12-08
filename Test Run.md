@@ -82,23 +82,19 @@ Create an employee (Admin Only) (POST) (JSON)
 
 {
 
-&nbsp; "employeeName": "John Doe",
+  "employeeName": "John Doe",
 
-&nbsp; "employeeAge": 30,
+  "employeeAge": 30,
 
-&nbsp; "employeeAddress": "123 Main St, Cityville",
+  "employeeAddress": "123 Main St, Cityville",
 
-&nbsp; "employeeContactNumber": "555-1234",
+  "employeeContactNumber": "555-1234",
 
-&nbsp; "employeeEmail": "john.doe@example.com",
+  "employeeEmail": "john.doe@example.com",
 
-&nbsp; "employmentStatus": "ACTIVE",
+  "employmentStatus": "ACTIVE",
 
-&nbsp; "employeePosition": {
-
-&nbsp;   "positionTitle": "Software Engineer"
-
-&nbsp; }
+  "positionTitle": "Software Engineer"
 
 }
 
@@ -106,23 +102,19 @@ Create an employee (Admin Only) (POST) (JSON)
 
 {
 
-&nbsp;   "employeeName": "Jane Smith",
+    "employeeName": "Jane Smith",
 
-&nbsp;   "employeeAge": 28,
+    "employeeAge": 28,
 
-&nbsp;   "employeeAddress": "456 Elm St, Townsville",
+    "employeeAddress": "456 Elm St, Townsville",
 
-&nbsp;   "employeeContactNumber": "555-5678",
+    "employeeContactNumber": "555-5678",
 
-&nbsp;   "employeeEmail": "jane.smith@example.com",
+    "employeeEmail": "jane.smith@example.com",
 
-&nbsp;   "employmentStatus": "ACTIVE",
+    "employmentStatus": "ACTIVE",
 
-&nbsp;   "employeePosition": {
-
-&nbsp;       "positionTitle": "Admin"
-
-&nbsp;   }
+    "positionTitle": "Admin"
 
 }
 
@@ -161,6 +153,8 @@ Assign position to an employee (Admin Only) (PATCH) (TEXT)
 **http://localhost:8080/admin/{adminId}/employees/assign-position/{employeeId}**
 
 **http://localhost:8080/admin/1/employees/assign-position/3**
+
+**Admin**
 
 
 

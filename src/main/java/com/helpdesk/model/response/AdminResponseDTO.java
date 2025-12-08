@@ -1,13 +1,12 @@
 package com.helpdesk.model.response;
 
-import com.helpdesk.model.EmploymentStatus;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
+@NoArgsConstructor
 public class AdminResponseDTO {
     private Long employeeId;
     private String employeeName;
@@ -15,6 +14,6 @@ public class AdminResponseDTO {
     private String employeeAddress;
     private String employeeContactNumber;
     private String employeeEmail;
-    private EmployeePositionResponseDTO employeePosition;
-    private EmploymentStatus employmentStatus;
+    private String positionTitle;
+    private String employmentStatus;
 }
