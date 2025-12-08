@@ -3,8 +3,13 @@ package com.helpdesk.service.mapper;
 import com.helpdesk.model.Employee;
 import com.helpdesk.model.EmployeePosition;
 import com.helpdesk.model.EmploymentStatus;
+import com.helpdesk.model.Ticket;
 import com.helpdesk.model.request.AdminRequestDTO;
 import com.helpdesk.model.response.AdminResponseDTO;
+import com.helpdesk.model.response.TicketAssignedResponseDTO;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class AdminMapper {
 
@@ -25,6 +30,18 @@ public class AdminMapper {
 
         EmployeePosition pos = employee.getEmployeePosition();
         dto.setPositionTitle(pos != null ? pos.getPositionTitle() : null);
+
+        // Map assigned tickets
+        List<Ticket> assignedTickets = employee.getAssignedTickets();
+        List<TicketAssignedResponseDTO> ticketDTOs = assignedTickets.stream().map(t -> {
+            TicketAssignedResponseDTO ticketDTO = new TicketAssignedResponseDTO();
+            ticketDTO.setTicketId(t.getTicketId());
+            ticketDTO.setTicketTitle(t.getTicketTitle());
+            ticketDTO.setTicketStatus(t.getTicketStatus() != null ? t.getTicketStatus().name() : null);
+            return ticketDTO;
+        }).collect(Collectors.toList());
+
+        dto.setAssignedTickets(ticketDTOs);
 
         return dto;
     }

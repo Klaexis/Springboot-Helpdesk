@@ -56,7 +56,12 @@ public class AdminServiceImpl implements AdminService {
     public AdminResponseDTO findEmployee(Long adminId,
                                          Long employeeId) {
         validateAdmin(adminId);
-        Employee employee = getEmployeeOrThrow(employeeId);
+
+        Employee employee = employeeRepository.findByIdWithTickets(employeeId);
+        if (employee == null) {
+            throw new RuntimeException("Employee not found");
+        }
+
         return AdminMapper.toDTO(employee);
     }
 

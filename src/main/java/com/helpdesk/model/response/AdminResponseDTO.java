@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -16,4 +18,5 @@ public class AdminResponseDTO {
     private String employeeEmail;
     private String positionTitle;
     private String employmentStatus;
+    private List<TicketAssignedResponseDTO> assignedTickets;
 }
