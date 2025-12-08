@@ -14,15 +14,13 @@ import java.util.List;
 
 @Service
 public class EmployeePositionServiceImpl implements EmployeePositionService {
-    @Autowired
     private final EmployeePositionRepository positionRepository;
 
-    @Autowired
     private final EmployeeRepository employeeRepository;
 
-    @Autowired
     private final EmployeeValidationHelper employeeValidationHelper;
 
+    @Autowired
     public EmployeePositionServiceImpl(EmployeePositionRepository positionRepository,
                                        EmployeeRepository employeeRepository,
                                        EmployeeValidationHelper employeeValidationHelper) {
@@ -31,62 +29,58 @@ public class EmployeePositionServiceImpl implements EmployeePositionService {
         this.employeeValidationHelper = employeeValidationHelper;
     }
 
-    public EmployeePosition findPosition(Long adminId,
-                                         Long positionId) {
+    private Employee validateAdmin(Long adminId) {
         Employee admin = employeeRepository.findById(adminId)
                 .orElseThrow(() -> new RuntimeException("Admin not found"));
 
         employeeValidationHelper.validateAdmin(admin);
         employeeValidationHelper.validateActive(admin);
 
+        return admin;
+    }
+
+    private EmployeePosition getPositionOrThrow(Long positionId) {
         return positionRepository.findById(positionId)
                 .orElseThrow(() -> new RuntimeException("Position not found"));
     }
 
-    public List<EmployeePosition> getAllPositions(Long adminId) {
-        Employee admin = employeeRepository.findById(adminId)
-                .orElseThrow(() -> new RuntimeException("Admin not found"));
+    public EmployeePosition findPosition(Long adminId,
+                                         Long positionId) {
+        validateAdmin(adminId);
 
-        employeeValidationHelper.validateAdmin(admin);
-        employeeValidationHelper.validateActive(admin);
+        return getPositionOrThrow(positionId);
+    }
+
+    public List<EmployeePosition> getAllPositions(Long adminId) {
+        validateAdmin(adminId);
 
         return positionRepository.findAll();
     }
 
     public EmployeePosition createPosition(Long adminId,
                                            String positionTitle) {
-        Employee admin = employeeRepository.findById(adminId)
-                .orElseThrow(() -> new RuntimeException("Admin not found"));
-
-        employeeValidationHelper.validateAdmin(admin);
-        employeeValidationHelper.validateActive(admin);
+        validateAdmin(adminId);
 
         EmployeePosition position = new EmployeePosition();
         position.setPositionTitle(positionTitle);
+
         return positionRepository.save(position);
     }
 
     public EmployeePosition updatePosition(Long adminId,
                                            Long positionId,
                                            String positionTitle) {
-        Employee admin = employeeRepository.findById(adminId)
-                .orElseThrow(() -> new RuntimeException("Admin not found"));
+        validateAdmin(adminId);
+        EmployeePosition position = getPositionOrThrow(positionId);
 
-        employeeValidationHelper.validateAdmin(admin);
-        employeeValidationHelper.validateActive(admin);
-
-        EmployeePosition position = positionRepository.findById(positionId).orElseThrow(() -> new RuntimeException("Position not found"));
         position.setPositionTitle(positionTitle);
+
         return positionRepository.save(position);
     }
 
     public void deletePosition(Long adminId,
                                Long positionId) {
-        Employee admin = employeeRepository.findById(adminId)
-                .orElseThrow(() -> new RuntimeException("Admin not found"));
-
-        employeeValidationHelper.validateAdmin(admin);
-        employeeValidationHelper.validateActive(admin);
+        validateAdmin(adminId);
 
         positionRepository.deleteById(positionId);
     }

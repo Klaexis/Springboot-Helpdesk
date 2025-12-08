@@ -49,6 +49,7 @@ public class AdminServiceImpl implements AdminService {
     public Employee findEmployee(Long adminId,
                                  Long employeeId) {
         validateAdmin(adminId);
+
         return getEmployeeOrThrow(employeeId);
     }
 
@@ -61,7 +62,6 @@ public class AdminServiceImpl implements AdminService {
     public Employee createEmployee(Long adminId,
                                    AdminRequestDTO dto) {
         validateAdmin(adminId);
-
         Employee employee = EmployeeMapper.fromDTO(dto);
 
         if (employee.getEmploymentStatus() == null) {
@@ -86,7 +86,6 @@ public class AdminServiceImpl implements AdminService {
                                    Long employeeId,
                                    AdminRequestDTO dto) {
         validateAdmin(adminId);
-
         Employee employee = getEmployeeOrThrow(employeeId);
 
         EmployeeMapper.updateEntityFromDTO(dto, employee);
@@ -116,7 +115,6 @@ public class AdminServiceImpl implements AdminService {
                                              Long employeeId,
                                              String positionTitle) {
         validateAdmin(adminId);
-
         Employee employee = getEmployeeOrThrow(employeeId);
 
         EmployeePosition position =

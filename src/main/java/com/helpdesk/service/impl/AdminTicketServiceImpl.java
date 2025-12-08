@@ -17,15 +17,13 @@ import java.util.List;
 
 @Service
 public class AdminTicketServiceImpl implements AdminTicketService {
-    @Autowired
     private final TicketRepository ticketRepository;
 
-    @Autowired
     private final EmployeeRepository employeeRepository;
 
-    @Autowired
     private final EmployeeValidationHelper employeeValidationHelper;
 
+    @Autowired
     public AdminTicketServiceImpl(TicketRepository ticketRepository,
                                   EmployeeRepository employeeRepository,
                                   EmployeeValidationHelper employeeValidationHelper) {
@@ -34,20 +32,32 @@ public class AdminTicketServiceImpl implements AdminTicketService {
         this.employeeValidationHelper = employeeValidationHelper;
     }
 
-    public Ticket assignTicket(Long ticketId,
-                               Long adminId,
-                               Long employeeId) {
-        Ticket ticket = ticketRepository.findById(ticketId)
-                .orElseThrow(() -> new RuntimeException("Ticket not found"));
-
+    private Employee validateAdmin(Long adminId) {
         Employee admin = employeeRepository.findById(adminId)
                 .orElseThrow(() -> new RuntimeException("Admin not found"));
+
         employeeValidationHelper.validateAdmin(admin);
         employeeValidationHelper.validateActive(admin);
 
-        Employee employee = employeeRepository.findById(employeeId)
-                    .orElseThrow(() -> new RuntimeException("Employee not found"));
-        employeeValidationHelper.validateActive(employee);
+        return admin;
+    }
+
+    private Employee getEmployeeOrThrow(Long employeeId) {
+        return employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+    }
+
+    private Ticket getTicketOrThrow(Long ticketId) {
+        return ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new RuntimeException("Ticket not found"));
+    }
+
+    public Ticket assignTicket(Long ticketId,
+                               Long adminId,
+                               Long employeeId) {
+        Ticket ticket = getTicketOrThrow(ticketId);
+        Employee admin = validateAdmin(adminId);
+        Employee employee = getEmployeeOrThrow(employeeId);
 
         ticket.setTicketAssignee(employee);
         ticket.setTicketUpdatedBy(admin);
@@ -58,22 +68,13 @@ public class AdminTicketServiceImpl implements AdminTicketService {
 
     public Ticket getTicket(Long adminId,
                             Long ticketId) {
-        Employee admin = employeeRepository.findById(adminId)
-                .orElseThrow(() -> new RuntimeException("Admin not found"));
+        validateAdmin(adminId);
 
-        employeeValidationHelper.validateAdmin(admin);
-        employeeValidationHelper.validateActive(admin);
-
-        return ticketRepository.findById(ticketId)
-                .orElseThrow(() -> new RuntimeException("Ticket not found"));
+        return getTicketOrThrow(ticketId);
     }
 
     public List<Ticket> getAllTickets(Long adminId) {
-        Employee admin = employeeRepository.findById(adminId)
-                .orElseThrow(() -> new RuntimeException("Admin not found"));
-
-        employeeValidationHelper.validateAdmin(admin);
-        employeeValidationHelper.validateActive(admin);
+        validateAdmin(adminId);
 
         return ticketRepository.findAll();
     }
@@ -81,13 +82,8 @@ public class AdminTicketServiceImpl implements AdminTicketService {
     public Ticket updateTicket(Long ticketId,
                                TicketUpdateRequestDTO updatedTicket,
                                Long adminId) {
-        Ticket ticket = ticketRepository.findById(ticketId)
-                .orElseThrow(() -> new RuntimeException("Ticket not found"));
-
-        Employee admin = employeeRepository.findById(adminId)
-                .orElseThrow(() -> new RuntimeException("Admin not found"));
-        employeeValidationHelper.validateAdmin(admin);
-        employeeValidationHelper.validateActive(admin);
+        Ticket ticket = getTicketOrThrow(ticketId);
+        Employee admin = validateAdmin(adminId);
 
         updatedTicket.getTicketTitle().ifPresent(ticket::setTicketTitle);
         updatedTicket.getTicketBody().ifPresent(ticket::setTicketBody);
@@ -113,13 +109,8 @@ public class AdminTicketServiceImpl implements AdminTicketService {
     public Ticket updateTicketStatus(Long ticketId,
                                      TicketStatus newStatus,
                                      Long adminId) {
-        Ticket ticket = ticketRepository.findById(ticketId)
-                .orElseThrow(() -> new RuntimeException("Ticket not found"));
-
-        Employee admin = employeeRepository.findById(adminId)
-                .orElseThrow(() -> new RuntimeException("Admin not found"));
-        employeeValidationHelper.validateAdmin(admin);
-        employeeValidationHelper.validateActive(admin);
+        Ticket ticket = getTicketOrThrow(ticketId);
+        Employee admin = validateAdmin(adminId);
 
         ticket.setTicketStatus(newStatus);
         ticket.setTicketUpdatedBy(admin);
@@ -131,14 +122,8 @@ public class AdminTicketServiceImpl implements AdminTicketService {
                                   Long adminId,
                                   String remark,
                                   TicketStatus newStatus) {
-        Ticket ticket = ticketRepository.findById(ticketId)
-                .orElseThrow(() -> new RuntimeException("Ticket not found"));
-
-        Employee admin = employeeRepository.findById(adminId)
-                .orElseThrow(() -> new RuntimeException("Admin not found"));
-
-        employeeValidationHelper.validateAdmin(admin);
-        employeeValidationHelper.validateActive(admin);
+        Ticket ticket = getTicketOrThrow(ticketId);
+        Employee admin = validateAdmin(adminId);
 
         TicketRemark ticketRemark = new TicketRemark();
         ticketRemark.setMessage(remark);
@@ -155,5 +140,4 @@ public class AdminTicketServiceImpl implements AdminTicketService {
 
         return ticketRepository.save(ticket);
     }
-
 }
