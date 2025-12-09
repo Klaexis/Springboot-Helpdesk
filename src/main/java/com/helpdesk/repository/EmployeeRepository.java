@@ -13,7 +13,4 @@ import java.util.List;
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     @Query("SELECT e FROM Employee e LEFT JOIN FETCH e.assignedTickets WHERE e.employeeId = :id")
     Employee findByIdWithTickets(@Param("id") Long id);
-
-    @Query("SELECT DISTINCT e FROM Employee e LEFT JOIN FETCH e.assignedTickets")
-    List<Employee> findAllWithTickets();
 }
