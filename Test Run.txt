@@ -1,3 +1,5 @@
+http://localhost:8080/swagger-ui/index.html
+
 <---------- INITIALIZE DUMMY DATA ---------->
 Load/Initialize Data (POST)
 http://localhost:8080/database/load
@@ -46,7 +48,9 @@ http://localhost:8080/admin/1/employees/create
   "employeeContactNumber": "555-1234",
   "employeeEmail": "john.doe@example.com",
   "employmentStatus": "ACTIVE",
-  "positionTitle": "Software Engineer"
+  "employeePosition": {
+  	"positionTitle": "Software Engineer"
+  }
 }
 
 {
