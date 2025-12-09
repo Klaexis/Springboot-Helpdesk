@@ -64,6 +64,7 @@ public class AdminTicketServiceImpl implements AdminTicketService {
         }
     }
 
+    @Override
     public TicketResponseDTO assignTicket(Long ticketId,
                                           Long adminId,
                                           Long employeeId) {
@@ -84,6 +85,7 @@ public class AdminTicketServiceImpl implements AdminTicketService {
         return TicketMapper.toTicketDTO(ticketRepository.save(ticket));
     }
 
+    @Override
     public TicketResponseDTO getTicket(Long adminId,
                                        Long ticketId) {
         validateAdmin(adminId);
@@ -91,6 +93,7 @@ public class AdminTicketServiceImpl implements AdminTicketService {
         return TicketMapper.toTicketDTO(getTicketOrThrow(ticketId));
     }
 
+    @Override
     public List<TicketResponseDTO> getAllTickets(Long adminId) {
         validateAdmin(adminId);
 
@@ -100,6 +103,7 @@ public class AdminTicketServiceImpl implements AdminTicketService {
                 .collect(Collectors.toList());
     }
 
+    @Override
     public TicketResponseDTO updateTicket(Long ticketId,
                                           TicketUpdateRequestDTO updatedTicket,
                                           Long adminId) {
@@ -119,6 +123,7 @@ public class AdminTicketServiceImpl implements AdminTicketService {
         return TicketMapper.toTicketDTO(ticketRepository.save(ticket));
     }
 
+    @Override
     public TicketResponseDTO updateTicketStatus(Long ticketId,
                                                 TicketStatus newStatus,
                                                 Long adminId) {
@@ -133,6 +138,7 @@ public class AdminTicketServiceImpl implements AdminTicketService {
         return TicketMapper.toTicketDTO(ticketRepository.save(ticket));
     }
 
+    @Override
     public TicketResponseDTO addTicketRemark(Long ticketId,
                                              Long adminId,
                                              String remark,

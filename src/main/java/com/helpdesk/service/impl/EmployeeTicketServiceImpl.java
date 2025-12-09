@@ -58,6 +58,7 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
         }
     }
 
+    @Override
     public TicketResponseDTO fileTicket(Ticket ticket,
                                         Long employeeId) {
         Employee employee = validateEmployee(employeeId);
@@ -68,6 +69,7 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
         return TicketMapper.toTicketDTO(ticketRepository.save(ticket));
     }
 
+    @Override
     public List<TicketResponseDTO> viewAssignedTickets(Long employeeId) {
         validateEmployee(employeeId);
 
@@ -77,6 +79,7 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
                 .collect(Collectors.toList());
     }
 
+    @Override
     public TicketResponseDTO updateOwnTicket(Long ticketId,
                                              TicketUpdateRequestDTO updatedTicket,
                                              Long employeeId) {
@@ -95,6 +98,7 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
         return TicketMapper.toTicketDTO(ticketRepository.save(ticket));
     }
 
+    @Override
     public TicketResponseDTO updateOwnTicketStatus(Long ticketId,
                                                    TicketStatus newStatus,
                                                    Long employeeId) {
@@ -113,6 +117,7 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
         return TicketMapper.toTicketDTO(ticketRepository.save(ticket));
     }
 
+    @Override
     public TicketResponseDTO addRemarkToAssignedTicket(Long ticketId,
                                                        Long employeeId,
                                                        String remark,
@@ -136,7 +141,7 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
         return TicketMapper.toTicketDTO(ticketRepository.save(ticket));
     }
 
-
+    @Override
     public List<TicketResponseDTO> getAllFiledTickets(Long employeeId) {
         validateEmployee(employeeId);
 
@@ -147,6 +152,7 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
                 .collect(Collectors.toList());
     }
 
+    @Override
     public TicketResponseDTO getFiledTicket(Long employeeId,
                                  Long ticketId) {
         validateEmployee(employeeId);

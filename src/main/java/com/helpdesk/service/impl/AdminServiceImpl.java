@@ -53,6 +53,7 @@ public class AdminServiceImpl implements AdminService {
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
     }
 
+    @Override
     public AdminResponseDTO findEmployee(Long adminId,
                                          Long employeeId) {
         validateAdmin(adminId);
@@ -65,6 +66,7 @@ public class AdminServiceImpl implements AdminService {
         return AdminMapper.toDTO(employee);
     }
 
+    @Override
     public List<AdminResponseDTO> getAllEmployees(Long adminId) {
         validateAdmin(adminId);
 
@@ -74,6 +76,7 @@ public class AdminServiceImpl implements AdminService {
                 .collect(Collectors.toList());
     }
 
+    @Override
     public AdminResponseDTO createEmployee(Long adminId,
                                            AdminRequestDTO dto) {
         validateAdmin(adminId);
@@ -97,6 +100,7 @@ public class AdminServiceImpl implements AdminService {
         return AdminMapper.toDTO(employeeRepository.save(employee));
     }
 
+    @Override
     public AdminResponseDTO updateEmployee(Long adminId,
                                            Long employeeId,
                                            AdminRequestDTO dto) {
@@ -119,6 +123,7 @@ public class AdminServiceImpl implements AdminService {
         return AdminMapper.toDTO(employeeRepository.save(employee));
     }
 
+    @Override
     public void deleteEmployee(Long adminId,
                                Long employeeId) {
         validateAdmin(adminId);
@@ -130,6 +135,7 @@ public class AdminServiceImpl implements AdminService {
         employeeRepository.deleteById(employeeId);
     }
 
+    @Override
     public AdminResponseDTO assignPositionToEmployee(Long adminId,
                                              Long employeeId,
                                              String positionTitle) {

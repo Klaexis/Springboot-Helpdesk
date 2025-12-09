@@ -44,6 +44,7 @@ public class EmployeePositionServiceImpl implements EmployeePositionService {
                 .orElseThrow(() -> new RuntimeException("Position not found"));
     }
 
+    @Override
     public EmployeePosition findPosition(Long adminId,
                                          Long positionId) {
         validateAdmin(adminId);
@@ -51,12 +52,14 @@ public class EmployeePositionServiceImpl implements EmployeePositionService {
         return getPositionOrThrow(positionId);
     }
 
+    @Override
     public List<EmployeePosition> getAllPositions(Long adminId) {
         validateAdmin(adminId);
 
         return positionRepository.findAll();
     }
 
+    @Override
     public EmployeePosition createPosition(Long adminId,
                                            String positionTitle) {
         validateAdmin(adminId);
@@ -67,6 +70,7 @@ public class EmployeePositionServiceImpl implements EmployeePositionService {
         return positionRepository.save(position);
     }
 
+    @Override
     public EmployeePosition updatePosition(Long adminId,
                                            Long positionId,
                                            String positionTitle) {
@@ -78,6 +82,7 @@ public class EmployeePositionServiceImpl implements EmployeePositionService {
         return positionRepository.save(position);
     }
 
+    @Override
     public void deletePosition(Long adminId,
                                Long positionId) {
         validateAdmin(adminId);
