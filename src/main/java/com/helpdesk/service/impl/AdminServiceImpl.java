@@ -1,5 +1,6 @@
 package com.helpdesk.service.impl;
 
+import com.helpdesk.controller.exception.EmptyPageException;
 import com.helpdesk.model.Employee;
 import com.helpdesk.model.EmployeePosition;
 import com.helpdesk.model.request.AdminRequestDTO;
@@ -15,6 +16,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -74,6 +78,22 @@ public class AdminServiceImpl implements AdminService {
                 .stream()
                 .map(AdminMapper::toDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Page<AdminResponseDTO> getAllEmployeesPaginated(Long adminId,
+                                                           int page,
+                                                           int size) {
+        validateAdmin(adminId);
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Employee> employees = employeeRepository.findAll(pageable);
+
+        if (employees.isEmpty()) {
+            throw new EmptyPageException("No employees found for this page.");
+        }
+
+        return employees.map(AdminMapper::toDTO);
     }
 
     @Override

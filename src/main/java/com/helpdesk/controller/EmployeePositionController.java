@@ -2,7 +2,9 @@ package com.helpdesk.controller;
 
 import com.helpdesk.model.Employee;
 import com.helpdesk.model.EmployeePosition;
+import com.helpdesk.model.response.PageResponse;
 import com.helpdesk.service.EmployeePositionService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +25,23 @@ public class EmployeePositionController {
         return ResponseEntity.ok(employeePositionService.getAllPositions(
                 adminId
         ));
+    }
+
+    // GET /admin/{adminId}/positions/pages?page=0&size=5
+    @GetMapping("/pages")
+    public ResponseEntity<?> getAllPositionsPaginated(
+            @PathVariable Long adminId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+        Page<EmployeePosition> result = employeePositionService.getAllPositionsPaginated(adminId, page, size);
+
+        return ResponseEntity.ok(
+            new PageResponse<>(
+                "Page loaded successfully.",
+                result
+            )
+        );
     }
 
     // GET /admin/{adminId}/positions/get/{positionId}

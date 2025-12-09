@@ -2,11 +2,14 @@ package com.helpdesk.service;
 
 import com.helpdesk.model.request.AdminRequestDTO;
 import com.helpdesk.model.response.AdminResponseDTO;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
 public interface AdminService {
     AdminResponseDTO findEmployee(Long adminId, Long employeeId);
+
+    Page<AdminResponseDTO> getAllEmployeesPaginated(Long adminId, int page, int size);
 
     List<AdminResponseDTO> getAllEmployees(Long adminId);
 

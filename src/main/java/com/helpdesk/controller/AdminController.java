@@ -2,7 +2,9 @@ package com.helpdesk.controller;
 
 import com.helpdesk.model.request.AdminRequestDTO;
 import com.helpdesk.model.response.AdminResponseDTO;
+import com.helpdesk.model.response.PageResponse;
 import com.helpdesk.service.AdminService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,6 +26,23 @@ public class AdminController {
         return ResponseEntity.ok(adminService.getAllEmployees(
                 adminId
         ));
+    }
+
+    // GET /admin/{adminId}/employees/pages?page=0&size=5
+    @GetMapping("/pages")
+    public ResponseEntity<?> getAllEmployeesPaginated(
+            @PathVariable Long adminId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+        Page<AdminResponseDTO> result = adminService.getAllEmployeesPaginated(adminId, page, size);
+
+        return ResponseEntity.ok(
+            new PageResponse<>(
+                "Page loaded successfully.",
+                result
+            )
+        );
     }
 
     // GET /admin/{adminId}/employees/find/{employeeId}

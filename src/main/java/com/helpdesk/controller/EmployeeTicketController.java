@@ -4,11 +4,13 @@ import com.helpdesk.model.Ticket;
 import com.helpdesk.model.TicketStatus;
 import com.helpdesk.model.request.TicketAddRemarkRequestDTO;
 import com.helpdesk.model.request.TicketUpdateRequestDTO;
+import com.helpdesk.model.response.PageResponse;
 import com.helpdesk.model.response.TicketResponseDTO;
 import com.helpdesk.repository.EmployeeRepository;
 import com.helpdesk.service.EmployeeTicketService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,6 +45,16 @@ public class EmployeeTicketController {
         return ResponseEntity.ok(employeeTicketService.viewAssignedTickets(
                 employeeId
         ));
+    }
+
+    // GET /employee/{employeeId}/tickets/get/assignedTickets/pages?page=0&size=5
+    @GetMapping("/get/assignedTickets/pages")
+    public ResponseEntity<?> viewAssignedTicketsPaginated(
+            @PathVariable Long employeeId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+        return ResponseEntity.ok(employeeTicketService.viewAssignedTicketsPaginated(employeeId, page, size));
     }
 
     // PATCH /employee/{employeeId}/tickets/update/{ticketId}
@@ -84,6 +96,23 @@ public class EmployeeTicketController {
         return ResponseEntity.ok(employeeTicketService.getAllFiledTickets(
                 employeeId
         ));
+    }
+
+    // GET /employee/{employeeId}/tickets/get/filedTickets/pages?page=0&size=5
+    @GetMapping("/get/filedTickets/pages")
+    public ResponseEntity<?> getAllFiledTicketsPaginated(
+            @PathVariable Long employeeId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+        Page<TicketResponseDTO> result = employeeTicketService.getAllFiledTicketsPaginated(employeeId, page, size);
+
+        return ResponseEntity.ok(
+                new PageResponse<>(
+                        "Page loaded successfully.",
+                        result
+                )
+        );
     }
 
     // GET /employee/{employeeId}/tickets/get/filedTicket/{ticketId}

@@ -11,7 +11,7 @@ http://localhost:8080/admin/1/positions
 
 Get a specified position based on ID (Admin Only) (GET)
 http://localhost:8080/admin/{adminId}/positions/get/{positionId}
-http://localhost:8080/admin/1/positions/get/2
+http://localhost:8080/admin/1/positions/get/3
 
 Create a position (Admin Only) (POST) (TEXT)
 http://localhost:8080/admin/{adminId}/positions/create
@@ -21,12 +21,12 @@ Data Engineer
 
 Update a position (Admin Only) (PATCH) (TEXT)
 http://localhost:8080/admin/{adminId}/positions/update/{positionId}
-http://localhost:8080/admin/1/positions/update/4
-Software Engineer
+http://localhost:8080/admin/1/positions/update/8
+Cloud Engineer
 
 Delete a position (Admin Only) (DELETE)
 http://localhost:8080/admin/{adminId}/positions/delete/{positionId}
-http://localhost:8080/admin/1/positions/delete/3
+http://localhost:8080/admin/1/positions/delete/7
 
 
 <---------- ADMIN FUNCTIONS ---------->
@@ -48,9 +48,7 @@ http://localhost:8080/admin/1/employees/create
   "employeeContactNumber": "555-1234",
   "employeeEmail": "john.doe@example.com",
   "employmentStatus": "ACTIVE",
-  "employeePosition": {
-  	"positionTitle": "Software Engineer"
-  }
+  "positionTitle": "Cloud Engineer"
 }
 
 {
@@ -60,12 +58,12 @@ http://localhost:8080/admin/1/employees/create
     "employeeContactNumber": "555-5678",
     "employeeEmail": "jane.smith@example.com",
     "employmentStatus": "ACTIVE",
-    "positionTitle": "Admin"
+    "positionTitle": "Software Engineer"
 }
 
 Update an employee (Admin Only) (PATCH) (JSON)
 http://localhost:8080/admin/{adminId}/employees/update/{employeeId}
-http://localhost:8080/admin/1/employees/update/3
+http://localhost:8080/admin/1/employees/update/7
 {
     "employeeName": "John McDoenalds",
     "employeeAddress": "456 Second St, New City",
@@ -75,7 +73,7 @@ http://localhost:8080/admin/1/employees/update/3
 
 Delete an employee (Admin Only) (DELETE)
 http://localhost:8080/admin/{adminId}/employees/delete/{employeeId}
-http://localhost:8080/admin/1/employees/delete/4
+http://localhost:8080/admin/1/employees/delete/8
 
 Assign position to an employee (Admin Only) (PATCH) (TEXT)
 http://localhost:8080/admin/{adminId}/employees/assign-position/{employeeId}

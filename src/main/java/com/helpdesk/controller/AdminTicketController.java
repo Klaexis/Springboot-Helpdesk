@@ -4,9 +4,11 @@ import com.helpdesk.model.Ticket;
 import com.helpdesk.model.TicketStatus;
 import com.helpdesk.model.request.TicketAddRemarkRequestDTO;
 import com.helpdesk.model.request.TicketUpdateRequestDTO;
+import com.helpdesk.model.response.PageResponse;
 import com.helpdesk.model.response.TicketResponseDTO;
 import com.helpdesk.service.AdminTicketService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,6 +30,23 @@ public class AdminTicketController {
         return ResponseEntity.ok(adminTicketService.getAllTickets(
                 adminId
         ));
+    }
+
+    // GET /admin/{adminId}/tickets/pages?page=0&size=5
+    @GetMapping("/pages")
+    public ResponseEntity<?> getAllTicketsPaginated(
+            @PathVariable Long adminId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+        Page<TicketResponseDTO> result = adminTicketService.getAllTicketsPaginated(adminId, page, size);
+
+        return ResponseEntity.ok(
+            new PageResponse<>(
+                "Page loaded successfully.",
+                result
+            )
+        );
     }
 
     // GET /admin/{adminId}/tickets/find/{ticketId}

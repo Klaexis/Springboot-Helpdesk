@@ -1,5 +1,6 @@
 package com.helpdesk.service.impl;
 
+import com.helpdesk.controller.exception.EmptyPageException;
 import com.helpdesk.model.Employee;
 import com.helpdesk.model.EmployeePosition;
 import com.helpdesk.repository.EmployeePositionRepository;
@@ -8,6 +9,9 @@ import com.helpdesk.service.EmployeePositionService;
 
 import com.helpdesk.service.util.EmployeeValidationHelper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -57,6 +61,21 @@ public class EmployeePositionServiceImpl implements EmployeePositionService {
         validateAdmin(adminId);
 
         return positionRepository.findAll();
+    }
+
+    @Override
+    public Page<EmployeePosition> getAllPositionsPaginated(Long adminId,
+                                                           int page,
+                                                           int size) {
+        validateAdmin(adminId);
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<EmployeePosition> positions = positionRepository.findAll(pageable);
+        if (positions.isEmpty()) {
+            throw new EmptyPageException("No positions found for this page.");
+        }
+
+        return positions;
     }
 
     @Override

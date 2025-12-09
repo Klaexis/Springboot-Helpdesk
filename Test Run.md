@@ -1,3 +1,7 @@
+**http://localhost:8080/swagger-ui/index.html**
+
+
+
 ***<---------- INITIALIZE DUMMY DATA ---------->***
 
 Load/Initialize Data (POST)
@@ -20,7 +24,7 @@ Get a specified position based on ID (Admin Only) (GET)
 
 **http://localhost:8080/admin/{adminId}/positions/get/{positionId}**
 
-**http://localhost:8080/admin/1/positions/get/2**
+**http://localhost:8080/admin/1/positions/get/3**
 
 
 
@@ -40,9 +44,9 @@ Update a position (Admin Only) (PATCH) (TEXT)
 
 **http://localhost:8080/admin/{adminId}/positions/update/{positionId}**
 
-**http://localhost:8080/admin/1/positions/update/4**
+**http://localhost:8080/admin/1/positions/update/8**
 
-Software Engineer
+Cloud Engineer
 
 
 
@@ -50,7 +54,7 @@ Delete a position (Admin Only) (DELETE)
 
 **http://localhost:8080/admin/{adminId}/positions/delete/{positionId}**
 
-**http://localhost:8080/admin/1/positions/delete/3**
+**http://localhost:8080/admin/1/positions/delete/7**
 
 
 
@@ -94,7 +98,7 @@ Create an employee (Admin Only) (POST) (JSON)
 
   "employmentStatus": "ACTIVE",
 
-  "positionTitle": "Software Engineer"
+  "positionTitle": "Cloud Engineer"
 
 }
 
@@ -114,7 +118,7 @@ Create an employee (Admin Only) (POST) (JSON)
 
     "employmentStatus": "ACTIVE",
 
-    "positionTitle": "Admin"
+    "positionTitle": "Software Engineer"
 
 }
 
@@ -124,7 +128,7 @@ Update an employee (Admin Only) (PATCH) (JSON)
 
 **http://localhost:8080/admin/{adminId}/employees/update/{employeeId}**
 
-**http://localhost:8080/admin/1/employees/update/3**
+**http://localhost:8080/admin/1/employees/update/7**
 
 {
 
@@ -144,7 +148,7 @@ Delete an employee (Admin Only) (DELETE)
 
 **http://localhost:8080/admin/{adminId}/employees/delete/{employeeId}**
 
-**http://localhost:8080/admin/1/employees/delete/4**
+**http://localhost:8080/admin/1/employees/delete/8**
 
 
 

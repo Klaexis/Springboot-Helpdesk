@@ -1,5 +1,6 @@
 package com.helpdesk.service.impl;
 
+import com.helpdesk.controller.exception.EmptyPageException;
 import com.helpdesk.model.Employee;
 import com.helpdesk.model.Ticket;
 import com.helpdesk.model.TicketRemark;
@@ -13,6 +14,9 @@ import com.helpdesk.service.mapper.TicketMapper;
 import com.helpdesk.service.util.EmployeeValidationHelper;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -78,6 +82,23 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
                 .map(TicketMapper::toTicketDTO)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public Page<TicketResponseDTO> viewAssignedTicketsPaginated(Long employeeId,
+                                                                int page,
+                                                                int size) {
+        validateEmployee(employeeId);
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Ticket> tickets = ticketRepository.findByTicketAssigneeEmployeeId(employeeId, pageable);
+
+        if (tickets.isEmpty()) {
+            throw new EmptyPageException("No tickets found for this page.");
+        }
+
+        return tickets.map(TicketMapper::toTicketDTO);
+    }
+
 
     @Override
     public TicketResponseDTO updateOwnTicket(Long ticketId,
@@ -150,6 +171,18 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
         return filedTickets.stream()
                 .map(TicketMapper::toTicketDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Page<TicketResponseDTO> getAllFiledTicketsPaginated(Long employeeId,
+                                                               int page,
+                                                               int size) {
+        validateEmployee(employeeId);
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Ticket> tickets = ticketRepository.findByTicketStatus(TicketStatus.FILED, pageable);
+
+        return tickets.map(TicketMapper::toTicketDTO);
     }
 
     @Override
