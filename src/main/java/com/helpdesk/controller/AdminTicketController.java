@@ -36,7 +36,7 @@ public class AdminTicketController {
     @GetMapping("/pages")
     public ResponseEntity<?> getAllTicketsPaginated(
             @PathVariable Long adminId,
-            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size
     ) {
         Page<TicketResponseDTO> result = adminTicketService.getAllTicketsPaginated(adminId, page, size);

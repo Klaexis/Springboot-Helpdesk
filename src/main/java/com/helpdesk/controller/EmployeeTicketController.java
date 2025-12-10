@@ -102,7 +102,7 @@ public class EmployeeTicketController {
     @GetMapping("/get/filedTickets/pages")
     public ResponseEntity<?> getAllFiledTicketsPaginated(
             @PathVariable Long employeeId,
-            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size
     ) {
         Page<TicketResponseDTO> result = employeeTicketService.getAllFiledTicketsPaginated(employeeId, page, size);

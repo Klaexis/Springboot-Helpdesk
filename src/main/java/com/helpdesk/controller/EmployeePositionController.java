@@ -31,7 +31,7 @@ public class EmployeePositionController {
     @GetMapping("/pages")
     public ResponseEntity<?> getAllPositionsPaginated(
             @PathVariable Long adminId,
-            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size
     ) {
         Page<EmployeePosition> result = employeePositionService.getAllPositionsPaginated(adminId, page, size);

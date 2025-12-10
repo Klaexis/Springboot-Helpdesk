@@ -1,5 +1,7 @@
 package com.helpdesk.service.impl;
 
+import com.helpdesk.controller.exception.AdminNotFoundException;
+import com.helpdesk.controller.exception.EmployeePositionNotFoundException;
 import com.helpdesk.controller.exception.EmptyPageException;
 import com.helpdesk.model.Employee;
 import com.helpdesk.model.EmployeePosition;
@@ -35,7 +37,7 @@ public class EmployeePositionServiceImpl implements EmployeePositionService {
 
     private Employee validateAdmin(Long adminId) {
         Employee admin = employeeRepository.findById(adminId)
-                .orElseThrow(() -> new RuntimeException("Admin not found"));
+                .orElseThrow(() -> new AdminNotFoundException(adminId));
 
         employeeValidationHelper.validateAdmin(admin);
         employeeValidationHelper.validateActive(admin);
@@ -45,7 +47,7 @@ public class EmployeePositionServiceImpl implements EmployeePositionService {
 
     private EmployeePosition getPositionOrThrow(Long positionId) {
         return positionRepository.findById(positionId)
-                .orElseThrow(() -> new RuntimeException("Position not found"));
+                .orElseThrow(() -> new EmployeePositionNotFoundException(positionId));
     }
 
     @Override
@@ -72,7 +74,7 @@ public class EmployeePositionServiceImpl implements EmployeePositionService {
         Pageable pageable = PageRequest.of(page, size);
         Page<EmployeePosition> positions = positionRepository.findAll(pageable);
         if (positions.isEmpty()) {
-            throw new EmptyPageException("No positions found for this page.");
+            throw new EmptyPageException(page, "No positions found");
         }
 
         return positions;

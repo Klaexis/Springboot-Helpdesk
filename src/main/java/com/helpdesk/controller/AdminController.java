@@ -32,7 +32,7 @@ public class AdminController {
     @GetMapping("/pages")
     public ResponseEntity<?> getAllEmployeesPaginated(
             @PathVariable Long adminId,
-            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size
     ) {
         Page<AdminResponseDTO> result = adminService.getAllEmployeesPaginated(adminId, page, size);

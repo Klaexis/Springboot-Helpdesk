@@ -1,6 +1,6 @@
 package com.helpdesk.service.impl;
 
-import com.helpdesk.controller.exception.EmptyPageException;
+import com.helpdesk.controller.exception.*;
 import com.helpdesk.model.Employee;
 import com.helpdesk.model.Ticket;
 import com.helpdesk.model.TicketRemark;
@@ -41,7 +41,7 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
 
     private Employee validateEmployee(Long employeeId) {
         Employee employee = employeeRepository.findById(employeeId)
-                .orElseThrow(() -> new RuntimeException("Employee not found"));
+                .orElseThrow(() -> new EmployeeNotFoundException(employeeId));
 
         employeeValidationHelper.validateActive(employee);
 
@@ -50,14 +50,14 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
 
     private Ticket getTicketOrThrow(Long ticketId) {
         return ticketRepository.findById(ticketId)
-                .orElseThrow(() -> new RuntimeException("Ticket not found"));
+                .orElseThrow(() -> new TicketNotFoundException(ticketId));
     }
 
     private void handleTicketClosure(Ticket ticket) {
         if (ticket.getTicketStatus() == TicketStatus.CLOSED && ticket.getTicketAssignee() != null) {
             Employee assignee = ticket.getTicketAssignee();
-            assignee.getAssignedTickets().remove(ticket); // remove ticket from employee
-            ticket.setTicketAssignee(null); // clear assignee
+            assignee.getAssignedTickets().remove(ticket);
+            ticket.setTicketAssignee(null);
             employeeRepository.save(assignee);
         }
     }
@@ -93,7 +93,7 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
         Page<Ticket> tickets = ticketRepository.findByTicketAssigneeEmployeeId(employeeId, pageable);
 
         if (tickets.isEmpty()) {
-            throw new EmptyPageException("No tickets found for this page.");
+            throw new EmptyPageException(page, "No tickets found");
         }
 
         return tickets.map(TicketMapper::toTicketDTO);
@@ -108,7 +108,7 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
         Employee employee = validateEmployee(employeeId);
 
         if (!ticket.getTicketCreatedBy().getEmployeeId().equals(employeeId)) {
-            throw new RuntimeException("You can only update your own tickets");
+            throw new TicketAccessException("You can only update your own tickets");
         }
 
         TicketMapper.updateEntityFromDTO(updatedTicket, ticket, employee, null);
@@ -127,7 +127,7 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
         Employee employee = validateEmployee(employeeId);
 
         if (!ticket.getTicketAssignee().getEmployeeId().equals(employeeId)) {
-            throw new RuntimeException("You can only update your own tickets");
+            throw new TicketAccessException("You can only update your own tickets");
         }
 
         ticket.setTicketStatus(newStatus);
@@ -147,7 +147,7 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
         Employee employee = validateEmployee(employeeId);
 
         if (!ticket.getTicketAssignee().getEmployeeId().equals(employeeId)) {
-            throw new RuntimeException("You can only add remarks to tickets assigned to you");
+            throw new TicketAccessException("You can only add remarks to tickets assigned to you");
         }
 
         ticket.getTicketRemarks().add(new TicketRemark(remark, employee, ticket));
@@ -192,7 +192,7 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
         Ticket ticket = getTicketOrThrow(ticketId);
 
         if (ticket.getTicketStatus() != TicketStatus.FILED) {
-            throw new RuntimeException("Ticket is not in FILED status");
+            throw new InvalidTicketStatusException("Ticket is not in FILED status");
         }
 
         return TicketMapper.toTicketDTO(ticketRepository.save(ticket));

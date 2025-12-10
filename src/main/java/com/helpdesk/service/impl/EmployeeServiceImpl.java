@@ -1,5 +1,6 @@
 package com.helpdesk.service.impl;
 
+import com.helpdesk.controller.exception.EmployeeNotFoundException;
 import com.helpdesk.model.Employee;
 import com.helpdesk.model.response.EmployeeProfileResponseDTO;
 import com.helpdesk.repository.EmployeeRepository;
@@ -21,9 +22,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public EmployeeProfileResponseDTO viewOwnProfile(Long employeeId) {
         Employee employee = employeeRepository.findById(employeeId)
-                .orElseThrow(() -> new RuntimeException("Employee not found"));
+                .orElseThrow(() -> new EmployeeNotFoundException(employeeId));
 
-        // Simply return mapped DTO
         return EmployeeMapper.toProfileDTO(employee);
     }
 }

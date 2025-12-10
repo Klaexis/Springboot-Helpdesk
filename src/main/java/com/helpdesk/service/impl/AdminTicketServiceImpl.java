@@ -1,6 +1,9 @@
 package com.helpdesk.service.impl;
 
+import com.helpdesk.controller.exception.AdminNotFoundException;
+import com.helpdesk.controller.exception.EmployeeNotFoundException;
 import com.helpdesk.controller.exception.EmptyPageException;
+import com.helpdesk.controller.exception.TicketNotFoundException;
 import com.helpdesk.model.Employee;
 import com.helpdesk.model.Ticket;
 import com.helpdesk.model.TicketRemark;
@@ -41,7 +44,7 @@ public class AdminTicketServiceImpl implements AdminTicketService {
 
     private Employee validateAdmin(Long adminId) {
         Employee admin = employeeRepository.findById(adminId)
-                .orElseThrow(() -> new RuntimeException("Admin not found"));
+                .orElseThrow(() -> new AdminNotFoundException(adminId));
 
         employeeValidationHelper.validateAdmin(admin);
         employeeValidationHelper.validateActive(admin);
@@ -51,12 +54,12 @@ public class AdminTicketServiceImpl implements AdminTicketService {
 
     private Employee getEmployeeOrThrow(Long employeeId) {
         return employeeRepository.findById(employeeId)
-                .orElseThrow(() -> new RuntimeException("Employee not found"));
+                .orElseThrow(() -> new EmployeeNotFoundException(employeeId));
     }
 
     private Ticket getTicketOrThrow(Long ticketId) {
         return ticketRepository.findById(ticketId)
-                .orElseThrow(() -> new RuntimeException("Ticket not found"));
+                .orElseThrow(() -> new TicketNotFoundException(ticketId));
     }
 
     private void handleTicketClosure(Ticket ticket) {
@@ -117,7 +120,7 @@ public class AdminTicketServiceImpl implements AdminTicketService {
         Page<Ticket> tickets = ticketRepository.findAll(pageable);
 
         if (tickets.isEmpty()) {
-            throw new EmptyPageException("No tickets found for this page.");
+            throw new EmptyPageException(page, "Contains no tickets");
         }
 
         return tickets.map(TicketMapper::toTicketDTO);

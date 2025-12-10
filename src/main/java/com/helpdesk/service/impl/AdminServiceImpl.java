@@ -1,6 +1,6 @@
 package com.helpdesk.service.impl;
 
-import com.helpdesk.controller.exception.EmptyPageException;
+import com.helpdesk.controller.exception.*;
 import com.helpdesk.model.Employee;
 import com.helpdesk.model.EmployeePosition;
 import com.helpdesk.model.request.AdminRequestDTO;
@@ -44,7 +44,7 @@ public class AdminServiceImpl implements AdminService {
 
     private Employee validateAdmin(Long adminId) {
         Employee admin = employeeRepository.findById(adminId)
-                .orElseThrow(() -> new RuntimeException("Admin not found"));
+                .orElseThrow(() -> new AdminNotFoundException(adminId));
 
         employeeValidationHelper.validateAdmin(admin);
         employeeValidationHelper.validateActive(admin);
@@ -54,7 +54,7 @@ public class AdminServiceImpl implements AdminService {
 
     private Employee getEmployeeOrThrow(Long employeeId) {
         return employeeRepository.findById(employeeId)
-                .orElseThrow(() -> new RuntimeException("Employee not found"));
+                .orElseThrow(() -> new EmployeeNotFoundException(employeeId));
     }
 
     @Override
@@ -64,7 +64,7 @@ public class AdminServiceImpl implements AdminService {
 
         Employee employee = employeeRepository.findByIdWithTickets(employeeId);
         if (employee == null) {
-            throw new RuntimeException("Employee not found");
+            throw new EmployeeNotFoundException(employeeId);
         }
 
         return AdminMapper.toDTO(employee);
@@ -90,7 +90,7 @@ public class AdminServiceImpl implements AdminService {
         Page<Employee> employees = employeeRepository.findAll(pageable);
 
         if (employees.isEmpty()) {
-            throw new EmptyPageException("No employees found for this page.");
+            throw new EmptyPageException(page, "Contains no employees");
         }
 
         return employees.map(AdminMapper::toDTO);
@@ -103,7 +103,7 @@ public class AdminServiceImpl implements AdminService {
         Employee employee = AdminMapper.fromDTO(dto);
 
         if (employee.getEmploymentStatus() == null) {
-            throw new RuntimeException("Employment status is required.");
+            throw new InvalidEmployeeStatusException("Employment status is required.");
         }
 
         if (dto.getPositionTitle() != null && !dto.getPositionTitle().isBlank()) {
@@ -111,7 +111,7 @@ public class AdminServiceImpl implements AdminService {
                     positionRepository.findByPositionTitle(dto.getPositionTitle());
 
             if (position == null) {
-                throw new RuntimeException("Position not found");
+                throw new EmployeePositionNotFoundException("Position not found");
             }
 
             employee.setEmployeePosition(position);
@@ -134,7 +134,7 @@ public class AdminServiceImpl implements AdminService {
                     positionRepository.findByPositionTitle(dto.getPositionTitle());
 
             if (position == null) {
-                throw new RuntimeException("Position not found");
+                throw new EmployeePositionNotFoundException("Position not found");
             }
 
             employee.setEmployeePosition(position);
@@ -166,7 +166,7 @@ public class AdminServiceImpl implements AdminService {
                 positionRepository.findByPositionTitle(positionTitle);
 
         if (position == null) {
-            throw new RuntimeException("Position not found");
+            throw new EmployeePositionNotFoundException("Position not found");
         }
 
         employee.setEmployeePosition(position);
