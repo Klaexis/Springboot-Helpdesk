@@ -1,8 +1,8 @@
 package com.helpdesk.service.impl;
 
-import com.helpdesk.controller.exception.AdminNotFoundException;
-import com.helpdesk.controller.exception.EmployeePositionNotFoundException;
-import com.helpdesk.controller.exception.EmptyPageException;
+import com.helpdesk.exception.AdminNotFoundException;
+import com.helpdesk.exception.EmployeePositionNotFoundException;
+import com.helpdesk.exception.EmptyPageException;
 import com.helpdesk.model.Employee;
 import com.helpdesk.model.EmployeePosition;
 import com.helpdesk.repository.EmployeePositionRepository;

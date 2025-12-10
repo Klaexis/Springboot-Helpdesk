@@ -1,6 +1,6 @@
 package com.helpdesk.service.impl;
 
-import com.helpdesk.controller.exception.EmployeeNotFoundException;
+import com.helpdesk.exception.EmployeeNotFoundException;
 import com.helpdesk.model.Employee;
 import com.helpdesk.model.response.EmployeeProfileResponseDTO;
 import com.helpdesk.repository.EmployeeRepository;

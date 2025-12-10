@@ -1,6 +1,6 @@
-package com.helpdesk.controller.exception.handler;
+package com.helpdesk.exception.handler;
 
-import com.helpdesk.controller.exception.*;
+import com.helpdesk.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;

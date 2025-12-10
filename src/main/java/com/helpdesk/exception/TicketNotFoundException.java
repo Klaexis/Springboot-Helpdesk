@@ -1,4 +1,4 @@
-package com.helpdesk.controller.exception;
+package com.helpdesk.exception;
 
 public class TicketNotFoundException extends BaseException {
     public TicketNotFoundException(Long ticketId) {

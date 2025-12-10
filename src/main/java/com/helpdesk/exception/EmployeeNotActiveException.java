@@ -1,4 +1,4 @@
-package com.helpdesk.controller.exception;
+package com.helpdesk.exception;
 
 public class EmployeeNotActiveException extends BaseException {
     public EmployeeNotActiveException(Long employeeId) {

@@ -1,4 +1,4 @@
-package com.helpdesk.controller.exception;
+package com.helpdesk.exception;
 
 public class EmptyPageException extends BaseException {
     public EmptyPageException(int page, String message) {

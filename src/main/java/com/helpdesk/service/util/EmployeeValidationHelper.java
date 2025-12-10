@@ -1,7 +1,7 @@
 package com.helpdesk.service.util;
 
-import com.helpdesk.controller.exception.EmployeeNotActiveException;
-import com.helpdesk.controller.exception.EmployeeNotAuthorizedException;
+import com.helpdesk.exception.EmployeeNotActiveException;
+import com.helpdesk.exception.EmployeeNotAuthorizedException;
 import com.helpdesk.model.Employee;
 import com.helpdesk.model.EmploymentStatus;
 

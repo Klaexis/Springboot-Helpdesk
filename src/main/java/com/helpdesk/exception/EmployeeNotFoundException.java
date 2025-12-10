@@ -1,4 +1,4 @@
-package com.helpdesk.controller.exception;
+package com.helpdesk.exception;
 
 public class EmployeeNotFoundException extends BaseException {
     public EmployeeNotFoundException(Long employeeId) {

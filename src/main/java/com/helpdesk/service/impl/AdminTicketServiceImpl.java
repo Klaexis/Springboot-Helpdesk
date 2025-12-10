@@ -1,9 +1,9 @@
 package com.helpdesk.service.impl;
 
-import com.helpdesk.controller.exception.AdminNotFoundException;
-import com.helpdesk.controller.exception.EmployeeNotFoundException;
-import com.helpdesk.controller.exception.EmptyPageException;
-import com.helpdesk.controller.exception.TicketNotFoundException;
+import com.helpdesk.exception.AdminNotFoundException;
+import com.helpdesk.exception.EmployeeNotFoundException;
+import com.helpdesk.exception.EmptyPageException;
+import com.helpdesk.exception.TicketNotFoundException;
 import com.helpdesk.model.Employee;
 import com.helpdesk.model.Ticket;
 import com.helpdesk.model.TicketRemark;

@@ -1,6 +1,6 @@
 package com.helpdesk.service.impl;
 
-import com.helpdesk.controller.exception.*;
+import com.helpdesk.exception.*;
 import com.helpdesk.model.Employee;
 import com.helpdesk.model.EmployeePosition;
 import com.helpdesk.model.request.AdminRequestDTO;

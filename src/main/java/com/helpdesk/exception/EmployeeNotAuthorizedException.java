@@ -1,4 +1,4 @@
-package com.helpdesk.controller.exception;
+package com.helpdesk.exception;
 
 public class EmployeeNotAuthorizedException extends BaseException {
     public EmployeeNotAuthorizedException(Long adminId) {
