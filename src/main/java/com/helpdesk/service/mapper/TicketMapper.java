@@ -65,13 +65,9 @@ public class TicketMapper {
         return dto;
     }
 
-    public static void updateEntity(TicketUpdateRequestDTO dto, Ticket ticket, Employee updater, Employee assignee) {
+    public static void updateEntity(TicketUpdateRequestDTO dto, Ticket ticket) {
         if (dto.getTicketTitle() != null) ticket.setTicketTitle(dto.getTicketTitle());
         if (dto.getTicketBody() != null) ticket.setTicketBody(dto.getTicketBody());
-        if (assignee != null) ticket.setTicketAssignee(assignee);
         if (dto.getTicketStatus() != null) ticket.setTicketStatus(dto.getTicketStatus());
-        if (dto.getRemarkToAdd() != null) {
-            ticket.getTicketRemarks().add(new TicketRemark(dto.getRemarkToAdd(), updater, ticket));
-        }
     }
 }

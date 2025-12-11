@@ -133,12 +133,7 @@ public class AdminTicketServiceImpl implements AdminTicketService {
         Ticket ticket = getTicketOrThrow(ticketId);
         Employee admin = validateAdmin(adminId);
 
-        Employee assignee = null;
-        if (updatedTicket.getTicketAssigneeId() != null) {
-            assignee = getEmployeeOrThrow(updatedTicket.getTicketAssigneeId());
-        }
-
-        TicketMapper.updateEntity(updatedTicket, ticket, admin, assignee);
+        TicketMapper.updateEntity(updatedTicket, ticket);
         ticket.setTicketUpdatedBy(admin);
 
         handleTicketClosure(ticket);

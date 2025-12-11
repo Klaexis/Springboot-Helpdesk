@@ -121,7 +121,7 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
             throw new TicketAccessException("You can only update your own tickets");
         }
 
-        TicketMapper.updateEntity(updatedTicket, ticket, employee, null);
+        TicketMapper.updateEntity(updatedTicket, ticket);
         ticket.setTicketUpdatedBy(employee);
 
         handleTicketClosure(ticket);

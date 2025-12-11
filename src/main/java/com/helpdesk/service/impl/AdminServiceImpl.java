@@ -101,13 +101,13 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public AdminResponseDTO createEmployee(Long adminId,
-                                           @Valid AdminCreateRequestDTO dto) {
+                                           @Valid AdminCreateRequestDTO createdEmployee) {
         validateAdmin(adminId);
-        Employee employee = AdminMapper.toEntity(dto);
+        Employee employee = AdminMapper.toEntity(createdEmployee);
 
-        if (dto.getPositionTitle() != null && !dto.getPositionTitle().isBlank()) {
+        if (createdEmployee.getPositionTitle() != null && !createdEmployee.getPositionTitle().isBlank()) {
             EmployeePosition position =
-                    positionRepository.findByPositionTitle(dto.getPositionTitle());
+                    positionRepository.findByPositionTitle(createdEmployee.getPositionTitle());
 
             if (position == null) {
                 throw new EmployeePositionNotFoundException("Position not found");
@@ -122,29 +122,29 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public AdminResponseDTO updateEmployee(Long adminId,
                                            Long employeeId,
-                                           AdminUpdateRequestDTO dto) {
+                                           AdminUpdateRequestDTO updatedEmployee) {
         validateAdmin(adminId);
         Employee employee = getEmployeeOrThrow(employeeId);
 
-        if (dto.getEmployeeName() != null && dto.getEmployeeName().isBlank()) {
+        if (updatedEmployee.getEmployeeName() != null && updatedEmployee.getEmployeeName().isBlank()) {
             throw new IllegalArgumentException("Name cannot be blank");
         }
 
-        if (dto.getEmployeeAge() != null) {
+        if (updatedEmployee.getEmployeeAge() != null) {
             throw new IllegalArgumentException("Age cannot be null");
         }
 
-        if (dto.getEmployeeEmail() != null && dto.getEmployeeEmail().isBlank()) {
+        if (updatedEmployee.getEmployeeEmail() != null && updatedEmployee.getEmployeeEmail().isBlank()) {
             throw new IllegalArgumentException("Email cannot be blank");
         }
 
-        if (dto.getEmploymentStatus() != null && dto.getEmploymentStatus().isBlank()) {
+        if (updatedEmployee.getEmploymentStatus() != null && updatedEmployee.getEmploymentStatus().isBlank()) {
             throw new IllegalArgumentException("Employment status cannot be blank");
         }
 
-        if (dto.getPositionTitle() != null && dto.getPositionTitle().isBlank()) {
+        if (updatedEmployee.getPositionTitle() != null && updatedEmployee.getPositionTitle().isBlank()) {
             EmployeePosition position =
-                    positionRepository.findByPositionTitle(dto.getPositionTitle());
+                    positionRepository.findByPositionTitle(updatedEmployee.getPositionTitle());
 
             if (position == null) {
                 throw new EmployeePositionNotFoundException("Position not found");
@@ -153,7 +153,7 @@ public class AdminServiceImpl implements AdminService {
             employee.setEmployeePosition(position);
         }
 
-        AdminMapper.updateEntity(dto, employee);
+        AdminMapper.updateEntity(updatedEmployee, employee);
 
         return AdminMapper.toDTO(employeeRepository.save(employee));
     }
@@ -172,8 +172,8 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public AdminResponseDTO assignPositionToEmployee(Long adminId,
-                                             Long employeeId,
-                                             String positionTitle) {
+                                                     Long employeeId,
+                                                     String positionTitle) {
         validateAdmin(adminId);
         Employee employee = getEmployeeOrThrow(employeeId);
 

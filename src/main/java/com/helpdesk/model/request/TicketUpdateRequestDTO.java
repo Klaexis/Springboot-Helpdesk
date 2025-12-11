@@ -11,7 +11,5 @@ import lombok.Setter;
 public class TicketUpdateRequestDTO {
     private String ticketTitle;
     private String ticketBody;
-    private Long ticketAssigneeId;
     private TicketStatus ticketStatus;
-    private String remarkToAdd;
 }
