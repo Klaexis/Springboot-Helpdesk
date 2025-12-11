@@ -31,9 +31,12 @@ public class EmployeePositionController {
     public ResponseEntity<PageResponseDTO<Page<EmployeePosition>>> getAllPositionsPaginated(
             @PathVariable Long adminId,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "position") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction
     ) {
-        Page<EmployeePosition> result = employeePositionService.getAllPositionsPaginated(adminId, page, size);
+        Page<EmployeePosition> result = employeePositionService.getAllPositionsPaginated(
+                adminId, page, size, sortBy, direction);
 
         return ResponseEntity.ok(
             new PageResponseDTO<>(

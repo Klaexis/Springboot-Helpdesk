@@ -11,7 +11,7 @@ import java.util.List;
 public interface AdminTicketService {
     TicketResponseDTO assignTicket(Long ticketId, Long adminId, Long employeeId);
 
-    Page<TicketResponseDTO> getAllTicketsPaginated(Long adminId, int page, int size);
+    Page<TicketResponseDTO> getAllTicketsPaginated(Long adminId, int page, int size, String sortBy, String direction);
 
     TicketResponseDTO getTicket(Long adminId, Long ticketId);
 

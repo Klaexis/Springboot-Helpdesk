@@ -35,9 +35,12 @@ public class AdminController {
     public ResponseEntity<PageResponseDTO<Page<AdminResponseDTO>>> getAllEmployeesPaginated(
             @PathVariable Long adminId,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "name") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction
     ) {
-        Page<AdminResponseDTO> result = adminService.getAllEmployeesPaginated(adminId, page, size);
+        Page<AdminResponseDTO> result = adminService.getAllEmployeesPaginated
+                (adminId, page, size, sortBy, direction);
 
         return ResponseEntity.ok(
             new PageResponseDTO<>(

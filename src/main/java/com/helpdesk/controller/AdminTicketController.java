@@ -36,9 +36,12 @@ public class AdminTicketController {
     public ResponseEntity<PageResponseDTO<Page<TicketResponseDTO>>> getAllTicketsPaginated(
             @PathVariable Long adminId,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction
     ) {
-        Page<TicketResponseDTO> result = adminTicketService.getAllTicketsPaginated(adminId, page, size);
+        Page<TicketResponseDTO> result = adminTicketService.getAllTicketsPaginated(
+                adminId, page, size, sortBy, direction);
 
         return ResponseEntity.ok(
             new PageResponseDTO<>(

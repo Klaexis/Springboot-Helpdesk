@@ -10,7 +10,7 @@ import java.util.List;
 public interface AdminService {
     AdminResponseDTO findEmployee(Long adminId, Long employeeId);
 
-    Page<AdminResponseDTO> getAllEmployeesPaginated(Long adminId, int page, int size);
+    Page<AdminResponseDTO> getAllEmployeesPaginated(Long adminId, int page, int size, String sortBy, String direction);
 
     List<AdminResponseDTO> getAllEmployees(Long adminId);
 

@@ -8,7 +8,7 @@ import java.util.List;
 public interface EmployeePositionService {
     EmployeePosition findPosition(Long adminId, Long positionId);
 
-    Page<EmployeePosition> getAllPositionsPaginated(Long adminId, int page, int size);
+    Page<EmployeePosition> getAllPositionsPaginated(Long adminId, int page, int size, String sortField, String direction);
 
     List<EmployeePosition> getAllPositions(Long adminId);
 

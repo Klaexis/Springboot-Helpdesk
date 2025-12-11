@@ -14,7 +14,7 @@ public interface EmployeeTicketService {
 
     List<TicketResponseDTO> viewAssignedTickets(Long employeeId);
 
-    Page<TicketResponseDTO> viewAssignedTicketsPaginated(Long employeeId, int page, int size);
+    Page<TicketResponseDTO> viewAssignedTicketsPaginated(Long employeeId, int page, int size, String sortBy, String direction);
 
     TicketResponseDTO updateOwnTicket(Long ticketId, TicketUpdateRequestDTO updatedTicket, Long employeeId);
 
@@ -22,7 +22,7 @@ public interface EmployeeTicketService {
 
     List<TicketResponseDTO> getAllFiledTickets(Long employeeId);
 
-    Page<TicketResponseDTO> getAllFiledTicketsPaginated(Long employeeId, int page, int size);
+    Page<TicketResponseDTO> getAllFiledTicketsPaginated(Long employeeId, int page, int size, String sortBy, String direction);
 
     TicketResponseDTO getFiledTicket(Long employeeId, Long ticketId);
 

@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -96,10 +97,24 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
     @Override
     public Page<TicketResponseDTO> viewAssignedTicketsPaginated(Long employeeId,
                                                                 int page,
-                                                                int size) {
+                                                                int size,
+                                                                String sortBy,
+                                                                String direction) {
         validateEmployee(employeeId);
 
-        Pageable pageable = PageRequest.of(page, size);
+        String sortField = switch (sortBy.toLowerCase()) {
+            case "createdat" -> "ticketCreatedAt";
+            case "updatedat" -> "ticketUpdatedAt";
+            case "status"    -> "ticketStatus";
+            case "title"     -> "ticketTitle";
+            default -> throw new IllegalArgumentException("Invalid sort field: " + sortBy);
+        };
+
+        Sort sort = direction.equalsIgnoreCase("desc")
+                ? Sort.by(sortField).descending()
+                : Sort.by(sortField).ascending();
+
+        Pageable pageable = PageRequest.of(page, size, sort);
         Page<Ticket> tickets = ticketRepository.findByTicketAssigneeEmployeeId(employeeId, pageable);
 
         if (tickets.isEmpty()) {
@@ -186,10 +201,23 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
     @Override
     public Page<TicketResponseDTO> getAllFiledTicketsPaginated(Long employeeId,
                                                                int page,
-                                                               int size) {
+                                                               int size,
+                                                               String sortBy,
+                                                               String direction) {
         validateEmployee(employeeId);
 
-        Pageable pageable = PageRequest.of(page, size);
+        String sortField = switch (sortBy.toLowerCase()) {
+            case "createdat" -> "ticketCreatedAt";
+            case "updatedat" -> "ticketUpdatedAt";
+            case "title"     -> "ticketTitle";
+            default -> throw new IllegalArgumentException("Invalid sort field: " + sortBy);
+        };
+
+        Sort sort = direction.equalsIgnoreCase("desc")
+                ? Sort.by(sortField).descending()
+                : Sort.by(sortField).ascending();
+
+        Pageable pageable = PageRequest.of(page, size, sort);
         Page<Ticket> tickets = ticketRepository.findByTicketStatus(TicketStatus.FILED, pageable);
 
         return tickets.map(TicketMapper::toTicketDTO);

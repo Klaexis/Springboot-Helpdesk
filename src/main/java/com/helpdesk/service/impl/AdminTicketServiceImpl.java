@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -113,10 +114,24 @@ public class AdminTicketServiceImpl implements AdminTicketService {
     @Override
     public Page<TicketResponseDTO> getAllTicketsPaginated(Long adminId,
                                                           int page,
-                                                          int size) {
+                                                          int size,
+                                                          String sortBy,
+                                                          String direction) {
         validateAdmin(adminId);
 
-        Pageable pageable = PageRequest.of(page, size);
+        String sortField = switch (sortBy.toLowerCase()) {
+            case "createdat" -> "ticketCreatedAt";
+            case "updatedat" -> "ticketUpdatedAt";
+            case "status" -> "ticketStatus";
+            case "title" -> "ticketTitle";
+            default -> throw new IllegalArgumentException("Invalid sort field: " + sortBy);
+        };
+
+        Sort sort = direction.equalsIgnoreCase("desc")
+                ? Sort.by(sortField).descending()
+                : Sort.by(sortField).ascending();
+
+        Pageable pageable = PageRequest.of(page, size, sort);
         Page<Ticket> tickets = ticketRepository.findAll(pageable);
 
         if (tickets.isEmpty()) {

@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -68,10 +69,21 @@ public class EmployeePositionServiceImpl implements EmployeePositionService {
     @Override
     public Page<EmployeePosition> getAllPositionsPaginated(Long adminId,
                                                            int page,
-                                                           int size) {
+                                                           int size,
+                                                           String sortBy,
+                                                           String direction) {
         validateAdmin(adminId);
 
-        Pageable pageable = PageRequest.of(page, size);
+        String sortField = switch (sortBy.toLowerCase()) {
+            case "position" -> "positionTitle";
+            default -> throw new IllegalArgumentException("Invalid sort field: " + sortBy);
+        };
+
+        Sort sort = direction.equalsIgnoreCase("desc")
+                ? Sort.by(sortField).descending()
+                : Sort.by(sortField).ascending();
+
+        Pageable pageable = PageRequest.of(page, size, sort);
         Page<EmployeePosition> positions = positionRepository.findAll(pageable);
         if (positions.isEmpty()) {
             throw new EmptyPageException(page, "No positions found");

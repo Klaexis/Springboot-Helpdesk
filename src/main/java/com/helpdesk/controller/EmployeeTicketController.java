@@ -11,6 +11,7 @@ import com.helpdesk.service.EmployeeTicketService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -52,12 +53,16 @@ public class EmployeeTicketController {
     public ResponseEntity<PageResponseDTO<Page<TicketResponseDTO>>> viewAssignedTicketsPaginated(
             @PathVariable Long employeeId,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "desc") String direction
     ) {
         Page<TicketResponseDTO> result = employeeTicketService.viewAssignedTicketsPaginated(
                 employeeId,
                 page,
-                size
+                size,
+                sortBy,
+                direction
         );
 
         return ResponseEntity.ok(
@@ -83,8 +88,8 @@ public class EmployeeTicketController {
     // PATCH /employee/{employeeId}/tickets/updateStatus/{ticketId}
     @PatchMapping("/updateStatus/{ticketId}")
     public ResponseEntity<TicketResponseDTO> updateOwnTicketStatus(@PathVariable Long employeeId,
-                                                        @RequestBody TicketStatus status,
-                                                        @PathVariable Long ticketId) {
+                                                                   @RequestBody TicketStatus status,
+                                                                   @PathVariable Long ticketId) {
         return ResponseEntity.ok(employeeTicketService.updateOwnTicketStatus(
                 ticketId,
                 status,
@@ -95,8 +100,8 @@ public class EmployeeTicketController {
     // PATCH /employee/{employeeId}/tickets/addRemarks/{ticketId}
     @PatchMapping("/addRemarks/{ticketId}")
     public ResponseEntity<TicketResponseDTO> addTicketRemark(@PathVariable Long employeeId,
-                                                  @PathVariable Long ticketId,
-                                                  @RequestBody TicketAddRemarkRequestDTO request) {
+                                                             @PathVariable Long ticketId,
+                                                             @RequestBody TicketAddRemarkRequestDTO request) {
         return ResponseEntity.ok(employeeTicketService.addRemarkToAssignedTicket(
                 ticketId, employeeId, request.getRemark(), request.getNewStatus()));
     }
@@ -114,12 +119,15 @@ public class EmployeeTicketController {
     public ResponseEntity<PageResponseDTO<Page<TicketResponseDTO>>> getAllFiledTicketsPaginated(
             @PathVariable Long employeeId,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size
-    ) {
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "desc") String direction) {
         Page<TicketResponseDTO> result = employeeTicketService.getAllFiledTicketsPaginated(
                 employeeId,
                 page,
-                size
+                size,
+                sortBy,
+                direction
         );
 
         return ResponseEntity.ok(

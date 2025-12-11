@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -86,10 +87,23 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public Page<AdminResponseDTO> getAllEmployeesPaginated(Long adminId,
                                                            int page,
-                                                           int size) {
+                                                           int size,
+                                                           String sortBy,
+                                                           String direction) {
         validateAdmin(adminId);
 
-        Pageable pageable = PageRequest.of(page, size);
+        String sortField = switch (sortBy.toLowerCase()) {
+            case "name" -> "employeeName";
+            case "position" -> "employeePosition.positionTitle";
+            case "status" -> "employmentStatus";
+            default -> throw new IllegalArgumentException("Invalid sort field: " + sortBy);
+        };
+
+        Sort sort = direction.equalsIgnoreCase("desc")
+                ? Sort.by(sortField).descending()
+                : Sort.by(sortField).ascending();
+
+        Pageable pageable = PageRequest.of(page, size, sort);
         Page<Employee> employees = employeeRepository.findAll(pageable);
 
         if (employees.isEmpty()) {
