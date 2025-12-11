@@ -32,6 +32,7 @@ public class AdminTicketController {
     }
 
     // GET /admin/{adminId}/tickets/pages?page=0&size=5&sortBy=createdAt&direction=asc
+    // sortBy = createdAt, updatedAt, status, title
     @GetMapping("/pages")
     public ResponseEntity<PageResponseDTO<Page<TicketResponseDTO>>> getAllTicketsPaginated(
             @PathVariable Long adminId,

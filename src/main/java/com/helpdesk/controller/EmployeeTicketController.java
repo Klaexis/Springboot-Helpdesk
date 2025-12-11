@@ -48,6 +48,7 @@ public class EmployeeTicketController {
     }
 
     // GET /employee/{employeeId}/tickets/get/assignedTickets/pages?page=0&size=5&sortBy=createdAt&direction=asc
+    // sortBy = createdAt, updatedAt, status, title
     @GetMapping("/get/assignedTickets/pages")
     public ResponseEntity<PageResponseDTO<Page<TicketResponseDTO>>> viewAssignedTicketsPaginated(
             @PathVariable Long employeeId,
@@ -114,6 +115,7 @@ public class EmployeeTicketController {
     }
 
     // GET /employee/{employeeId}/tickets/get/filedTickets/pages?page=0&size=5&sortBy=createdAt&direction=asc
+    // sortBy = createdAt, updatedAt, title
     @GetMapping("/get/filedTickets/pages")
     public ResponseEntity<PageResponseDTO<Page<TicketResponseDTO>>> getAllFiledTicketsPaginated(
             @PathVariable Long employeeId,

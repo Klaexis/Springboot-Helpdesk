@@ -27,6 +27,7 @@ public class EmployeePositionController {
     }
 
     // GET /admin/{adminId}/positions/pages?page=0&size=5&sortBy=position&direction=asc
+    // sortBy = position
     @GetMapping("/pages")
     public ResponseEntity<PageResponseDTO<Page<EmployeePosition>>> getAllPositionsPaginated(
             @PathVariable Long adminId,
