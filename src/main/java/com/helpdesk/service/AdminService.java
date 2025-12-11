@@ -1,5 +1,6 @@
 package com.helpdesk.service;
 
+import com.helpdesk.model.EmploymentStatus;
 import com.helpdesk.model.request.AdminCreateRequestDTO;
 import com.helpdesk.model.request.AdminUpdateRequestDTO;
 import com.helpdesk.model.response.AdminResponseDTO;
@@ -21,4 +22,15 @@ public interface AdminService {
     void deleteEmployee(Long adminId, Long employeeId);
 
     AdminResponseDTO assignPositionToEmployee(Long adminId, Long employeeId, String positionTitle);
+
+    Page<AdminResponseDTO> searchEmployees(
+            Long adminId,
+            String name,
+            String positionTitle,
+            EmploymentStatus status,
+            int page,
+            int size,
+            String sortBy,
+            String direction
+    );
 }

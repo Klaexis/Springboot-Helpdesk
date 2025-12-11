@@ -1,6 +1,5 @@
 package com.helpdesk.service;
 
-import com.helpdesk.model.Ticket;
 import com.helpdesk.model.TicketStatus;
 import com.helpdesk.model.request.TicketUpdateRequestDTO;
 import com.helpdesk.model.response.TicketResponseDTO;
@@ -22,4 +21,17 @@ public interface AdminTicketService {
     TicketResponseDTO updateTicketStatus(Long ticketId, TicketStatus newStatus, Long adminId);
 
     TicketResponseDTO addTicketRemark(Long ticketId, Long adminId, String remark, TicketStatus newStatus);
+
+    Page<TicketResponseDTO> searchTickets(
+            Long adminId,
+            String title,
+            String createdBy,
+            String updatedBy,
+            String assignee,
+            TicketStatus status,
+            int page,
+            int size,
+            String sortBy,
+            String direction
+    );
 }

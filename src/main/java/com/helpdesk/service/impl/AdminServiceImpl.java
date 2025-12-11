@@ -10,6 +10,7 @@ import com.helpdesk.model.response.AdminResponseDTO;
 import com.helpdesk.repository.EmployeePositionRepository;
 import com.helpdesk.repository.EmployeeRepository;
 import com.helpdesk.repository.TicketRepository;
+import com.helpdesk.repository.specification.EmployeeSpecification;
 import com.helpdesk.service.AdminService;
 import com.helpdesk.service.mapper.AdminMapper;
 import com.helpdesk.service.util.EmployeeValidationHelper;
@@ -23,6 +24,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -200,5 +202,48 @@ public class AdminServiceImpl implements AdminService {
 
         employee.setEmployeePosition(position);
         return AdminMapper.toDTO(employeeRepository.save(employee));
+    }
+
+    @Override
+    public Page<AdminResponseDTO> searchEmployees(
+            Long adminId,
+            String name,
+            String positionTitle,
+            EmploymentStatus status,
+            int page,
+            int size,
+            String sortBy,
+            String direction
+    ) {
+        validateAdmin(adminId);
+
+        // Build combined specification
+        // allOf = AND, anyOf = OR
+        Specification<Employee> spec = Specification.allOf(
+                EmployeeSpecification.hasName(name),
+                EmployeeSpecification.hasPosition(positionTitle),
+                EmployeeSpecification.hasStatus(status)
+        );
+
+        // Sorting
+        String sortField = switch (sortBy.toLowerCase()) {
+            case "name" -> "employeeName";
+            case "position" -> "employeePosition.positionTitle";
+            case "status" -> "employmentStatus";
+            default -> throw new IllegalArgumentException("Invalid sort field: " + sortBy);
+        };
+
+        Sort sort = direction.equalsIgnoreCase("desc")
+                ? Sort.by(sortField).descending()
+                : Sort.by(sortField).ascending();
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<Employee> employees = employeeRepository.findAll(spec, pageable);
+
+        if (employees.isEmpty()) {
+            throw new EmptyPageException(page, "No employees match the search criteria");
+        }
+
+        return employees.map(AdminMapper::toDTO);
     }
 }
