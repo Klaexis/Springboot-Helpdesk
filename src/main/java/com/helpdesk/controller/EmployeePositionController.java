@@ -1,8 +1,7 @@
 package com.helpdesk.controller;
 
-import com.helpdesk.model.Employee;
 import com.helpdesk.model.EmployeePosition;
-import com.helpdesk.model.response.PageResponse;
+import com.helpdesk.model.response.PageResponseDTO;
 import com.helpdesk.service.EmployeePositionService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +28,7 @@ public class EmployeePositionController {
 
     // GET /admin/{adminId}/positions/pages?page=0&size=5
     @GetMapping("/pages")
-    public ResponseEntity<?> getAllPositionsPaginated(
+    public ResponseEntity<PageResponseDTO<Page<EmployeePosition>>> getAllPositionsPaginated(
             @PathVariable Long adminId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size
@@ -37,7 +36,7 @@ public class EmployeePositionController {
         Page<EmployeePosition> result = employeePositionService.getAllPositionsPaginated(adminId, page, size);
 
         return ResponseEntity.ok(
-            new PageResponse<>(
+            new PageResponseDTO<>(
                 "Page loaded successfully.",
                 result
             )

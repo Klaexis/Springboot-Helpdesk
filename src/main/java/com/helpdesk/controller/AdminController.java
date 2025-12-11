@@ -1,8 +1,8 @@
 package com.helpdesk.controller;
 
-import com.helpdesk.model.request.AdminRequestDTO;
+import com.helpdesk.model.request.AdminCreateRequestDTO;
 import com.helpdesk.model.response.AdminResponseDTO;
-import com.helpdesk.model.response.PageResponse;
+import com.helpdesk.model.response.PageResponseDTO;
 import com.helpdesk.service.AdminService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +30,7 @@ public class AdminController {
 
     // GET /admin/{adminId}/employees/pages?page=0&size=5
     @GetMapping("/pages")
-    public ResponseEntity<?> getAllEmployeesPaginated(
+    public ResponseEntity<PageResponseDTO<Page<AdminResponseDTO>>> getAllEmployeesPaginated(
             @PathVariable Long adminId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size
@@ -38,7 +38,7 @@ public class AdminController {
         Page<AdminResponseDTO> result = adminService.getAllEmployeesPaginated(adminId, page, size);
 
         return ResponseEntity.ok(
-            new PageResponse<>(
+            new PageResponseDTO<>(
                 "Page loaded successfully.",
                 result
             )
@@ -57,7 +57,7 @@ public class AdminController {
     // POST /admin/{adminId}/employees/create
     @PostMapping("/create")
     public ResponseEntity<AdminResponseDTO> createEmployee(@PathVariable Long adminId,
-                                                           @RequestBody AdminRequestDTO request) {
+                                                           @RequestBody AdminCreateRequestDTO request) {
         return ResponseEntity.ok(adminService.createEmployee(
                 adminId,
                 request
@@ -68,7 +68,7 @@ public class AdminController {
     @PatchMapping("/update/{employeeId}")
     public ResponseEntity<AdminResponseDTO> updateEmployee(@PathVariable Long adminId,
                                                            @PathVariable Long employeeId,
-                                                           @RequestBody AdminRequestDTO request) {
+                                                           @RequestBody AdminCreateRequestDTO request) {
         return ResponseEntity.ok(adminService.updateEmployee(
                 adminId,
                 employeeId,

@@ -1,10 +1,10 @@
 package com.helpdesk.controller;
 
-import com.helpdesk.model.Ticket;
 import com.helpdesk.model.TicketStatus;
 import com.helpdesk.model.request.TicketAddRemarkRequestDTO;
+import com.helpdesk.model.request.TicketCreateRequestDTO;
 import com.helpdesk.model.request.TicketUpdateRequestDTO;
-import com.helpdesk.model.response.PageResponse;
+import com.helpdesk.model.response.PageResponseDTO;
 import com.helpdesk.model.response.TicketResponseDTO;
 import com.helpdesk.repository.EmployeeRepository;
 import com.helpdesk.service.EmployeeTicketService;
@@ -31,7 +31,7 @@ public class EmployeeTicketController {
 
     // POST /employee/{employeeId}/tickets/file
     @PostMapping("/file")
-    public ResponseEntity<TicketResponseDTO> fileTicket(@RequestBody Ticket ticket,
+    public ResponseEntity<TicketResponseDTO> fileTicket(@RequestBody TicketCreateRequestDTO ticket,
                                                         @PathVariable Long employeeId) {
         return ResponseEntity.ok(employeeTicketService.fileTicket(
                 ticket,
@@ -49,12 +49,23 @@ public class EmployeeTicketController {
 
     // GET /employee/{employeeId}/tickets/get/assignedTickets/pages?page=0&size=5
     @GetMapping("/get/assignedTickets/pages")
-    public ResponseEntity<?> viewAssignedTicketsPaginated(
+    public ResponseEntity<PageResponseDTO<Page<TicketResponseDTO>>> viewAssignedTicketsPaginated(
             @PathVariable Long employeeId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size
     ) {
-        return ResponseEntity.ok(employeeTicketService.viewAssignedTicketsPaginated(employeeId, page, size));
+        Page<TicketResponseDTO> result = employeeTicketService.viewAssignedTicketsPaginated(
+                employeeId,
+                page,
+                size
+        );
+
+        return ResponseEntity.ok(
+                new PageResponseDTO<>(
+                        "Page loaded successfully.",
+                        result
+                )
+        );
     }
 
     // PATCH /employee/{employeeId}/tickets/update/{ticketId}
@@ -100,15 +111,19 @@ public class EmployeeTicketController {
 
     // GET /employee/{employeeId}/tickets/get/filedTickets/pages?page=0&size=5
     @GetMapping("/get/filedTickets/pages")
-    public ResponseEntity<?> getAllFiledTicketsPaginated(
+    public ResponseEntity<PageResponseDTO<Page<TicketResponseDTO>>> getAllFiledTicketsPaginated(
             @PathVariable Long employeeId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size
     ) {
-        Page<TicketResponseDTO> result = employeeTicketService.getAllFiledTicketsPaginated(employeeId, page, size);
+        Page<TicketResponseDTO> result = employeeTicketService.getAllFiledTicketsPaginated(
+                employeeId,
+                page,
+                size
+        );
 
         return ResponseEntity.ok(
-                new PageResponse<>(
+                new PageResponseDTO<>(
                         "Page loaded successfully.",
                         result
                 )

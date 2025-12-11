@@ -53,8 +53,8 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
-    @ExceptionHandler(InvalidEmployeeStatusException.class)
-    public ResponseEntity<Object> handleInvalidEmployeeStatus(InvalidEmployeeStatusException ex) {
+    @ExceptionHandler(InvalidEmployeeFormException.class)
+    public ResponseEntity<Object> handleInvalidEmployeeStatus(InvalidEmployeeFormException ex) {
         return build(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 

@@ -2,6 +2,7 @@ package com.helpdesk.service;
 
 import com.helpdesk.model.Ticket;
 import com.helpdesk.model.TicketStatus;
+import com.helpdesk.model.request.TicketCreateRequestDTO;
 import com.helpdesk.model.request.TicketUpdateRequestDTO;
 import com.helpdesk.model.response.TicketResponseDTO;
 import org.springframework.data.domain.Page;
@@ -9,7 +10,7 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 public interface EmployeeTicketService {
-    TicketResponseDTO fileTicket(Ticket ticket, Long employeeId);
+    TicketResponseDTO fileTicket(TicketCreateRequestDTO ticket, Long employeeId);
 
     List<TicketResponseDTO> viewAssignedTickets(Long employeeId);
 

@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class AdminRequestDTO {
+public class AdminCreateRequestDTO {
     private String employeeName;
     private Integer employeeAge;
     private String employeeAddress;

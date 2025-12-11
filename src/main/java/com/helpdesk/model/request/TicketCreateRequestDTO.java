@@ -10,5 +10,4 @@ import lombok.Setter;
 public class TicketCreateRequestDTO {
     private String ticketTitle;
     private String ticketBody;
-    private Long ticketAssigneeId;
 }

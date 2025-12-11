@@ -3,6 +3,7 @@ package com.helpdesk.service.mapper;
 import com.helpdesk.model.Employee;
 import com.helpdesk.model.Ticket;
 import com.helpdesk.model.TicketRemark;
+import com.helpdesk.model.request.TicketCreateRequestDTO;
 import com.helpdesk.model.request.TicketUpdateRequestDTO;
 import com.helpdesk.model.response.TicketEmployeeResponseDTO;
 import com.helpdesk.model.response.TicketRemarkResponseDTO;
@@ -12,6 +13,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class TicketMapper {
+    public static Ticket toEntity(TicketCreateRequestDTO dto) {
+        Ticket ticket = new Ticket();
+        ticket.setTicketTitle(dto.getTicketTitle());
+        ticket.setTicketBody(dto.getTicketBody());
+        return ticket;
+    }
 
     public static TicketEmployeeResponseDTO toEmployeeDTO(com.helpdesk.model.Employee employee) {
         if (employee == null) return null;
@@ -58,7 +65,7 @@ public class TicketMapper {
         return dto;
     }
 
-    public static void updateEntityFromDTO(TicketUpdateRequestDTO dto, Ticket ticket, Employee updater, Employee assignee) {
+    public static void updateEntity(TicketUpdateRequestDTO dto, Ticket ticket, Employee updater, Employee assignee) {
         if (dto.getTicketTitle() != null) ticket.setTicketTitle(dto.getTicketTitle());
         if (dto.getTicketBody() != null) ticket.setTicketBody(dto.getTicketBody());
         if (assignee != null) ticket.setTicketAssignee(assignee);

@@ -138,7 +138,7 @@ public class AdminTicketServiceImpl implements AdminTicketService {
             assignee = getEmployeeOrThrow(updatedTicket.getTicketAssigneeId());
         }
 
-        TicketMapper.updateEntityFromDTO(updatedTicket, ticket, admin, assignee);
+        TicketMapper.updateEntity(updatedTicket, ticket, admin, assignee);
         ticket.setTicketUpdatedBy(admin);
 
         handleTicketClosure(ticket);

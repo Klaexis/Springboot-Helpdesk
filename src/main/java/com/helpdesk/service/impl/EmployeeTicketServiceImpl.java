@@ -5,6 +5,7 @@ import com.helpdesk.model.Employee;
 import com.helpdesk.model.Ticket;
 import com.helpdesk.model.TicketRemark;
 import com.helpdesk.model.TicketStatus;
+import com.helpdesk.model.request.TicketCreateRequestDTO;
 import com.helpdesk.model.request.TicketUpdateRequestDTO;
 import com.helpdesk.model.response.TicketResponseDTO;
 import com.helpdesk.repository.EmployeeRepository;
@@ -63,14 +64,23 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
     }
 
     @Override
-    public TicketResponseDTO fileTicket(Ticket ticket,
+    public TicketResponseDTO fileTicket(TicketCreateRequestDTO ticket,
                                         Long employeeId) {
         Employee employee = validateEmployee(employeeId);
 
-        ticket.setTicketStatus(TicketStatus.FILED);
-        ticket.setTicketCreatedBy(employee);
+        Ticket newTicket = TicketMapper.toEntity(ticket);
+        newTicket.setTicketCreatedBy(employee);
 
-        return TicketMapper.toTicketDTO(ticketRepository.save(ticket));
+        boolean hasTitle = ticket.getTicketTitle() != null && !ticket.getTicketTitle().isBlank();
+        boolean hasBody = ticket.getTicketBody() != null && !ticket.getTicketBody().isBlank();
+
+        if (hasTitle && hasBody) {
+            newTicket.setTicketStatus(TicketStatus.FILED);
+        } else {
+            newTicket.setTicketStatus(TicketStatus.DRAFT);
+        }
+
+        return TicketMapper.toTicketDTO(ticketRepository.save(newTicket));
     }
 
     @Override
@@ -111,7 +121,7 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
             throw new TicketAccessException("You can only update your own tickets");
         }
 
-        TicketMapper.updateEntityFromDTO(updatedTicket, ticket, employee, null);
+        TicketMapper.updateEntity(updatedTicket, ticket, employee, null);
         ticket.setTicketUpdatedBy(employee);
 
         handleTicketClosure(ticket);

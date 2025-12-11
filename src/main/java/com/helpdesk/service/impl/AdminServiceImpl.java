@@ -3,7 +3,7 @@ package com.helpdesk.service.impl;
 import com.helpdesk.exception.*;
 import com.helpdesk.model.Employee;
 import com.helpdesk.model.EmployeePosition;
-import com.helpdesk.model.request.AdminRequestDTO;
+import com.helpdesk.model.request.AdminCreateRequestDTO;
 import com.helpdesk.model.response.AdminResponseDTO;
 import com.helpdesk.repository.EmployeePositionRepository;
 import com.helpdesk.repository.EmployeeRepository;
@@ -98,12 +98,16 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public AdminResponseDTO createEmployee(Long adminId,
-                                           AdminRequestDTO dto) {
+                                           AdminCreateRequestDTO dto) {
         validateAdmin(adminId);
-        Employee employee = AdminMapper.fromDTO(dto);
+        Employee employee = AdminMapper.toEntity(dto);
 
         if (employee.getEmploymentStatus() == null) {
-            throw new InvalidEmployeeStatusException("Employment status is required.");
+            throw new InvalidEmployeeFormException("Employment status is required.");
+        }
+
+        if (employee.getEmployeeName() == null) {
+            throw new InvalidEmployeeFormException("Employee name is required.");
         }
 
         if (dto.getPositionTitle() != null && !dto.getPositionTitle().isBlank()) {
@@ -123,13 +127,13 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public AdminResponseDTO updateEmployee(Long adminId,
                                            Long employeeId,
-                                           AdminRequestDTO dto) {
+                                           AdminCreateRequestDTO dto) {
         validateAdmin(adminId);
         Employee employee = getEmployeeOrThrow(employeeId);
 
-        AdminMapper.updateEntityFromDTO(dto, employee);
+        AdminMapper.updateEntity(dto, employee);
 
-        if (dto.getPositionTitle() != null) {
+        if (dto.getPositionTitle() != null && !dto.getPositionTitle().isBlank()) {
             EmployeePosition position =
                     positionRepository.findByPositionTitle(dto.getPositionTitle());
 

@@ -1,10 +1,9 @@
 package com.helpdesk.controller;
 
-import com.helpdesk.model.Ticket;
 import com.helpdesk.model.TicketStatus;
 import com.helpdesk.model.request.TicketAddRemarkRequestDTO;
 import com.helpdesk.model.request.TicketUpdateRequestDTO;
-import com.helpdesk.model.response.PageResponse;
+import com.helpdesk.model.response.PageResponseDTO;
 import com.helpdesk.model.response.TicketResponseDTO;
 import com.helpdesk.service.AdminTicketService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +33,7 @@ public class AdminTicketController {
 
     // GET /admin/{adminId}/tickets/pages?page=0&size=5
     @GetMapping("/pages")
-    public ResponseEntity<?> getAllTicketsPaginated(
+    public ResponseEntity<PageResponseDTO<Page<TicketResponseDTO>>> getAllTicketsPaginated(
             @PathVariable Long adminId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size
@@ -42,7 +41,7 @@ public class AdminTicketController {
         Page<TicketResponseDTO> result = adminTicketService.getAllTicketsPaginated(adminId, page, size);
 
         return ResponseEntity.ok(
-            new PageResponse<>(
+            new PageResponseDTO<>(
                 "Page loaded successfully.",
                 result
             )
