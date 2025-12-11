@@ -30,7 +30,8 @@ public class AdminController {
         ));
     }
 
-    // GET /admin/{adminId}/employees/pages?page=0&size=5
+    // GET /admin/{adminId}/employees/pages?page=0&size=5&sortBy=name&direction=asc
+    // sortBy = name, position, status
     @GetMapping("/pages")
     public ResponseEntity<PageResponseDTO<Page<AdminResponseDTO>>> getAllEmployeesPaginated(
             @PathVariable Long adminId,

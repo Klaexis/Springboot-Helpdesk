@@ -11,7 +11,6 @@ import com.helpdesk.service.EmployeeTicketService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -48,14 +47,14 @@ public class EmployeeTicketController {
         ));
     }
 
-    // GET /employee/{employeeId}/tickets/get/assignedTickets/pages?page=0&size=5
+    // GET /employee/{employeeId}/tickets/get/assignedTickets/pages?page=0&size=5&sortBy=createdAt&direction=asc
     @GetMapping("/get/assignedTickets/pages")
     public ResponseEntity<PageResponseDTO<Page<TicketResponseDTO>>> viewAssignedTicketsPaginated(
             @PathVariable Long employeeId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size,
             @RequestParam(defaultValue = "createdAt") String sortBy,
-            @RequestParam(defaultValue = "desc") String direction
+            @RequestParam(defaultValue = "asc") String direction
     ) {
         Page<TicketResponseDTO> result = employeeTicketService.viewAssignedTicketsPaginated(
                 employeeId,
@@ -114,14 +113,14 @@ public class EmployeeTicketController {
         ));
     }
 
-    // GET /employee/{employeeId}/tickets/get/filedTickets/pages?page=0&size=5
+    // GET /employee/{employeeId}/tickets/get/filedTickets/pages?page=0&size=5&sortBy=createdAt&direction=asc
     @GetMapping("/get/filedTickets/pages")
     public ResponseEntity<PageResponseDTO<Page<TicketResponseDTO>>> getAllFiledTicketsPaginated(
             @PathVariable Long employeeId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size,
             @RequestParam(defaultValue = "createdAt") String sortBy,
-            @RequestParam(defaultValue = "desc") String direction) {
+            @RequestParam(defaultValue = "asc") String direction) {
         Page<TicketResponseDTO> result = employeeTicketService.getAllFiledTicketsPaginated(
                 employeeId,
                 page,

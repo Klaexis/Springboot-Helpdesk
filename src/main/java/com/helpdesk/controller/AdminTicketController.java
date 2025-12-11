@@ -31,7 +31,7 @@ public class AdminTicketController {
         ));
     }
 
-    // GET /admin/{adminId}/tickets/pages?page=0&size=5
+    // GET /admin/{adminId}/tickets/pages?page=0&size=5&sortBy=createdAt&direction=asc
     @GetMapping("/pages")
     public ResponseEntity<PageResponseDTO<Page<TicketResponseDTO>>> getAllTicketsPaginated(
             @PathVariable Long adminId,
@@ -64,8 +64,8 @@ public class AdminTicketController {
     // PATCH /admin/{adminId}/tickets/assign/{ticketId}/assignTo/{employeeId}
     @PatchMapping("assign/{ticketId}/assignTo/{employeeId}")
     public ResponseEntity<TicketResponseDTO> assignTicket(@PathVariable Long adminId,
-                                               @PathVariable Long ticketId,
-                                               @PathVariable Long employeeId) {
+                                                          @PathVariable Long ticketId,
+                                                          @PathVariable Long employeeId) {
         return ResponseEntity.ok(adminTicketService.assignTicket(
                 ticketId,
                 adminId,
