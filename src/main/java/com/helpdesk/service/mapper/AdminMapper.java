@@ -5,6 +5,7 @@ import com.helpdesk.model.EmployeePosition;
 import com.helpdesk.model.EmploymentStatus;
 import com.helpdesk.model.Ticket;
 import com.helpdesk.model.request.AdminCreateRequestDTO;
+import com.helpdesk.model.request.AdminUpdateRequestDTO;
 import com.helpdesk.model.response.AdminResponseDTO;
 import com.helpdesk.model.response.TicketAssignedResponseDTO;
 
@@ -67,7 +68,7 @@ public class AdminMapper {
     }
 
     /** For UPDATE: apply only non-null fields (except position) */
-    public static void updateEntity(AdminCreateRequestDTO dto, Employee employee) {
+    public static void updateEntity(AdminUpdateRequestDTO dto, Employee employee) {
         if (dto.getEmployeeName() != null) employee.setEmployeeName(dto.getEmployeeName());
         if (dto.getEmployeeAge() != null) employee.setEmployeeAge(dto.getEmployeeAge());
         if (dto.getEmployeeAddress() != null) employee.setEmployeeAddress(dto.getEmployeeAddress());

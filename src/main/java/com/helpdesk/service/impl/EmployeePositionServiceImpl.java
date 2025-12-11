@@ -85,6 +85,10 @@ public class EmployeePositionServiceImpl implements EmployeePositionService {
                                            String positionTitle) {
         validateAdmin(adminId);
 
+        if (positionTitle == null || positionTitle.isBlank()) {
+            throw new IllegalArgumentException("Position title cannot be null or blank");
+        }
+
         EmployeePosition position = new EmployeePosition();
         position.setPositionTitle(positionTitle);
 
@@ -96,6 +100,11 @@ public class EmployeePositionServiceImpl implements EmployeePositionService {
                                            Long positionId,
                                            String positionTitle) {
         validateAdmin(adminId);
+
+        if (positionTitle == null || positionTitle.isBlank()) {
+            throw new IllegalArgumentException("Position title cannot be null or blank");
+        }
+
         EmployeePosition position = getPositionOrThrow(positionId);
 
         position.setPositionTitle(positionTitle);

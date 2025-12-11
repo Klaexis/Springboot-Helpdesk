@@ -202,7 +202,7 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
         Ticket ticket = getTicketOrThrow(ticketId);
 
         if (ticket.getTicketStatus() != TicketStatus.FILED) {
-            throw new InvalidTicketStatusException("Ticket is not in FILED status");
+            throw new IllegalArgumentException("Ticket is not in FILED status");
         }
 
         return TicketMapper.toTicketDTO(ticketRepository.save(ticket));

@@ -1,9 +1,11 @@
 package com.helpdesk.controller;
 
 import com.helpdesk.model.request.AdminCreateRequestDTO;
+import com.helpdesk.model.request.AdminUpdateRequestDTO;
 import com.helpdesk.model.response.AdminResponseDTO;
 import com.helpdesk.model.response.PageResponseDTO;
 import com.helpdesk.service.AdminService;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -57,7 +59,7 @@ public class AdminController {
     // POST /admin/{adminId}/employees/create
     @PostMapping("/create")
     public ResponseEntity<AdminResponseDTO> createEmployee(@PathVariable Long adminId,
-                                                           @RequestBody AdminCreateRequestDTO request) {
+                                                           @Valid @RequestBody AdminCreateRequestDTO request) {
         return ResponseEntity.ok(adminService.createEmployee(
                 adminId,
                 request
@@ -68,7 +70,7 @@ public class AdminController {
     @PatchMapping("/update/{employeeId}")
     public ResponseEntity<AdminResponseDTO> updateEmployee(@PathVariable Long adminId,
                                                            @PathVariable Long employeeId,
-                                                           @RequestBody AdminCreateRequestDTO request) {
+                                                           @RequestBody AdminUpdateRequestDTO request) {
         return ResponseEntity.ok(adminService.updateEmployee(
                 adminId,
                 employeeId,

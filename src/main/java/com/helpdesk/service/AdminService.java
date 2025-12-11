@@ -1,6 +1,7 @@
 package com.helpdesk.service;
 
 import com.helpdesk.model.request.AdminCreateRequestDTO;
+import com.helpdesk.model.request.AdminUpdateRequestDTO;
 import com.helpdesk.model.response.AdminResponseDTO;
 import org.springframework.data.domain.Page;
 
@@ -15,7 +16,7 @@ public interface AdminService {
 
     AdminResponseDTO createEmployee(Long adminId, AdminCreateRequestDTO dto);
 
-    AdminResponseDTO updateEmployee(Long adminId, Long employeeId, AdminCreateRequestDTO dto);
+    AdminResponseDTO updateEmployee(Long adminId, Long employeeId, AdminUpdateRequestDTO dto);
 
     void deleteEmployee(Long adminId, Long employeeId);
 

@@ -23,6 +23,11 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(body, status);
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Object> handleIllegalArgument(IllegalArgumentException ex) {
+        return build(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
     @ExceptionHandler(AdminNotFoundException.class)
     public ResponseEntity<Object> handleAdminNotFound(AdminNotFoundException ex) {
         return build(HttpStatus.NOT_FOUND, ex.getMessage());
@@ -53,16 +58,6 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
-    @ExceptionHandler(InvalidEmployeeFormException.class)
-    public ResponseEntity<Object> handleInvalidEmployeeStatus(InvalidEmployeeFormException ex) {
-        return build(HttpStatus.BAD_REQUEST, ex.getMessage());
-    }
-
-    @ExceptionHandler(InvalidTicketStatusException.class)
-    public ResponseEntity<Object> handleInvalidTicketStatus(InvalidTicketStatusException ex) {
-        return build(HttpStatus.BAD_REQUEST, ex.getMessage());
-    }
-
     @ExceptionHandler(TicketAccessException.class)
     public ResponseEntity<Object> handleTicketAccess(TicketAccessException ex) {
         return build(HttpStatus.FORBIDDEN, ex.getMessage());
@@ -72,10 +67,5 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Object> handleTicketNotFound(TicketNotFoundException ex) {
         return build(HttpStatus.NOT_FOUND, ex.getMessage());
     }
-
-
-
-
-
 
 }

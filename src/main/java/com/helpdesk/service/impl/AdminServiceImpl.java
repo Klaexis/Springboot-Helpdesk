@@ -3,7 +3,9 @@ package com.helpdesk.service.impl;
 import com.helpdesk.exception.*;
 import com.helpdesk.model.Employee;
 import com.helpdesk.model.EmployeePosition;
+import com.helpdesk.model.EmploymentStatus;
 import com.helpdesk.model.request.AdminCreateRequestDTO;
+import com.helpdesk.model.request.AdminUpdateRequestDTO;
 import com.helpdesk.model.response.AdminResponseDTO;
 import com.helpdesk.repository.EmployeePositionRepository;
 import com.helpdesk.repository.EmployeeRepository;
@@ -15,6 +17,7 @@ import com.helpdesk.service.util.EmployeeValidationHelper;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -98,17 +101,9 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public AdminResponseDTO createEmployee(Long adminId,
-                                           AdminCreateRequestDTO dto) {
+                                           @Valid AdminCreateRequestDTO dto) {
         validateAdmin(adminId);
         Employee employee = AdminMapper.toEntity(dto);
-
-        if (employee.getEmploymentStatus() == null) {
-            throw new InvalidEmployeeFormException("Employment status is required.");
-        }
-
-        if (employee.getEmployeeName() == null) {
-            throw new InvalidEmployeeFormException("Employee name is required.");
-        }
 
         if (dto.getPositionTitle() != null && !dto.getPositionTitle().isBlank()) {
             EmployeePosition position =
@@ -127,13 +122,27 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public AdminResponseDTO updateEmployee(Long adminId,
                                            Long employeeId,
-                                           AdminCreateRequestDTO dto) {
+                                           AdminUpdateRequestDTO dto) {
         validateAdmin(adminId);
         Employee employee = getEmployeeOrThrow(employeeId);
 
-        AdminMapper.updateEntity(dto, employee);
+        if (dto.getEmployeeName() != null && dto.getEmployeeName().isBlank()) {
+            throw new IllegalArgumentException("Name cannot be blank");
+        }
 
-        if (dto.getPositionTitle() != null && !dto.getPositionTitle().isBlank()) {
+        if (dto.getEmployeeAge() != null) {
+            throw new IllegalArgumentException("Age cannot be null");
+        }
+
+        if (dto.getEmployeeEmail() != null && dto.getEmployeeEmail().isBlank()) {
+            throw new IllegalArgumentException("Email cannot be blank");
+        }
+
+        if (dto.getEmploymentStatus() != null && dto.getEmploymentStatus().isBlank()) {
+            throw new IllegalArgumentException("Employment status cannot be blank");
+        }
+
+        if (dto.getPositionTitle() != null && dto.getPositionTitle().isBlank()) {
             EmployeePosition position =
                     positionRepository.findByPositionTitle(dto.getPositionTitle());
 
@@ -143,6 +152,8 @@ public class AdminServiceImpl implements AdminService {
 
             employee.setEmployeePosition(position);
         }
+
+        AdminMapper.updateEntity(dto, employee);
 
         return AdminMapper.toDTO(employeeRepository.save(employee));
     }
