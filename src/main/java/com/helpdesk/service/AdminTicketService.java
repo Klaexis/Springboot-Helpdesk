@@ -25,8 +25,6 @@ public interface AdminTicketService {
     Page<TicketResponseDTO> searchTickets(
             Long adminId,
             String title,
-            String createdBy,
-            String updatedBy,
             String assignee,
             TicketStatus status,
             int page,

@@ -110,4 +110,36 @@ public class AdminTicketController {
                 request.getNewStatus()
         ));
     }
+
+    // GET /admin/{adminId}/tickets/search?title=bug&assignee=John&status=IN_PROGRESS&page=0&size=5&sortBy=title&direction=asc
+    // sortBy = title, status, assignee
+    @GetMapping("/search")
+    public ResponseEntity<PageResponseDTO<Page<TicketResponseDTO>>> searchTickets(
+            @PathVariable Long adminId,
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String assignee,
+            @RequestParam(required = false) TicketStatus status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "title") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction
+    ) {
+        Page<TicketResponseDTO> result = adminTicketService.searchTickets(
+                adminId,
+                title,
+                assignee,
+                status,
+                page,
+                size,
+                sortBy,
+                direction
+        );
+
+        return ResponseEntity.ok(
+                new PageResponseDTO<>(
+                        "Search completed successfully.",
+                        result
+                )
+        );
+    }
 }

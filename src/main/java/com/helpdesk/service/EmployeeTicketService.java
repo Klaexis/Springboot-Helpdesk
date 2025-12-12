@@ -28,26 +28,22 @@ public interface EmployeeTicketService {
 
     TicketResponseDTO addRemarkToAssignedTicket(Long ticketId, Long employeeId, String remark, TicketStatus newStatus);
 
-//    Page<TicketResponseDTO> searchAssignedTickets(
-//            Long employeeId,
-//            String title,
-//            String createdBy,
-//            String updatedBy,
-//            TicketStatus status,
-//            int page,
-//            int size,
-//            String sortBy,
-//            String direction
-//    );
-//
-//    Page<TicketResponseDTO> searchFiledTickets(
-//            Long employeeId,
-//            String title,
-//            String createdBy,
-//            String updatedBy,
-//            int page,
-//            int size,
-//            String sortBy,
-//            String direction
-//    );
+    Page<TicketResponseDTO> searchAssignedTickets(
+            Long employeeId,
+            String title,
+            TicketStatus status,
+            int page,
+            int size,
+            String sortBy,
+            String direction
+    );
+
+    Page<TicketResponseDTO> searchFiledTickets(
+            Long employeeId,
+            String title,
+            int page,
+            int size,
+            String sortBy,
+            String direction
+    );
 }

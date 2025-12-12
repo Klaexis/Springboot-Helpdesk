@@ -12,6 +12,7 @@ import com.helpdesk.model.request.TicketUpdateRequestDTO;
 import com.helpdesk.model.response.TicketResponseDTO;
 import com.helpdesk.repository.EmployeeRepository;
 import com.helpdesk.repository.TicketRepository;
+import com.helpdesk.repository.specification.TicketSpecification;
 import com.helpdesk.service.AdminTicketService;
 import com.helpdesk.service.mapper.TicketMapper;
 import com.helpdesk.service.util.EmployeeValidationHelper;
@@ -21,6 +22,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -190,5 +192,42 @@ public class AdminTicketServiceImpl implements AdminTicketService {
         handleTicketClosure(ticket);
 
         return TicketMapper.toTicketDTO(ticketRepository.save(ticket));
+    }
+
+    @Override
+    public Page<TicketResponseDTO> searchTickets(Long adminId,
+                                                 String title,
+                                                 String assignee,
+                                                 TicketStatus status,
+                                                 int page,
+                                                 int size,
+                                                 String sortBy,
+                                                 String direction) {
+        validateAdmin(adminId);
+
+        Specification<Ticket> spec = Specification.allOf(
+                TicketSpecification.hasTitle(title),
+                TicketSpecification.hasAssignee(assignee),
+                TicketSpecification.hasStatus(status)
+        );
+
+        String sortField = switch (sortBy.toLowerCase()) {
+            case "title"  -> "ticketTitle";
+            case "status" -> "ticketStatus";
+            default -> throw new IllegalArgumentException("Invalid sort field: " + sortBy);
+        };
+
+        Sort sort = direction.equalsIgnoreCase("desc")
+                ? Sort.by(sortField).descending()
+                : Sort.by(sortField).ascending();
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<Ticket> tickets = ticketRepository.findAll(spec, pageable);
+
+        if (tickets.isEmpty()) {
+            throw new EmptyPageException(page, "No tickets match the search criteria");
+        }
+
+        return tickets.map(TicketMapper::toTicketDTO);
     }
 }

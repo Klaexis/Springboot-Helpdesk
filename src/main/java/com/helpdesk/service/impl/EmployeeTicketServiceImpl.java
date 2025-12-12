@@ -10,6 +10,7 @@ import com.helpdesk.model.request.TicketUpdateRequestDTO;
 import com.helpdesk.model.response.TicketResponseDTO;
 import com.helpdesk.repository.EmployeeRepository;
 import com.helpdesk.repository.TicketRepository;
+import com.helpdesk.repository.specification.TicketSpecification;
 import com.helpdesk.service.EmployeeTicketService;
 import com.helpdesk.service.mapper.TicketMapper;
 import com.helpdesk.service.util.EmployeeValidationHelper;
@@ -19,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -225,7 +227,7 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
 
     @Override
     public TicketResponseDTO getFiledTicket(Long employeeId,
-                                 Long ticketId) {
+                                            Long ticketId) {
         validateEmployee(employeeId);
         Ticket ticket = getTicketOrThrow(ticketId);
 
@@ -234,5 +236,76 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
         }
 
         return TicketMapper.toTicketDTO(ticketRepository.save(ticket));
+    }
+
+    @Override
+    public Page<TicketResponseDTO> searchAssignedTickets(Long employeeId,
+                                                         String title,
+                                                         TicketStatus status,
+                                                         int page,
+                                                         int size,
+                                                         String sortBy,
+                                                         String direction) {
+        validateEmployee(employeeId);
+
+        Specification<Ticket> spec = Specification.allOf(
+                TicketSpecification.isAssignedTo(employeeId),
+                TicketSpecification.hasTitle(title),
+                TicketSpecification.hasStatus(status)
+        );
+
+        String sortField = switch (sortBy.toLowerCase()) {
+            case "title"  -> "ticketTitle";
+            case "status" -> "ticketStatus";
+            default -> throw new IllegalArgumentException("Invalid sort field: " + sortBy);
+        };
+
+        Sort sort = direction.equalsIgnoreCase("desc")
+                ? Sort.by(sortField).descending()
+                : Sort.by(sortField).ascending();
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<Ticket> tickets = ticketRepository.findAll(spec, pageable);
+
+        if (tickets.isEmpty()) {
+            throw new EmptyPageException(page, "No assigned tickets match the search criteria");
+        }
+
+        return tickets.map(TicketMapper::toTicketDTO);
+    }
+
+    @Override
+    public Page<TicketResponseDTO> searchFiledTickets(Long employeeId,
+                                                      String title,
+                                                      int page,
+                                                      int size,
+                                                      String sortBy,
+                                                      String direction) {
+        validateEmployee(employeeId);
+
+        Specification<Ticket> spec = Specification.allOf(
+                TicketSpecification.hasTitle(title),
+                TicketSpecification.hasStatus(TicketStatus.FILED),
+                (root, query, cb) ->
+                        cb.equal(root.get("ticketCreatedBy").get("employeeId"), employeeId)
+        );
+
+        String sortField = switch (sortBy.toLowerCase()) {
+            case "title" -> "ticketTitle";
+            default -> throw new IllegalArgumentException("Invalid sort field: " + sortBy);
+        };
+
+        Sort sort = direction.equalsIgnoreCase("desc")
+                ? Sort.by(sortField).descending()
+                : Sort.by(sortField).ascending();
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<Ticket> tickets = ticketRepository.findAll(spec, pageable);
+
+        if (tickets.isEmpty()) {
+            throw new EmptyPageException(page, "No filed tickets match the search criteria");
+        }
+
+        return tickets.map(TicketMapper::toTicketDTO);
     }
 }

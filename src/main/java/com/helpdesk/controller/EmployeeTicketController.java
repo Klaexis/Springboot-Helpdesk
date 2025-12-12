@@ -147,4 +147,62 @@ public class EmployeeTicketController {
                 ticketId
         ));
     }
+
+    // GET /employee/{employeeId}/tickets/search/assigned?page=0&size=5&title=abc&status=FILED&sortBy=title&direction=asc
+    // sortBy = title, status
+    @GetMapping("/search/assigned")
+    public ResponseEntity<PageResponseDTO<Page<TicketResponseDTO>>> searchAssignedTickets(
+            @PathVariable Long employeeId,
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) TicketStatus status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "title") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction
+    ) {
+        Page<TicketResponseDTO> result = employeeTicketService.searchAssignedTickets(
+                employeeId,
+                title,
+                status,
+                page,
+                size,
+                sortBy,
+                direction
+        );
+
+        return ResponseEntity.ok(
+                new PageResponseDTO<>(
+                        "Search completed successfully.",
+                        result
+                )
+        );
+    }
+
+    // GET /employee/{employeeId}/tickets/search/filed?page=0&size=5&title=abc&sortBy=title&direction=asc
+    // sortBy = title
+    @GetMapping("/search/filed")
+    public ResponseEntity<PageResponseDTO<Page<TicketResponseDTO>>> searchFiledTickets(
+            @PathVariable Long employeeId,
+            @RequestParam(required = false) String title,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "title") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction
+    ) {
+        Page<TicketResponseDTO> result = employeeTicketService.searchFiledTickets(
+                employeeId,
+                title,
+                page,
+                size,
+                sortBy,
+                direction
+        );
+
+        return ResponseEntity.ok(
+                new PageResponseDTO<>(
+                        "Search completed successfully.",
+                        result
+                )
+        );
+    }
 }
