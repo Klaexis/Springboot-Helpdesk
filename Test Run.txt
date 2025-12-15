@@ -1,5 +1,9 @@
 http://localhost:8080/swagger-ui/index.html
 
+http://localhost:8080/h2-console
+username: sa
+spring.datasource.url=jdbc:h2:mem:testdb
+
 <---------- INITIALIZE DUMMY DATA ---------->
 Load/Initialize Data (POST)
 http://localhost:8080/database/load

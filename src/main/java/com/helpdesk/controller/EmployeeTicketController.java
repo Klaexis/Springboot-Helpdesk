@@ -21,12 +21,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/employee/{employeeId}/tickets")
 public class EmployeeTicketController {
-    @Autowired
     private final EmployeeTicketService employeeTicketService;
 
     @Autowired
-    private EmployeeRepository employeeRepository;
-
     public EmployeeTicketController(EmployeeTicketService employeeTicketService) {
         this.employeeTicketService = employeeTicketService;
     }
