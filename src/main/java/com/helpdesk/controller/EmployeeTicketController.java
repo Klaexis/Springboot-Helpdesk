@@ -11,9 +11,11 @@ import com.helpdesk.service.EmployeeTicketService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -149,11 +151,17 @@ public class EmployeeTicketController {
     }
 
     // GET /employee/{employeeId}/tickets/search/assigned?page=0&size=5&title=abc&status=FILED&sortBy=title&direction=asc
-    // sortBy = title, status
+    // sortBy = title, createdDate, updatedDate, status
     @GetMapping("/search/assigned")
     public ResponseEntity<PageResponseDTO<Page<TicketResponseDTO>>> searchAssignedTickets(
             @PathVariable Long employeeId,
             @RequestParam(required = false) String title,
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate createdDate,
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate updatedDate,
             @RequestParam(required = false) TicketStatus status,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size,
@@ -163,6 +171,8 @@ public class EmployeeTicketController {
         Page<TicketResponseDTO> result = employeeTicketService.searchAssignedTickets(
                 employeeId,
                 title,
+                createdDate,
+                updatedDate,
                 status,
                 page,
                 size,
@@ -179,11 +189,17 @@ public class EmployeeTicketController {
     }
 
     // GET /employee/{employeeId}/tickets/search/filed?page=0&size=5&title=abc&sortBy=title&direction=asc
-    // sortBy = title
+    // sortBy = title, createdDate, updatedDate
     @GetMapping("/search/filed")
     public ResponseEntity<PageResponseDTO<Page<TicketResponseDTO>>> searchFiledTickets(
             @PathVariable Long employeeId,
             @RequestParam(required = false) String title,
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate createdDate,
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate updatedDate,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size,
             @RequestParam(defaultValue = "title") String sortBy,
@@ -192,6 +208,8 @@ public class EmployeeTicketController {
         Page<TicketResponseDTO> result = employeeTicketService.searchFiledTickets(
                 employeeId,
                 title,
+                createdDate,
+                updatedDate,
                 page,
                 size,
                 sortBy,

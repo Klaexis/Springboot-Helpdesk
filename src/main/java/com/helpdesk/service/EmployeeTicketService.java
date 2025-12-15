@@ -7,6 +7,7 @@ import com.helpdesk.model.request.TicketUpdateRequestDTO;
 import com.helpdesk.model.response.TicketResponseDTO;
 import org.springframework.data.domain.Page;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface EmployeeTicketService {
@@ -31,6 +32,8 @@ public interface EmployeeTicketService {
     Page<TicketResponseDTO> searchAssignedTickets(
             Long employeeId,
             String title,
+            LocalDate createdDate,
+            LocalDate updatedDate,
             TicketStatus status,
             int page,
             int size,
@@ -41,6 +44,8 @@ public interface EmployeeTicketService {
     Page<TicketResponseDTO> searchFiledTickets(
             Long employeeId,
             String title,
+            LocalDate createdDate,
+            LocalDate updatedDate,
             int page,
             int size,
             String sortBy,

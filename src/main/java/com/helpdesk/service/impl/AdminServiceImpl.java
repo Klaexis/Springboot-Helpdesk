@@ -217,7 +217,6 @@ public class AdminServiceImpl implements AdminService {
     ) {
         validateAdmin(adminId);
 
-        // Build combined specification
         // allOf = AND, anyOf = OR
         Specification<Employee> spec = Specification.allOf(
                 EmployeeSpecification.hasName(name),

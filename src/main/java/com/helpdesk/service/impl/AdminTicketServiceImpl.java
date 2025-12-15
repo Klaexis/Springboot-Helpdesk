@@ -213,6 +213,7 @@ public class AdminTicketServiceImpl implements AdminTicketService {
 
         String sortField = switch (sortBy.toLowerCase()) {
             case "title"  -> "ticketTitle";
+            case "assignee"  -> "ticketAssignee";
             case "status" -> "ticketStatus";
             default -> throw new IllegalArgumentException("Invalid sort field: " + sortBy);
         };

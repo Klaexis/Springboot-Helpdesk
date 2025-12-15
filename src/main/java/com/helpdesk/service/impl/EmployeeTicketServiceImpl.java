@@ -23,6 +23,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -241,6 +242,8 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
     @Override
     public Page<TicketResponseDTO> searchAssignedTickets(Long employeeId,
                                                          String title,
+                                                         LocalDate createdDate,
+                                                         LocalDate updatedDate,
                                                          TicketStatus status,
                                                          int page,
                                                          int size,
@@ -249,13 +252,16 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
         validateEmployee(employeeId);
 
         Specification<Ticket> spec = Specification.allOf(
-                TicketSpecification.isAssignedTo(employeeId),
                 TicketSpecification.hasTitle(title),
+                TicketSpecification.hasCreatedDate(createdDate),
+                TicketSpecification.hasUpdatedDate(updatedDate),
                 TicketSpecification.hasStatus(status)
         );
 
         String sortField = switch (sortBy.toLowerCase()) {
             case "title"  -> "ticketTitle";
+            case "createdBy" -> "ticketCreatedBy";
+            case "updatedBy" -> "ticketUpdatedBy";
             case "status" -> "ticketStatus";
             default -> throw new IllegalArgumentException("Invalid sort field: " + sortBy);
         };
@@ -277,6 +283,8 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
     @Override
     public Page<TicketResponseDTO> searchFiledTickets(Long employeeId,
                                                       String title,
+                                                      LocalDate createdDate,
+                                                      LocalDate updatedDate,
                                                       int page,
                                                       int size,
                                                       String sortBy,
@@ -284,14 +292,16 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
         validateEmployee(employeeId);
 
         Specification<Ticket> spec = Specification.allOf(
-                TicketSpecification.hasTitle(title),
                 TicketSpecification.hasStatus(TicketStatus.FILED),
-                (root, query, cb) ->
-                        cb.equal(root.get("ticketCreatedBy").get("employeeId"), employeeId)
+                TicketSpecification.hasTitle(title),
+                TicketSpecification.hasCreatedDate(createdDate),
+                TicketSpecification.hasUpdatedDate(updatedDate)
         );
 
         String sortField = switch (sortBy.toLowerCase()) {
             case "title" -> "ticketTitle";
+            case "createdBy" -> "ticketCreatedBy";
+            case "updatedBy" -> "ticketUpdatedBy";
             default -> throw new IllegalArgumentException("Invalid sort field: " + sortBy);
         };
 
