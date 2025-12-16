@@ -26,8 +26,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 public class AdminServiceImpl implements AdminService {
     private final EmployeeRepository employeeRepository;
 
@@ -63,6 +65,7 @@ public class AdminServiceImpl implements AdminService {
                 .orElseThrow(() -> new EmployeeNotFoundException(employeeId));
     }
 
+    @Transactional(readOnly = true)
     @Override
     public AdminResponseDTO findEmployee(Long adminId,
                                          Long employeeId) {
@@ -76,6 +79,7 @@ public class AdminServiceImpl implements AdminService {
         return AdminMapper.toDTO(employee);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<AdminResponseDTO> getAllEmployees(Long adminId) {
         validateAdmin(adminId);
@@ -86,6 +90,7 @@ public class AdminServiceImpl implements AdminService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Page<AdminResponseDTO> getAllEmployeesPaginated(Long adminId,
                                                            int page,
@@ -204,6 +209,7 @@ public class AdminServiceImpl implements AdminService {
         return AdminMapper.toDTO(employeeRepository.save(employee));
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Page<AdminResponseDTO> searchEmployees(
             Long adminId,

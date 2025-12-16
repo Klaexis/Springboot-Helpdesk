@@ -22,12 +22,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class EmployeeTicketServiceImpl implements EmployeeTicketService {
     private final TicketRepository ticketRepository;
 
@@ -59,11 +61,12 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
     }
 
     private void handleTicketClosure(Ticket ticket) {
-        if (ticket.getTicketStatus() == TicketStatus.CLOSED && ticket.getTicketAssignee() != null) {
+        if (ticket.getTicketStatus() == TicketStatus.CLOSED) {
             Employee assignee = ticket.getTicketAssignee();
-            assignee.getAssignedTickets().remove(ticket);
-            ticket.setTicketAssignee(null);
-            employeeRepository.save(assignee);
+            if (assignee != null) {
+                assignee.getAssignedTickets().remove(ticket);
+                ticket.setTicketAssignee(null);
+            }
         }
     }
 
@@ -87,6 +90,7 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
         return TicketMapper.toTicketDTO(ticketRepository.save(newTicket));
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<TicketResponseDTO> viewAssignedTickets(Long employeeId) {
         validateEmployee(employeeId);
@@ -97,6 +101,7 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Page<TicketResponseDTO> viewAssignedTicketsPaginated(Long employeeId,
                                                                 int page,
@@ -127,7 +132,6 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
         return tickets.map(TicketMapper::toTicketDTO);
     }
 
-
     @Override
     public TicketResponseDTO updateOwnTicket(Long ticketId,
                                              TicketUpdateRequestDTO updatedTicket,
@@ -154,7 +158,8 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
         Ticket ticket = getTicketOrThrow(ticketId);
         Employee employee = validateEmployee(employeeId);
 
-        if (!ticket.getTicketAssignee().getEmployeeId().equals(employeeId)) {
+        Employee assignee = ticket.getTicketAssignee();
+        if (assignee == null || !assignee.getEmployeeId().equals(employeeId)) {
             throw new TicketAccessException("You can only update your own tickets");
         }
 
@@ -174,7 +179,8 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
         Ticket ticket = getTicketOrThrow(ticketId);
         Employee employee = validateEmployee(employeeId);
 
-        if (!ticket.getTicketAssignee().getEmployeeId().equals(employeeId)) {
+        Employee assignee = ticket.getTicketAssignee();
+        if (assignee == null || !assignee.getEmployeeId().equals(employeeId)) {
             throw new TicketAccessException("You can only add remarks to tickets assigned to you");
         }
 
@@ -190,6 +196,7 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
         return TicketMapper.toTicketDTO(ticketRepository.save(ticket));
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<TicketResponseDTO> getAllFiledTickets(Long employeeId) {
         validateEmployee(employeeId);
@@ -201,6 +208,7 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Page<TicketResponseDTO> getAllFiledTicketsPaginated(Long employeeId,
                                                                int page,
@@ -226,6 +234,7 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
         return tickets.map(TicketMapper::toTicketDTO);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public TicketResponseDTO getFiledTicket(Long employeeId,
                                             Long ticketId) {
@@ -236,9 +245,10 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
             throw new IllegalArgumentException("Ticket is not in FILED status");
         }
 
-        return TicketMapper.toTicketDTO(ticketRepository.save(ticket));
+        return TicketMapper.toTicketDTO(ticket);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Page<TicketResponseDTO> searchAssignedTickets(Long employeeId,
                                                          String title,
@@ -280,6 +290,7 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
         return tickets.map(TicketMapper::toTicketDTO);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Page<TicketResponseDTO> searchFiledTickets(Long employeeId,
                                                       String title,

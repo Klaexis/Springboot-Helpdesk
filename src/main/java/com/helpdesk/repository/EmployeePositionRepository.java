@@ -9,6 +9,4 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface EmployeePositionRepository extends JpaRepository<EmployeePosition, Long> {
     EmployeePosition findByPositionTitle(String positionTitle);
-
-    Page<EmployeePosition> findAll(Pageable pageable);
 }

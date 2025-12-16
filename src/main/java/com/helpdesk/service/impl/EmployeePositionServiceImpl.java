@@ -16,10 +16,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@Transactional
 public class EmployeePositionServiceImpl implements EmployeePositionService {
     private final EmployeePositionRepository positionRepository;
 
@@ -51,6 +53,7 @@ public class EmployeePositionServiceImpl implements EmployeePositionService {
                 .orElseThrow(() -> new EmployeePositionNotFoundException(positionId));
     }
 
+    @Transactional(readOnly = true)
     @Override
     public EmployeePosition findPosition(Long adminId,
                                          Long positionId) {
@@ -59,6 +62,7 @@ public class EmployeePositionServiceImpl implements EmployeePositionService {
         return getPositionOrThrow(positionId);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<EmployeePosition> getAllPositions(Long adminId) {
         validateAdmin(adminId);
@@ -66,6 +70,7 @@ public class EmployeePositionServiceImpl implements EmployeePositionService {
         return positionRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Page<EmployeePosition> getAllPositionsPaginated(Long adminId,
                                                            int page,

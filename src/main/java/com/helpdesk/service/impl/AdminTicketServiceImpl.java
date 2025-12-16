@@ -24,11 +24,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class AdminTicketServiceImpl implements AdminTicketService {
     private final TicketRepository ticketRepository;
 
@@ -66,11 +68,12 @@ public class AdminTicketServiceImpl implements AdminTicketService {
     }
 
     private void handleTicketClosure(Ticket ticket) {
-        if (ticket.getTicketStatus() == TicketStatus.CLOSED && ticket.getTicketAssignee() != null) {
+        if (ticket.getTicketStatus() == TicketStatus.CLOSED) {
             Employee assignee = ticket.getTicketAssignee();
-            assignee.getAssignedTickets().remove(ticket); // remove ticket from employee
-            ticket.setTicketAssignee(null); // optional: clear assignee
-            employeeRepository.save(assignee); // persist change
+            if (assignee != null) {
+                assignee.getAssignedTickets().remove(ticket);
+                ticket.setTicketAssignee(null);
+            }
         }
     }
 
@@ -95,6 +98,7 @@ public class AdminTicketServiceImpl implements AdminTicketService {
         return TicketMapper.toTicketDTO(ticketRepository.save(ticket));
     }
 
+    @Transactional(readOnly = true)
     @Override
     public TicketResponseDTO getTicket(Long adminId,
                                        Long ticketId) {
@@ -103,6 +107,7 @@ public class AdminTicketServiceImpl implements AdminTicketService {
         return TicketMapper.toTicketDTO(getTicketOrThrow(ticketId));
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<TicketResponseDTO> getAllTickets(Long adminId) {
         validateAdmin(adminId);
@@ -113,6 +118,7 @@ public class AdminTicketServiceImpl implements AdminTicketService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Page<TicketResponseDTO> getAllTicketsPaginated(Long adminId,
                                                           int page,
@@ -194,6 +200,7 @@ public class AdminTicketServiceImpl implements AdminTicketService {
         return TicketMapper.toTicketDTO(ticketRepository.save(ticket));
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Page<TicketResponseDTO> searchTickets(Long adminId,
                                                  String title,
