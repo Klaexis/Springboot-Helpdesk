@@ -111,8 +111,8 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
         validateEmployee(employeeId);
 
         String sortField = switch (sortBy.toLowerCase()) {
-            case "createdat" -> "ticketCreatedAt";
-            case "updatedat" -> "ticketUpdatedAt";
+            case "createdat" -> "ticketCreatedDate";
+            case "updatedat" -> "ticketUpdatedDate";
             case "status"    -> "ticketStatus";
             case "title"     -> "ticketTitle";
             default -> throw new IllegalArgumentException("Invalid sort field: " + sortBy);
@@ -218,8 +218,8 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
         validateEmployee(employeeId);
 
         String sortField = switch (sortBy.toLowerCase()) {
-            case "createdat" -> "ticketCreatedAt";
-            case "updatedat" -> "ticketUpdatedAt";
+            case "createdat" -> "ticketCreatedDate";
+            case "updatedat" -> "ticketUpdatedDate";
             case "title"     -> "ticketTitle";
             default -> throw new IllegalArgumentException("Invalid sort field: " + sortBy);
         };
@@ -262,6 +262,7 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
         validateEmployee(employeeId);
 
         Specification<Ticket> spec = Specification.allOf(
+                TicketSpecification.assignedToEmployee(employeeId),
                 TicketSpecification.hasTitle(title),
                 TicketSpecification.hasCreatedDate(createdDate),
                 TicketSpecification.hasUpdatedDate(updatedDate),
@@ -270,8 +271,8 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
 
         String sortField = switch (sortBy.toLowerCase()) {
             case "title"  -> "ticketTitle";
-            case "createdBy" -> "ticketCreatedBy";
-            case "updatedBy" -> "ticketUpdatedBy";
+            case "createdat" -> "ticketCreatedDate";
+            case "updatedat" -> "ticketUpdatedDate";
             case "status" -> "ticketStatus";
             default -> throw new IllegalArgumentException("Invalid sort field: " + sortBy);
         };
@@ -311,8 +312,8 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
 
         String sortField = switch (sortBy.toLowerCase()) {
             case "title" -> "ticketTitle";
-            case "createdBy" -> "ticketCreatedBy";
-            case "updatedBy" -> "ticketUpdatedBy";
+            case "createdat" -> "ticketCreatedDate";
+            case "updatedat" -> "ticketUpdatedDate";
             default -> throw new IllegalArgumentException("Invalid sort field: " + sortBy);
         };
 

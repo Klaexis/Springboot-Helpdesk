@@ -128,8 +128,8 @@ public class AdminTicketServiceImpl implements AdminTicketService {
         validateAdmin(adminId);
 
         String sortField = switch (sortBy.toLowerCase()) {
-            case "createdat" -> "ticketCreatedAt";
-            case "updatedat" -> "ticketUpdatedAt";
+            case "createdat" -> "ticketCreatedDate";
+            case "updatedat" -> "ticketUpdatedDate";
             case "status" -> "ticketStatus";
             case "title" -> "ticketTitle";
             default -> throw new IllegalArgumentException("Invalid sort field: " + sortBy);
