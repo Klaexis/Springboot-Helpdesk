@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 public class AdminMapper {
 
-    /** For GET operations (and after create/update) */
+    // For GET operations
     public static AdminResponseDTO toDTO(Employee employee) {
         if (employee == null) return null;
 
@@ -32,7 +32,6 @@ public class AdminMapper {
         EmployeePosition pos = employee.getEmployeePosition();
         dto.setPositionTitle(pos != null ? pos.getPositionTitle() : null);
 
-        // Map assigned tickets
         List<Ticket> assignedTickets = employee.getAssignedTickets();
         List<TicketAssignedResponseDTO> ticketDTOs = assignedTickets.stream().map(t -> {
             TicketAssignedResponseDTO ticketDTO = new TicketAssignedResponseDTO();
@@ -47,7 +46,7 @@ public class AdminMapper {
         return dto;
     }
 
-    /** For CREATE: map basic fields; position is ignored here (set via service) */
+    // For CREATE: map basic fields, employee position is set at service
     public static Employee toEntity(AdminCreateRequestDTO dto) {
         if (dto == null) return null;
 
@@ -67,7 +66,7 @@ public class AdminMapper {
         return employee;
     }
 
-    /** For UPDATE: apply only non-null fields (except position) */
+    // For UPDATE: apply only non-null fields
     public static void updateEntity(AdminUpdateRequestDTO dto, Employee employee) {
         if (dto.getEmployeeName() != null) employee.setEmployeeName(dto.getEmployeeName());
         if (dto.getEmployeeAge() != null) employee.setEmployeeAge(dto.getEmployeeAge());

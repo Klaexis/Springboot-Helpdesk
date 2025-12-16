@@ -1,6 +1,5 @@
 package com.helpdesk.service.mapper;
 
-import com.helpdesk.model.Employee;
 import com.helpdesk.model.Ticket;
 import com.helpdesk.model.TicketRemark;
 import com.helpdesk.model.request.TicketCreateRequestDTO;
