@@ -95,20 +95,20 @@ public class AdminController {
     @PatchMapping("/assign-position/{employeeId}")
     public ResponseEntity<AdminResponseDTO> assignPosition(@PathVariable Long adminId,
                                                            @PathVariable Long employeeId,
-                                                           @RequestBody String positionTitle) {
+                                                           @RequestBody String position) {
         return ResponseEntity.ok(adminService.assignPositionToEmployee(
                 adminId,
                 employeeId,
-                positionTitle
+                position
         ));
     }
 
-    // GET /admin/{adminId}/employees/search?name=John&positionTitle=Developer&status=ACTIVE&page=0&size=10&sortBy=name&direction=asc
+    // GET /admin/{adminId}/employees/search?name=John&position=Employee&status=ACTIVE&page=0&size=10&sortBy=name&direction=asc
     @GetMapping("/search")
     public ResponseEntity<PageResponseDTO<Page<AdminResponseDTO>>> searchEmployees(
             @PathVariable Long adminId,
             @RequestParam(required = false) String name,
-            @RequestParam(required = false) String positionTitle,
+            @RequestParam(required = false) String position,
             @RequestParam(required = false) EmploymentStatus status,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -116,7 +116,7 @@ public class AdminController {
             @RequestParam(defaultValue = "asc") String direction
     ) {
         Page<AdminResponseDTO> result = adminService.searchEmployees(
-                adminId, name, positionTitle, status,
+                adminId, name, position, status,
                 page, size, sortBy, direction
         );
 

@@ -160,7 +160,7 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
 
         Employee assignee = ticket.getTicketAssignee();
         if (assignee == null || !assignee.getEmployeeId().equals(employeeId)) {
-            throw new TicketAccessException("You can only update your own tickets");
+            throw new TicketAccessException("You can only update your assigned tickets");
         }
 
         ticket.setTicketStatus(newStatus);

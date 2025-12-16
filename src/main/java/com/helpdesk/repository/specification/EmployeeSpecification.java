@@ -1,6 +1,7 @@
 package com.helpdesk.repository.specification;
 
 import com.helpdesk.model.Employee;
+import com.helpdesk.model.EmployeePosition;
 import com.helpdesk.model.EmploymentStatus;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
@@ -14,9 +15,17 @@ public class EmployeeSpecification {
 
     public static Specification<Employee> hasPosition(String positionTitle) {
         return (root, query, cb) -> {
-            if (positionTitle == null || positionTitle.isBlank()) return null;
-            Join<Object, Object> positionJoin = root.join("employeePosition", JoinType.LEFT);
-            return cb.equal(positionJoin.get("positionTitle"), positionTitle);
+            if (positionTitle == null || positionTitle.isBlank()) {
+                return null;
+            }
+
+            Join<Employee, EmployeePosition> positionJoin =
+                    root.join("employeePosition", JoinType.INNER);
+
+            return cb.equal(
+                    cb.lower(positionJoin.get("positionTitle")),
+                    positionTitle.toLowerCase()
+            );
         };
     }
 

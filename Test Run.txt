@@ -52,7 +52,7 @@ http://localhost:8080/admin/1/employees/create
   "employeeContactNumber": "555-1234",
   "employeeEmail": "john.doe@example.com",
   "employmentStatus": "ACTIVE",
-  "positionTitle": "Cloud Engineer"
+  "positionTitle": "Software Engineer"
 }
 
 {
@@ -62,7 +62,7 @@ http://localhost:8080/admin/1/employees/create
     "employeeContactNumber": "555-5678",
     "employeeEmail": "jane.smith@example.com",
     "employmentStatus": "ACTIVE",
-    "positionTitle": "Software Engineer"
+    "positionTitle": "QA Engineer"
 }
 
 Update an employee (Admin Only) (PATCH) (JSON)
