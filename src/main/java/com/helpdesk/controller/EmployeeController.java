@@ -21,7 +21,6 @@ public class EmployeeController {
     // GET /employee/{currentEmployee}/profile
     @GetMapping("/profile")
     public ResponseEntity<EmployeeProfileResponseDTO> viewOwnProfile(@PathVariable Long currentEmployee) {
-        // Ensure employee can only view their own profile
         return ResponseEntity.ok(employeeService.viewOwnProfile(currentEmployee));
     }
 }

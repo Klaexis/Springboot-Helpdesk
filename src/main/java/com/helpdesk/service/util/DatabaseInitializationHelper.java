@@ -10,12 +10,16 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class DatabaseInitializationHelper {
+    private final EmployeeRepository employeeRepository;
+
+    private final EmployeePositionRepository employeePositionRepository;
 
     @Autowired
-    private EmployeeRepository employeeRepository;
-
-    @Autowired
-    private EmployeePositionRepository employeePositionRepository;
+    public DatabaseInitializationHelper(EmployeeRepository employeeRepository,
+                                        EmployeePositionRepository employeePositionRepository) {
+        this.employeeRepository = employeeRepository;
+        this.employeePositionRepository = employeePositionRepository;
+    }
 
     public void loadData() {
         EmployeePosition adminPosition = new EmployeePosition("Admin");
