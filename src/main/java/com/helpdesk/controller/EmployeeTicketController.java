@@ -6,10 +6,8 @@ import com.helpdesk.model.request.TicketCreateRequestDTO;
 import com.helpdesk.model.request.TicketUpdateRequestDTO;
 import com.helpdesk.model.response.PageResponseDTO;
 import com.helpdesk.model.response.TicketResponseDTO;
-import com.helpdesk.repository.EmployeeRepository;
 import com.helpdesk.service.EmployeeTicketService;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +21,6 @@ import java.util.List;
 public class EmployeeTicketController {
     private final EmployeeTicketService employeeTicketService;
 
-    @Autowired
     public EmployeeTicketController(EmployeeTicketService employeeTicketService) {
         this.employeeTicketService = employeeTicketService;
     }

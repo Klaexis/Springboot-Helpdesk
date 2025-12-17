@@ -207,6 +207,23 @@ public class AdminTicketServiceImpl implements AdminTicketService {
         return ticketMapper.toTicketDTO(ticketRepository.save(ticket));
     }
 
+    @Override
+    public void deleteTicket(Long adminId, Long ticketId) {
+        validateAdmin(adminId);
+        Ticket ticket = getTicketOrThrow(ticketId);
+
+        Employee assignee = ticket.getTicketAssignee();
+        if (assignee != null) {
+            assignee.getAssignedTickets().remove(ticket);
+            ticket.setTicketAssignee(null);
+
+            // force UPDATE tickets set assignee = null
+            ticketRepository.saveAndFlush(ticket);
+        }
+
+        ticketRepository.delete(ticket);
+    }
+
     @Transactional(readOnly = true)
     @Override
     public Page<TicketResponseDTO> searchTickets(Long adminId,

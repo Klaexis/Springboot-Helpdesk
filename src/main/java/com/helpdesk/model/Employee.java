@@ -80,6 +80,7 @@ public class Employee {
     public List<Ticket> getAssignedTickets() {
         return assignedTickets;
     }
+
     // Setters
     public void setId(Long id) {
         this.id = id;
@@ -116,4 +117,6 @@ public class Employee {
     public void setAssignedTickets(List<Ticket> assignedTickets) {
         this.assignedTickets = assignedTickets;
     }
+
+    //
 }

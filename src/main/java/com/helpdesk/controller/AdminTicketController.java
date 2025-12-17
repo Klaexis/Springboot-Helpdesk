@@ -7,7 +7,6 @@ import com.helpdesk.model.response.PageResponseDTO;
 import com.helpdesk.model.response.TicketResponseDTO;
 import com.helpdesk.service.AdminTicketService;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +16,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/admin")
 public class AdminTicketController {
-    @Autowired
     private final AdminTicketService adminTicketService;
 
     public AdminTicketController(AdminTicketService adminTicketService) {
@@ -110,6 +108,13 @@ public class AdminTicketController {
                 request.getRemark(),
                 request.getNewStatus()
         ));
+    }
+
+    @DeleteMapping("/{adminId}/tickets/delete/{ticketId}")
+    public ResponseEntity<TicketResponseDTO> deleteTicket(@PathVariable Long adminId,
+                                                          @PathVariable Long ticketId) {
+        adminTicketService.deleteTicket(adminId, ticketId);
+        return ResponseEntity.noContent().build();
     }
 
     // GET /admin/{adminId}/tickets/search?title=bug&assignee=John&status=IN_PROGRESS&page=0&size=5&sortBy=title&direction=asc

@@ -22,6 +22,8 @@ public interface AdminTicketService {
 
     TicketResponseDTO addTicketRemark(Long ticketId, Long adminId, String remark, TicketStatus newStatus);
 
+    void deleteTicket(Long adminId, Long ticketId);
+
     Page<TicketResponseDTO> searchTickets(
             Long adminId,
             String title,
