@@ -23,6 +23,8 @@ public interface AdminService {
 
     AdminResponseDTO assignPositionToEmployee(Long adminId, Long employeeId, String positionTitle);
 
+    AdminResponseDTO unassignPositionFromEmployee(Long adminId, Long employeeId);
+
     Page<AdminResponseDTO> searchEmployees(
             Long adminId,
             String name,

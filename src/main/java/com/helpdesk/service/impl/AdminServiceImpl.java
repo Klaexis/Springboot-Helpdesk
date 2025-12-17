@@ -217,6 +217,21 @@ public class AdminServiceImpl implements AdminService {
         return adminMapper.toDTO(employeeRepository.save(employee));
     }
 
+    @Override
+    @Transactional
+    public AdminResponseDTO unassignPositionFromEmployee(Long adminId, Long employeeId) {
+        validateAdmin(adminId);
+
+        Employee employee = getEmployeeOrThrow(employeeId);
+
+        if (employee.getEmployeePosition() == null) {
+            throw new IllegalStateException("Employee has no assigned position");
+        }
+
+        employee.setEmployeePosition(null);
+        return adminMapper.toDTO(employeeRepository.save(employee));
+    }
+
     @Transactional(readOnly = true)
     @Override
     public Page<AdminResponseDTO> searchEmployees(

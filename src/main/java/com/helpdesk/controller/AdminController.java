@@ -104,6 +104,16 @@ public class AdminController {
         ));
     }
 
+    // PATCH /admin/{adminId}/employees/unassign-position/{employeeId}
+    @PatchMapping("/{adminId}/employees/unassign-position/{employeeId}")
+    public ResponseEntity<AdminResponseDTO> unassignPosition(@PathVariable Long adminId,
+                                                             @PathVariable Long employeeId) {
+        return ResponseEntity.ok(adminService.unassignPositionFromEmployee(
+                adminId,
+                employeeId
+        ));
+    }
+
     // GET /admin/{adminId}/employees/search?name=John&position=Employee&status=ACTIVE&page=0&size=10&sortBy=name&direction=asc
     @GetMapping("/{adminId}/employees/search")
     public ResponseEntity<PageResponseDTO<Page<AdminResponseDTO>>> searchEmployees(
