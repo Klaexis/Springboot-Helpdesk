@@ -19,7 +19,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/employee/{employeeId}/tickets")
+@RequestMapping("/employee")
 public class EmployeeTicketController {
     private final EmployeeTicketService employeeTicketService;
 
@@ -29,7 +29,7 @@ public class EmployeeTicketController {
     }
 
     // POST /employee/{employeeId}/tickets/file
-    @PostMapping("/file")
+    @PostMapping("/{employeeId}/tickets/file")
     public ResponseEntity<TicketResponseDTO> fileTicket(@RequestBody TicketCreateRequestDTO ticket,
                                                         @PathVariable Long employeeId) {
         return ResponseEntity.ok(employeeTicketService.fileTicket(
@@ -39,7 +39,7 @@ public class EmployeeTicketController {
     }
 
     // GET /employee/{employeeId}/tickets/get/assignedTickets
-    @GetMapping("/get/assignedTickets")
+    @GetMapping("/{employeeId}/tickets/get/assignedTickets")
     public ResponseEntity<List<TicketResponseDTO>> viewAssignedTickets(@PathVariable Long employeeId) {
         return ResponseEntity.ok(employeeTicketService.viewAssignedTickets(
                 employeeId
@@ -48,7 +48,7 @@ public class EmployeeTicketController {
 
     // GET /employee/{employeeId}/tickets/get/assignedTickets/pages?page=0&size=5&sortBy=createdAt&direction=asc
     // sortBy = createdAt, updatedAt, status, title
-    @GetMapping("/get/assignedTickets/pages")
+    @GetMapping("/{employeeId}/tickets/get/assignedTickets/pages")
     public ResponseEntity<PageResponseDTO<Page<TicketResponseDTO>>> viewAssignedTicketsPaginated(
             @PathVariable Long employeeId,
             @RequestParam(defaultValue = "0") int page,
@@ -73,7 +73,7 @@ public class EmployeeTicketController {
     }
 
     // PATCH /employee/{employeeId}/tickets/update/{ticketId}
-    @PatchMapping("/update/{ticketId}")
+    @PatchMapping("/{employeeId}/tickets/update/{ticketId}")
     public ResponseEntity<TicketResponseDTO> updateOwnTicket(@PathVariable Long employeeId,
                                                              @RequestBody TicketUpdateRequestDTO ticket,
                                                              @PathVariable Long ticketId) {
@@ -85,7 +85,7 @@ public class EmployeeTicketController {
     }
 
     // PATCH /employee/{employeeId}/tickets/updateStatus/{ticketId}
-    @PatchMapping("/updateStatus/{ticketId}")
+    @PatchMapping("/{employeeId}/tickets/updateStatus/{ticketId}")
     public ResponseEntity<TicketResponseDTO> updateOwnTicketStatus(@PathVariable Long employeeId,
                                                                    @RequestBody TicketStatus status,
                                                                    @PathVariable Long ticketId) {
@@ -97,7 +97,7 @@ public class EmployeeTicketController {
     }
 
     // PATCH /employee/{employeeId}/tickets/addRemarks/{ticketId}
-    @PatchMapping("/addRemarks/{ticketId}")
+    @PatchMapping("/{employeeId}/tickets/addRemarks/{ticketId}")
     public ResponseEntity<TicketResponseDTO> addTicketRemark(@PathVariable Long employeeId,
                                                              @PathVariable Long ticketId,
                                                              @RequestBody TicketAddRemarkRequestDTO request) {
@@ -106,7 +106,7 @@ public class EmployeeTicketController {
     }
 
     // GET /employee/{employeeId}/tickets/get/filedTickets
-    @GetMapping("/get/filedTickets")
+    @GetMapping("/{employeeId}/tickets/get/filedTickets")
     public ResponseEntity<List<TicketResponseDTO>> getAllFiledTickets(@PathVariable Long employeeId) {
         return ResponseEntity.ok(employeeTicketService.getAllFiledTickets(
                 employeeId
@@ -115,7 +115,7 @@ public class EmployeeTicketController {
 
     // GET /employee/{employeeId}/tickets/get/filedTickets/pages?page=0&size=5&sortBy=createdAt&direction=asc
     // sortBy = createdAt, updatedAt, title
-    @GetMapping("/get/filedTickets/pages")
+    @GetMapping("/{employeeId}/tickets/get/filedTickets/pages")
     public ResponseEntity<PageResponseDTO<Page<TicketResponseDTO>>> getAllFiledTicketsPaginated(
             @PathVariable Long employeeId,
             @RequestParam(defaultValue = "0") int page,
@@ -139,7 +139,7 @@ public class EmployeeTicketController {
     }
 
     // GET /employee/{employeeId}/tickets/get/filedTicket/{ticketId}
-    @GetMapping("/get/filedTicket/{ticketId}")
+    @GetMapping("/{employeeId}/tickets/get/filedTicket/{ticketId}")
     public ResponseEntity<TicketResponseDTO> getFiledTicket(@PathVariable Long employeeId, @PathVariable Long ticketId) {
         return ResponseEntity.ok(employeeTicketService.getFiledTicket(
                 employeeId,
@@ -149,7 +149,7 @@ public class EmployeeTicketController {
 
     // GET /employee/{employeeId}/tickets/search/assigned?page=0&size=5&title=abc&status=FILED&sortBy=title&direction=asc
     // sortBy = title, createdDate, updatedDate, status
-    @GetMapping("/search/assigned")
+    @GetMapping("/{employeeId}/tickets/search/assigned")
     public ResponseEntity<PageResponseDTO<Page<TicketResponseDTO>>> searchAssignedTickets(
             @PathVariable Long employeeId,
             @RequestParam(required = false) String title,
@@ -187,7 +187,7 @@ public class EmployeeTicketController {
 
     // GET /employee/{employeeId}/tickets/search/filed?page=0&size=5&title=abc&sortBy=title&direction=asc
     // sortBy = title, createdDate, updatedDate
-    @GetMapping("/search/filed")
+    @GetMapping("/{employeeId}/tickets/search/filed")
     public ResponseEntity<PageResponseDTO<Page<TicketResponseDTO>>> searchFiledTickets(
             @PathVariable Long employeeId,
             @RequestParam(required = false) String title,

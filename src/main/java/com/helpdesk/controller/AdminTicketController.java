@@ -6,6 +6,7 @@ import com.helpdesk.model.request.TicketUpdateRequestDTO;
 import com.helpdesk.model.response.PageResponseDTO;
 import com.helpdesk.model.response.TicketResponseDTO;
 import com.helpdesk.service.AdminTicketService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/admin/{adminId}/tickets")
+@RequestMapping("/admin")
 public class AdminTicketController {
     @Autowired
     private final AdminTicketService adminTicketService;
@@ -24,7 +25,7 @@ public class AdminTicketController {
     }
 
     // GET /admin/{adminId}/tickets
-    @GetMapping
+    @GetMapping("/{adminId}/tickets")
     public ResponseEntity<List<TicketResponseDTO>> getAllTickets(@PathVariable Long adminId) {
         return ResponseEntity.ok(adminTicketService.getAllTickets(
                 adminId
@@ -33,7 +34,7 @@ public class AdminTicketController {
 
     // GET /admin/{adminId}/tickets/pages?page=0&size=5&sortBy=createdAt&direction=asc
     // sortBy = createdAt, updatedAt, status, title
-    @GetMapping("/pages")
+    @GetMapping("/{adminId}/tickets/pages")
     public ResponseEntity<PageResponseDTO<Page<TicketResponseDTO>>> getAllTicketsPaginated(
             @PathVariable Long adminId,
             @RequestParam(defaultValue = "0") int page,
@@ -53,7 +54,7 @@ public class AdminTicketController {
     }
 
     // GET /admin/{adminId}/tickets/find/{ticketId}
-    @GetMapping("/find/{ticketId}")
+    @GetMapping("/{adminId}/tickets/find/{ticketId}")
     public ResponseEntity<TicketResponseDTO> getTicket(@PathVariable Long adminId,
                                                        @PathVariable Long ticketId) {
         return ResponseEntity.ok(adminTicketService.getTicket(
@@ -63,7 +64,7 @@ public class AdminTicketController {
     }
 
     // PATCH /admin/{adminId}/tickets/assign/{ticketId}/assignTo/{employeeId}
-    @PatchMapping("assign/{ticketId}/assignTo/{employeeId}")
+    @PatchMapping("/{adminId}/tickets/assign/{ticketId}/assignTo/{employeeId}")
     public ResponseEntity<TicketResponseDTO> assignTicket(@PathVariable Long adminId,
                                                           @PathVariable Long ticketId,
                                                           @PathVariable Long employeeId) {
@@ -75,7 +76,7 @@ public class AdminTicketController {
     }
 
     // PATCH /admin/{adminId}/tickets/update/{ticketId}
-    @PatchMapping("update/{ticketId}")
+    @PatchMapping("/{adminId}/tickets/update/{ticketId}")
     public ResponseEntity<TicketResponseDTO> updateTicket(@PathVariable Long adminId,
                                                           @RequestBody TicketUpdateRequestDTO updatedTicket,
                                                           @PathVariable Long ticketId) {
@@ -87,7 +88,7 @@ public class AdminTicketController {
     }
 
     // PATCH /admin/{adminId}/tickets/update/{ticketId}/status
-    @PatchMapping("/update/{ticketId}/status")
+    @PatchMapping("/{adminId}/tickets/update/{ticketId}/status")
     public ResponseEntity<TicketResponseDTO> updateTicketStatus(@PathVariable Long adminId,
                                                                 @RequestBody TicketStatus newStatus,
                                                                 @PathVariable Long ticketId) {
@@ -99,7 +100,7 @@ public class AdminTicketController {
     }
 
     // PATCH /admin/{adminId}/tickets/addRemarks/{ticketId}
-    @PatchMapping("/addRemarks/{ticketId}")
+    @PatchMapping("/{adminId}/tickets/addRemarks/{ticketId}")
     public ResponseEntity<TicketResponseDTO> addTicketRemark(@PathVariable Long adminId,
                                                              @PathVariable Long ticketId,
                                                              @RequestBody TicketAddRemarkRequestDTO request) {
@@ -113,7 +114,7 @@ public class AdminTicketController {
 
     // GET /admin/{adminId}/tickets/search?title=bug&assignee=John&status=IN_PROGRESS&page=0&size=5&sortBy=title&direction=asc
     // sortBy = title, status, assignee
-    @GetMapping("/search")
+    @GetMapping("/{adminId}/tickets/search")
     public ResponseEntity<PageResponseDTO<Page<TicketResponseDTO>>> searchTickets(
             @PathVariable Long adminId,
             @RequestParam(required = false) String title,

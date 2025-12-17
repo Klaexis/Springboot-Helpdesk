@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/employee/{currentEmployee}")
+@RequestMapping("/employee")
 public class EmployeeController {
 
     private final EmployeeService employeeService;
@@ -18,9 +18,9 @@ public class EmployeeController {
         this.employeeService = employeeService;
     }
 
-    // GET /employee/{currentEmployee}/profile
-    @GetMapping("/profile")
-    public ResponseEntity<EmployeeProfileResponseDTO> viewOwnProfile(@PathVariable Long currentEmployee) {
-        return ResponseEntity.ok(employeeService.viewOwnProfile(currentEmployee));
+    // GET /employee/{employeeId}/profile
+    @GetMapping("/{employeeId}/profile")
+    public ResponseEntity<EmployeeProfileResponseDTO> viewOwnProfile(@PathVariable Long employeeId) {
+        return ResponseEntity.ok(employeeService.viewOwnProfile(employeeId));
     }
 }
