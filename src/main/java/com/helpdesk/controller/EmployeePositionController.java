@@ -1,6 +1,8 @@
 package com.helpdesk.controller;
 
 import com.helpdesk.model.EmployeePosition;
+import com.helpdesk.model.request.EmployeePositionRequestDTO;
+import com.helpdesk.model.response.EmployeePositionResponseDTO;
 import com.helpdesk.model.response.PageResponseDTO;
 import com.helpdesk.service.EmployeePositionService;
 import org.springframework.data.domain.Page;
@@ -21,7 +23,7 @@ public class EmployeePositionController {
 
     // GET /admin/{adminId}/positions
     @GetMapping("/{adminId}/positions")
-    public ResponseEntity<List<EmployeePosition>>  getAllPositions(@PathVariable Long adminId) {
+    public ResponseEntity<List<EmployeePositionResponseDTO>>  getAllPositions(@PathVariable Long adminId) {
         return ResponseEntity.ok(employeePositionService.getAllPositions(
                 adminId
         ));
@@ -30,11 +32,11 @@ public class EmployeePositionController {
     // GET /admin/{adminId}/positions/pages?page=0&size=5&sortBy=position&direction=asc
     // sortBy = position
     @GetMapping("/{adminId}/positions/pages")
-    public ResponseEntity<PageResponseDTO<Page<EmployeePosition>>> getAllPositionsPaginated(
+    public ResponseEntity<PageResponseDTO<Page<EmployeePositionResponseDTO>>> getAllPositionsPaginated(
             @PathVariable Long adminId,
             Pageable pageable
     ) {
-        Page<EmployeePosition> result = employeePositionService.getAllPositionsPaginated(
+        Page<EmployeePositionResponseDTO> result = employeePositionService.getAllPositionsPaginated(
                 adminId, pageable.getPageNumber(), pageable.getPageSize(), "position", "asc");
 
         return ResponseEntity.ok(
@@ -47,7 +49,7 @@ public class EmployeePositionController {
 
     // GET /admin/{adminId}/positions/get/{positionId}
     @GetMapping("/{adminId}/positions/get/{positionId}")
-    public ResponseEntity<EmployeePosition> getPositionById(@PathVariable Long adminId,
+    public ResponseEntity<EmployeePositionResponseDTO> getPositionById(@PathVariable Long adminId,
                                                             @PathVariable Long positionId) {
         return ResponseEntity.ok(employeePositionService.findPosition(
                 adminId,
@@ -57,8 +59,8 @@ public class EmployeePositionController {
 
     // POST /admin/{adminId}/positions/create
     @PostMapping("/{adminId}/positions/create")
-    public ResponseEntity<EmployeePosition> createEmployeePosition(@PathVariable Long adminId,
-                                                                   @RequestBody String positionTitle) {
+    public ResponseEntity<EmployeePositionResponseDTO> createEmployeePosition(@PathVariable Long adminId,
+                                                                   @RequestBody EmployeePositionRequestDTO positionTitle) {
         return ResponseEntity.ok(employeePositionService.createPosition(
                 adminId,
                 positionTitle
@@ -67,9 +69,9 @@ public class EmployeePositionController {
 
     // PATCH /admin/{adminId}/positions/update/{positionId}
     @PatchMapping("/{adminId}/positions/update/{positionId}")
-    public ResponseEntity<EmployeePosition> updateEmployeePosition(@PathVariable Long adminId,
+    public ResponseEntity<EmployeePositionResponseDTO> updateEmployeePosition(@PathVariable Long adminId,
                                                                    @PathVariable Long positionId,
-                                                                   @RequestBody String positionTitle) {
+                                                                   @RequestBody EmployeePositionRequestDTO  positionTitle) {
         return ResponseEntity.ok(employeePositionService.updatePosition(
                 adminId,
                 positionId,

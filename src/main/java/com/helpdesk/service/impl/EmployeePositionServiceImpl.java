@@ -5,10 +5,13 @@ import com.helpdesk.exception.EmployeePositionNotFoundException;
 import com.helpdesk.exception.EmptyPageException;
 import com.helpdesk.model.Employee;
 import com.helpdesk.model.EmployeePosition;
+import com.helpdesk.model.request.EmployeePositionRequestDTO;
+import com.helpdesk.model.response.EmployeePositionResponseDTO;
 import com.helpdesk.repository.EmployeePositionRepository;
 import com.helpdesk.repository.EmployeeRepository;
 import com.helpdesk.service.EmployeePositionService;
 
+import com.helpdesk.service.mapper.EmployeePositionMapper;
 import com.helpdesk.service.util.EmployeeValidationHelper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,12 +31,16 @@ public class EmployeePositionServiceImpl implements EmployeePositionService {
 
     private final EmployeeValidationHelper employeeValidationHelper;
 
+    private final EmployeePositionMapper positionMapper;
+
     public EmployeePositionServiceImpl(EmployeePositionRepository positionRepository,
                                        EmployeeRepository employeeRepository,
-                                       EmployeeValidationHelper employeeValidationHelper) {
+                                       EmployeeValidationHelper employeeValidationHelper,
+                                       EmployeePositionMapper positionMapper) {
         this.positionRepository = positionRepository;
         this.employeeRepository = employeeRepository;
         this.employeeValidationHelper = employeeValidationHelper;
+        this.positionMapper = positionMapper;
     }
 
     private Employee validateAdmin(Long adminId) {
@@ -53,28 +60,31 @@ public class EmployeePositionServiceImpl implements EmployeePositionService {
 
     @Transactional(readOnly = true)
     @Override
-    public EmployeePosition findPosition(Long adminId,
-                                         Long positionId) {
+    public EmployeePositionResponseDTO findPosition(Long adminId,
+                                                    Long positionId) {
         validateAdmin(adminId);
 
-        return getPositionOrThrow(positionId);
+        return positionMapper.toDTO(getPositionOrThrow(positionId));
     }
 
     @Transactional(readOnly = true)
     @Override
-    public List<EmployeePosition> getAllPositions(Long adminId) {
+    public List<EmployeePositionResponseDTO> getAllPositions(Long adminId) {
         validateAdmin(adminId);
 
-        return positionRepository.findAll();
+        return positionRepository.findAll()
+                .stream()
+                .map(positionMapper::toDTO)
+                .toList();
     }
 
     @Transactional(readOnly = true)
     @Override
-    public Page<EmployeePosition> getAllPositionsPaginated(Long adminId,
-                                                           int page,
-                                                           int size,
-                                                           String sortBy,
-                                                           String direction) {
+    public Page<EmployeePositionResponseDTO> getAllPositionsPaginated(Long adminId,
+                                                                      int page,
+                                                                      int size,
+                                                                      String sortBy,
+                                                                      String direction) {
         validateAdmin(adminId);
 
         String sortField = switch (sortBy.toLowerCase()) {
@@ -92,39 +102,36 @@ public class EmployeePositionServiceImpl implements EmployeePositionService {
             throw new EmptyPageException(page, "No positions found");
         }
 
-        return positions;
+        return positions.map(positionMapper::toDTO);
     }
 
     @Override
-    public EmployeePosition createPosition(Long adminId,
-                                           String positionTitle) {
+    public EmployeePositionResponseDTO createPosition(Long adminId,
+                                                      EmployeePositionRequestDTO  createdPosition) {
         validateAdmin(adminId);
 
-        if (positionTitle == null || positionTitle.isBlank()) {
+        if (createdPosition.getPositionTitle() == null || createdPosition.getPositionTitle().isBlank()) {
             throw new IllegalArgumentException("Position title cannot be null or blank");
         }
 
-        EmployeePosition position = new EmployeePosition();
-        position.setPositionTitle(positionTitle);
-
-        return positionRepository.save(position);
+        EmployeePosition position = positionMapper.toEntity(createdPosition);
+        return positionMapper.toDTO(positionRepository.save(position));
     }
 
     @Override
-    public EmployeePosition updatePosition(Long adminId,
-                                           Long positionId,
-                                           String positionTitle) {
+    public EmployeePositionResponseDTO updatePosition(Long adminId,
+                                                      Long positionId,
+                                                      EmployeePositionRequestDTO updatedPosition) {
         validateAdmin(adminId);
 
-        if (positionTitle == null || positionTitle.isBlank()) {
+        if (updatedPosition.getPositionTitle() == null || updatedPosition.getPositionTitle().isBlank()) {
             throw new IllegalArgumentException("Position title cannot be null or blank");
         }
 
         EmployeePosition position = getPositionOrThrow(positionId);
+        positionMapper.updateEntity(updatedPosition, position);
 
-        position.setPositionTitle(positionTitle);
-
-        return positionRepository.save(position);
+        return positionMapper.toDTO(positionRepository.save(position));
     }
 
     @Override

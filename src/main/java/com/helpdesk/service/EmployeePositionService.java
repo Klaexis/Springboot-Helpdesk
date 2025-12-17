@@ -1,20 +1,21 @@
 package com.helpdesk.service;
 
-import com.helpdesk.model.EmployeePosition;
+import com.helpdesk.model.request.EmployeePositionRequestDTO;
+import com.helpdesk.model.response.EmployeePositionResponseDTO;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
 
 public interface EmployeePositionService {
-    EmployeePosition findPosition(Long adminId, Long positionId);
+    EmployeePositionResponseDTO findPosition(Long adminId, Long positionId);
 
-    Page<EmployeePosition> getAllPositionsPaginated(Long adminId, int page, int size, String sortField, String direction);
+    Page<EmployeePositionResponseDTO> getAllPositionsPaginated(Long adminId, int page, int size, String sortField, String direction);
 
-    List<EmployeePosition> getAllPositions(Long adminId);
+    List<EmployeePositionResponseDTO> getAllPositions(Long adminId);
 
-    EmployeePosition createPosition(Long adminId, String positionTitle);
+    EmployeePositionResponseDTO createPosition(Long adminId, EmployeePositionRequestDTO createdPosition);
 
-    EmployeePosition updatePosition(Long adminId, Long positionId, String positionTitle);
+    EmployeePositionResponseDTO updatePosition(Long adminId, Long positionId, EmployeePositionRequestDTO updatedPosition);
 
     void deletePosition(Long adminId, Long positionId);
 }
