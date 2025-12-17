@@ -6,6 +6,7 @@ import com.helpdesk.model.EmployeePosition;
 import com.helpdesk.model.EmploymentStatus;
 import com.helpdesk.model.request.AdminCreateRequestDTO;
 import com.helpdesk.model.request.AdminUpdateRequestDTO;
+import com.helpdesk.model.request.AssignPositionRequestDTO;
 import com.helpdesk.model.response.AdminResponseDTO;
 import com.helpdesk.repository.EmployeePositionRepository;
 import com.helpdesk.repository.EmployeeRepository;
@@ -202,12 +203,12 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public AdminResponseDTO assignPositionToEmployee(Long adminId,
                                                      Long employeeId,
-                                                     String positionTitle) {
+                                                     AssignPositionRequestDTO positionTitle) {
         validateAdmin(adminId);
         Employee employee = getEmployeeOrThrow(employeeId);
 
         EmployeePosition position =
-                positionRepository.findByPositionTitle(positionTitle);
+                positionRepository.findByPositionTitle(positionTitle.getPositionTitle());
 
         if (position == null) {
             throw new EmployeePositionNotFoundException("Position not found");
@@ -219,7 +220,8 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     @Transactional
-    public AdminResponseDTO unassignPositionFromEmployee(Long adminId, Long employeeId) {
+    public AdminResponseDTO unassignPositionFromEmployee(Long adminId,
+                                                         Long employeeId) {
         validateAdmin(adminId);
 
         Employee employee = getEmployeeOrThrow(employeeId);

@@ -3,6 +3,7 @@ package com.helpdesk.controller;
 import com.helpdesk.model.EmploymentStatus;
 import com.helpdesk.model.request.AdminCreateRequestDTO;
 import com.helpdesk.model.request.AdminUpdateRequestDTO;
+import com.helpdesk.model.request.AssignPositionRequestDTO;
 import com.helpdesk.model.response.AdminResponseDTO;
 import com.helpdesk.model.response.PageResponseDTO;
 import com.helpdesk.service.AdminService;
@@ -96,7 +97,7 @@ public class AdminController {
     @PatchMapping("/{adminId}/employees/assign-position/{employeeId}")
     public ResponseEntity<AdminResponseDTO> assignPosition(@PathVariable Long adminId,
                                                            @PathVariable Long employeeId,
-                                                           @RequestBody String position) {
+                                                           @RequestBody AssignPositionRequestDTO position) {
         return ResponseEntity.ok(adminService.assignPositionToEmployee(
                 adminId,
                 employeeId,

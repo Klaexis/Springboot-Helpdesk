@@ -3,6 +3,7 @@ package com.helpdesk.service;
 import com.helpdesk.model.EmploymentStatus;
 import com.helpdesk.model.request.AdminCreateRequestDTO;
 import com.helpdesk.model.request.AdminUpdateRequestDTO;
+import com.helpdesk.model.request.AssignPositionRequestDTO;
 import com.helpdesk.model.response.AdminResponseDTO;
 import org.springframework.data.domain.Page;
 
@@ -21,7 +22,7 @@ public interface AdminService {
 
     void deleteEmployee(Long adminId, Long employeeId);
 
-    AdminResponseDTO assignPositionToEmployee(Long adminId, Long employeeId, String positionTitle);
+    AdminResponseDTO assignPositionToEmployee(Long adminId, Long employeeId, AssignPositionRequestDTO positionTitle);
 
     AdminResponseDTO unassignPositionFromEmployee(Long adminId, Long employeeId);
 
