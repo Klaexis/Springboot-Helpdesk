@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+// Fix pagination, call Pageable in param
 @RestController
 @RequestMapping("/admin")
 public class AdminController {
