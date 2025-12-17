@@ -13,11 +13,11 @@ import java.util.List;
 
 @Repository
 public interface TicketRepository extends JpaRepository<Ticket, Long>, JpaSpecificationExecutor<Ticket> {
-    List<Ticket> findByTicketAssigneeEmployeeId(Long assigneeId);
+    List<Ticket> findByTicketAssigneeId(Long assigneeId);
     List<Ticket> findByTicketStatus(TicketStatus status);
 
     // Paginated by assignee
-    Page<Ticket> findByTicketAssigneeEmployeeId(Long assigneeId, Pageable pageable);
+    Page<Ticket> findByTicketAssigneeId(Long assigneeId, Pageable pageable);
 
     // Paginated by status
     Page<Ticket> findByTicketStatus(TicketStatus status, Pageable pageable);

@@ -20,13 +20,13 @@ public class EmployeeValidationHelper {
 
     public void validateAdmin(Employee employee) {
         if (!isAdmin(employee)) {
-            throw new EmployeeNotAuthorizedException(employee.getEmployeeId());
+            throw new EmployeeNotAuthorizedException(employee.getId());
         }
     }
 
     public void validateActive(Employee employee) {
         if (!isActive(employee)) {
-            throw new EmployeeNotActiveException(employee.getEmployeeId());
+            throw new EmployeeNotActiveException(employee.getId());
         }
     }
 }

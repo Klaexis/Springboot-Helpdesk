@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class TicketAssignedResponseDTO {
-    private Long ticketId;
+    private Long id;
     private String ticketTitle;
     private String ticketStatus;
 }

@@ -81,7 +81,7 @@ http://localhost:8080/admin/1/employees/delete/8
 
 Assign position to an employee (Admin Only) (PATCH) (TEXT)
 http://localhost:8080/admin/{adminId}/employees/assign-position/{employeeId}
-http://localhost:8080/admin/1/employees/assign-position/3
+http://localhost:8080/admin/1/employees/assign-position/7
 Admin
 
 

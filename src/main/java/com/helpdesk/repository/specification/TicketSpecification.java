@@ -4,19 +4,21 @@ import com.helpdesk.model.Ticket;
 import com.helpdesk.model.TicketStatus;
 
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+@Component
 public class TicketSpecification {
-    public static Specification<Ticket> hasTitle(String title) {
+    public Specification<Ticket> hasTitle(String title) {
         return (root, query, cb) ->
                 title == null || title.isBlank()
                         ? null
                         : cb.like(cb.lower(root.get("ticketTitle")), "%" + title.toLowerCase() + "%");
     }
 
-    public static Specification<Ticket> hasAssignee(String name) {
+    public Specification<Ticket> hasAssignee(String name) {
         return (root, query, cb) ->
                 name == null || name.isBlank()
                         ? null
@@ -24,14 +26,14 @@ public class TicketSpecification {
                         "%" + name.toLowerCase() + "%");
     }
 
-    public static Specification<Ticket> hasStatus(TicketStatus status) {
+    public Specification<Ticket> hasStatus(TicketStatus status) {
         return (root, query, cb) ->
                 status == null
                         ? null
                         : cb.equal(root.get("ticketStatus"), status);
     }
 
-    public static Specification<Ticket> hasCreatedDate(LocalDate date) {
+    public Specification<Ticket> hasCreatedDate(LocalDate date) {
         return (root, query, cb) -> {
             if (date == null) return null;
 
@@ -49,7 +51,7 @@ public class TicketSpecification {
         };
     }
 
-    public static Specification<Ticket> hasUpdatedDate(LocalDate date) {
+    public Specification<Ticket> hasUpdatedDate(LocalDate date) {
         return (root, query, cb) -> {
             if (date == null) return null;
 
@@ -67,7 +69,7 @@ public class TicketSpecification {
         };
     }
 
-    public static Specification<Ticket> assignedToEmployee(Long employeeId) {
+    public Specification<Ticket> assignedToEmployee(Long employeeId) {
         return (root, query, cb) ->
                 cb.equal(root.get("ticketAssignee").get("employeeId"), employeeId);
     }

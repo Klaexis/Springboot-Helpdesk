@@ -7,7 +7,7 @@ import jakarta.persistence.*;
 public class EmployeePosition {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long positionId;
+    private Long id;
 
     private String positionTitle;
 
@@ -19,8 +19,8 @@ public class EmployeePosition {
     }
 
     // Getters
-    public Long getPositionId() {
-        return positionId;
+    public Long getId() {
+        return id;
     }
 
     public String getPositionTitle() {
@@ -28,8 +28,8 @@ public class EmployeePosition {
     }
 
     // Setters
-    public void setPositionId(Long positionId) {
-        this.positionId = positionId;
+    public void setId(Long positionId) {
+        this.id = positionId;
     }
 
     public void setPositionTitle(String positionTitle) {

@@ -29,7 +29,6 @@ public class EmployeePositionServiceImpl implements EmployeePositionService {
 
     private final EmployeeValidationHelper employeeValidationHelper;
 
-    @Autowired
     public EmployeePositionServiceImpl(EmployeePositionRepository positionRepository,
                                        EmployeeRepository employeeRepository,
                                        EmployeeValidationHelper employeeValidationHelper) {

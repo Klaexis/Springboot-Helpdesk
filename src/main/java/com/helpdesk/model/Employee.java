@@ -5,12 +5,13 @@ import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+// Make all IDs into id
 @Entity
 @Table(name = "employees")
 public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long employeeId;
+    private Long id;
 
     private String employeeName;
     private Integer employeeAge;
@@ -44,8 +45,8 @@ public class Employee {
     }
 
     // Getters
-    public Long getEmployeeId() {
-        return employeeId;
+    public Long getId() {
+        return id;
     }
 
     public String getEmployeeName() {
@@ -80,8 +81,8 @@ public class Employee {
         return assignedTickets;
     }
     // Setters
-    public void setEmployeeId(Long employeeId) {
-        this.employeeId = employeeId;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public void setEmployeeName(String employeeName) {

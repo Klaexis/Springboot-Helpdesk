@@ -37,13 +37,21 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
 
     private final EmployeeValidationHelper employeeValidationHelper;
 
+    private final TicketMapper ticketMapper;
+
+    private final TicketSpecification ticketSpecification;
+
     @Autowired
     public EmployeeTicketServiceImpl(TicketRepository ticketRepository,
                                      EmployeeRepository employeeRepository,
-                                     EmployeeValidationHelper employeeValidationHelper) {
+                                     EmployeeValidationHelper employeeValidationHelper,
+                                     TicketMapper ticketMapper,
+                                     TicketSpecification ticketSpecification) {
         this.ticketRepository = ticketRepository;
         this.employeeRepository = employeeRepository;
         this.employeeValidationHelper = employeeValidationHelper;
+        this.ticketMapper = ticketMapper;
+        this.ticketSpecification = ticketSpecification;
     }
 
     private Employee validateEmployee(Long employeeId) {
@@ -75,7 +83,7 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
                                         Long employeeId) {
         Employee employee = validateEmployee(employeeId);
 
-        Ticket newTicket = TicketMapper.toEntity(ticket);
+        Ticket newTicket = ticketMapper.toEntity(ticket);
         newTicket.setTicketCreatedBy(employee);
 
         boolean hasTitle = ticket.getTicketTitle() != null && !ticket.getTicketTitle().isBlank();
@@ -87,7 +95,7 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
             newTicket.setTicketStatus(TicketStatus.DRAFT);
         }
 
-        return TicketMapper.toTicketDTO(ticketRepository.save(newTicket));
+        return ticketMapper.toTicketDTO(ticketRepository.save(newTicket));
     }
 
     @Transactional(readOnly = true)
@@ -95,9 +103,9 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
     public List<TicketResponseDTO> viewAssignedTickets(Long employeeId) {
         validateEmployee(employeeId);
 
-        return ticketRepository.findByTicketAssigneeEmployeeId(employeeId)
+        return ticketRepository.findByTicketAssigneeId(employeeId)
                 .stream()
-                .map(TicketMapper::toTicketDTO)
+                .map(ticketMapper::toTicketDTO)
                 .collect(Collectors.toList());
     }
 
@@ -123,13 +131,13 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
                 : Sort.by(sortField).ascending();
 
         Pageable pageable = PageRequest.of(page, size, sort);
-        Page<Ticket> tickets = ticketRepository.findByTicketAssigneeEmployeeId(employeeId, pageable);
+        Page<Ticket> tickets = ticketRepository.findByTicketAssigneeId(employeeId, pageable);
 
         if (tickets.isEmpty()) {
             throw new EmptyPageException(page, "No tickets found");
         }
 
-        return tickets.map(TicketMapper::toTicketDTO);
+        return tickets.map(ticketMapper::toTicketDTO);
     }
 
     @Override
@@ -139,16 +147,16 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
         Ticket ticket = getTicketOrThrow(ticketId);
         Employee employee = validateEmployee(employeeId);
 
-        if (!ticket.getTicketCreatedBy().getEmployeeId().equals(employeeId)) {
+        if (!ticket.getTicketCreatedBy().getId().equals(employeeId)) {
             throw new TicketAccessException("You can only update your own tickets");
         }
 
-        TicketMapper.updateEntity(updatedTicket, ticket);
+        ticketMapper.updateEntity(updatedTicket, ticket);
         ticket.setTicketUpdatedBy(employee);
 
         handleTicketClosure(ticket);
 
-        return TicketMapper.toTicketDTO(ticketRepository.save(ticket));
+        return ticketMapper.toTicketDTO(ticketRepository.save(ticket));
     }
 
     @Override
@@ -159,7 +167,7 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
         Employee employee = validateEmployee(employeeId);
 
         Employee assignee = ticket.getTicketAssignee();
-        if (assignee == null || !assignee.getEmployeeId().equals(employeeId)) {
+        if (assignee == null || !assignee.getId().equals(employeeId)) {
             throw new TicketAccessException("You can only update your assigned tickets");
         }
 
@@ -168,7 +176,7 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
 
         handleTicketClosure(ticket);
 
-        return TicketMapper.toTicketDTO(ticketRepository.save(ticket));
+        return ticketMapper.toTicketDTO(ticketRepository.save(ticket));
     }
 
     @Override
@@ -180,7 +188,7 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
         Employee employee = validateEmployee(employeeId);
 
         Employee assignee = ticket.getTicketAssignee();
-        if (assignee == null || !assignee.getEmployeeId().equals(employeeId)) {
+        if (assignee == null || !assignee.getId().equals(employeeId)) {
             throw new TicketAccessException("You can only add remarks to tickets assigned to you");
         }
 
@@ -193,7 +201,7 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
 
         handleTicketClosure(ticket);
 
-        return TicketMapper.toTicketDTO(ticketRepository.save(ticket));
+        return ticketMapper.toTicketDTO(ticketRepository.save(ticket));
     }
 
     @Transactional(readOnly = true)
@@ -204,7 +212,7 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
         List<Ticket> filedTickets = ticketRepository.findByTicketStatus(TicketStatus.FILED);
 
         return filedTickets.stream()
-                .map(TicketMapper::toTicketDTO)
+                .map(ticketMapper::toTicketDTO)
                 .collect(Collectors.toList());
     }
 
@@ -231,7 +239,7 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
         Pageable pageable = PageRequest.of(page, size, sort);
         Page<Ticket> tickets = ticketRepository.findByTicketStatus(TicketStatus.FILED, pageable);
 
-        return tickets.map(TicketMapper::toTicketDTO);
+        return tickets.map(ticketMapper::toTicketDTO);
     }
 
     @Transactional(readOnly = true)
@@ -245,7 +253,7 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
             throw new IllegalArgumentException("Ticket is not in FILED status");
         }
 
-        return TicketMapper.toTicketDTO(ticket);
+        return ticketMapper.toTicketDTO(ticket);
     }
 
     @Transactional(readOnly = true)
@@ -262,11 +270,11 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
         validateEmployee(employeeId);
 
         Specification<Ticket> spec = Specification.allOf(
-                TicketSpecification.assignedToEmployee(employeeId),
-                TicketSpecification.hasTitle(title),
-                TicketSpecification.hasCreatedDate(createdDate),
-                TicketSpecification.hasUpdatedDate(updatedDate),
-                TicketSpecification.hasStatus(status)
+                ticketSpecification.assignedToEmployee(employeeId),
+                ticketSpecification.hasTitle(title),
+                ticketSpecification.hasCreatedDate(createdDate),
+                ticketSpecification.hasUpdatedDate(updatedDate),
+                ticketSpecification.hasStatus(status)
         );
 
         String sortField = switch (sortBy.toLowerCase()) {
@@ -288,7 +296,7 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
             throw new EmptyPageException(page, "No assigned tickets match the search criteria");
         }
 
-        return tickets.map(TicketMapper::toTicketDTO);
+        return tickets.map(ticketMapper::toTicketDTO);
     }
 
     @Transactional(readOnly = true)
@@ -304,10 +312,10 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
         validateEmployee(employeeId);
 
         Specification<Ticket> spec = Specification.allOf(
-                TicketSpecification.hasStatus(TicketStatus.FILED),
-                TicketSpecification.hasTitle(title),
-                TicketSpecification.hasCreatedDate(createdDate),
-                TicketSpecification.hasUpdatedDate(updatedDate)
+                ticketSpecification.hasStatus(TicketStatus.FILED),
+                ticketSpecification.hasTitle(title),
+                ticketSpecification.hasCreatedDate(createdDate),
+                ticketSpecification.hasUpdatedDate(updatedDate)
         );
 
         String sortField = switch (sortBy.toLowerCase()) {
@@ -328,6 +336,6 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
             throw new EmptyPageException(page, "No filed tickets match the search criteria");
         }
 
-        return tickets.map(TicketMapper::toTicketDTO);
+        return tickets.map(ticketMapper::toTicketDTO);
     }
 }

@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class EmployeeProfileResponseDTO {
-    private Long employeeId;
+    private Long id;
     private String employeeName;
     private Integer employeeAge;
     private String employeeAddress;

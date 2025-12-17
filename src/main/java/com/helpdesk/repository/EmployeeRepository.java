@@ -10,6 +10,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface EmployeeRepository extends JpaRepository<Employee, Long>, JpaSpecificationExecutor<Employee> {
-    @Query("SELECT e FROM Employee e LEFT JOIN FETCH e.assignedTickets WHERE e.employeeId = :id")
+    @Query("SELECT e FROM Employee e LEFT JOIN FETCH e.assignedTickets WHERE e.id = :id")
     Employee findByIdWithTickets(@Param("id") Long id);
 }

@@ -14,7 +14,7 @@ import java.util.List;
 public class Ticket {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long ticketId;
+    private Long id;
 
     private String ticketTitle;
     private String ticketBody;
@@ -47,12 +47,12 @@ public class Ticket {
     // Constructors
     public Ticket() {}
 
-    public Ticket(Long ticketId,
+    public Ticket(Long id,
                   String ticketTitle,
                   String ticketBody,
                   LocalDateTime ticketCreatedDate,
                   Employee ticketCreatedBy) {
-        this.ticketId = ticketId;
+        this.id = id;
         this.ticketTitle = ticketTitle;
         this.ticketBody = ticketBody;
         this.ticketCreatedDate = ticketCreatedDate;
@@ -60,8 +60,8 @@ public class Ticket {
     }
 
     // Getters
-    public Long getTicketId() {
-        return ticketId;
+    public Long getId() {
+        return id;
     }
 
     public String getTicketTitle() {
@@ -101,8 +101,8 @@ public class Ticket {
     }
 
     // Setters
-    public void setTicketId(Long ticketId) {
-        this.ticketId = ticketId;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public void setTicketTitle(String ticketTitle) {

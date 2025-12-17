@@ -39,17 +39,25 @@ public class AdminServiceImpl implements AdminService {
 
     private final EmployeeValidationHelper employeeValidationHelper;
 
-    @Autowired
+    private final AdminMapper adminMapper;
+
+    private final EmployeeSpecification employeeSpecification;
+
     public AdminServiceImpl(EmployeeRepository employeeRepository,
                             EmployeePositionRepository positionRepository,
                             TicketRepository ticketRepository,
-                            EmployeeValidationHelper employeeValidationHelper) {
+                            EmployeeValidationHelper employeeValidationHelper,
+                            AdminMapper adminMapper,
+                            EmployeeSpecification employeeSpecification) {
         this.employeeRepository = employeeRepository;
         this.positionRepository = positionRepository;
         this.ticketRepository = ticketRepository;
         this.employeeValidationHelper = employeeValidationHelper;
+        this.adminMapper = adminMapper;
+        this.employeeSpecification = employeeSpecification;
     }
 
+    // Make validateAdmin and getEmployeeOrThrow into helper methods
     private Employee validateAdmin(Long adminId) {
         Employee admin = employeeRepository.findById(adminId)
                 .orElseThrow(() -> new AdminNotFoundException(adminId));
@@ -76,7 +84,7 @@ public class AdminServiceImpl implements AdminService {
             throw new EmployeeNotFoundException(employeeId);
         }
 
-        return AdminMapper.toDTO(employee);
+        return adminMapper.toDTO(employee);
     }
 
     @Transactional(readOnly = true)
@@ -86,7 +94,7 @@ public class AdminServiceImpl implements AdminService {
 
         return employeeRepository.findAll()
                 .stream()
-                .map(AdminMapper::toDTO)
+                .map(adminMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
@@ -117,14 +125,14 @@ public class AdminServiceImpl implements AdminService {
             throw new EmptyPageException(page, "Contains no employees");
         }
 
-        return employees.map(AdminMapper::toDTO);
+        return employees.map(adminMapper::toDTO);
     }
 
     @Override
     public AdminResponseDTO createEmployee(Long adminId,
                                            @Valid AdminCreateRequestDTO createdEmployee) {
         validateAdmin(adminId);
-        Employee employee = AdminMapper.toEntity(createdEmployee);
+        Employee employee = adminMapper.toEntity(createdEmployee);
 
         if (createdEmployee.getPositionTitle() != null && !createdEmployee.getPositionTitle().isBlank()) {
             EmployeePosition position =
@@ -137,7 +145,7 @@ public class AdminServiceImpl implements AdminService {
             employee.setEmployeePosition(position);
         }
 
-        return AdminMapper.toDTO(employeeRepository.save(employee));
+        return adminMapper.toDTO(employeeRepository.save(employee));
     }
 
     @Override
@@ -174,9 +182,9 @@ public class AdminServiceImpl implements AdminService {
             employee.setEmployeePosition(position);
         }
 
-        AdminMapper.updateEntity(updatedEmployee, employee);
+        adminMapper.updateEntity(updatedEmployee, employee);
 
-        return AdminMapper.toDTO(employeeRepository.save(employee));
+        return adminMapper.toDTO(employeeRepository.save(employee));
     }
 
     @Override
@@ -206,7 +214,7 @@ public class AdminServiceImpl implements AdminService {
         }
 
         employee.setEmployeePosition(position);
-        return AdminMapper.toDTO(employeeRepository.save(employee));
+        return adminMapper.toDTO(employeeRepository.save(employee));
     }
 
     @Transactional(readOnly = true)
@@ -225,9 +233,9 @@ public class AdminServiceImpl implements AdminService {
 
         // allOf = AND, anyOf = OR
         Specification<Employee> spec = Specification.allOf(
-                EmployeeSpecification.hasName(name),
-                EmployeeSpecification.hasPosition(positionTitle),
-                EmployeeSpecification.hasStatus(status)
+                employeeSpecification.hasName(name),
+                employeeSpecification.hasPosition(positionTitle),
+                employeeSpecification.hasStatus(status)
         );
 
         // Sorting
@@ -249,6 +257,6 @@ public class AdminServiceImpl implements AdminService {
             throw new EmptyPageException(page, "No employees match the search criteria");
         }
 
-        return employees.map(AdminMapper::toDTO);
+        return employees.map(adminMapper::toDTO);
     }
 }

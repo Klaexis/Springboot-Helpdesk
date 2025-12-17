@@ -8,6 +8,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class TicketEmployeeResponseDTO {
-    private Long employeeId;
+    private Long id;
     private String employeeName;
 }

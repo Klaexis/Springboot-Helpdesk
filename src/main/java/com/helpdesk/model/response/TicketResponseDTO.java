@@ -13,7 +13,7 @@ import java.util.List;
 @Getter
 @Setter
 public class TicketResponseDTO {
-    private Long ticketId;
+    private Long id;
     private String ticketTitle;
     private String ticketBody;
     private TicketEmployeeResponseDTO ticketAssignee;

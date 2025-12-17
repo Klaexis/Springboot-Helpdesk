@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class TicketRemarkResponseDTO {
-    private Long remarkId;
+    private Long id;
     private String message;
     private TicketEmployeeResponseDTO createdBy;
     private LocalDateTime createdAt;

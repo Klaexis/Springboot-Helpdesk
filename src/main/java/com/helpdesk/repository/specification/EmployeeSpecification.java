@@ -6,14 +6,16 @@ import com.helpdesk.model.EmploymentStatus;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Component;
 
+@Component
 public class EmployeeSpecification {
-    public static Specification<Employee> hasName(String name) {
+    public Specification<Employee> hasName(String name) {
         return (root, query, cb) ->
                 name == null || name.isBlank() ? null : cb.like(cb.lower(root.get("employeeName")), "%" + name.toLowerCase() + "%");
     }
 
-    public static Specification<Employee> hasPosition(String positionTitle) {
+    public Specification<Employee> hasPosition(String positionTitle) {
         return (root, query, cb) -> {
             if (positionTitle == null || positionTitle.isBlank()) {
                 return null;
@@ -29,7 +31,7 @@ public class EmployeeSpecification {
         };
     }
 
-    public static Specification<Employee> hasStatus(EmploymentStatus status) {
+    public Specification<Employee> hasStatus(EmploymentStatus status) {
         return (root, query, cb) ->
                 status == null ? null : cb.equal(root.get("employmentStatus"), status);
     }

@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 public class TicketRemark {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long remarkId;
+    private Long id;
 
     private String message;
 
@@ -36,8 +36,8 @@ public class TicketRemark {
     }
 
     // Getters
-    public Long getRemarkId() {
-        return remarkId;
+    public Long getId() {
+        return id;
     }
 
     public String getMessage() {
@@ -57,8 +57,8 @@ public class TicketRemark {
     }
 
     // Setters
-    public void setRemarkId(Long remarkId) {
-        this.remarkId = remarkId;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public void setMessage(String message) {

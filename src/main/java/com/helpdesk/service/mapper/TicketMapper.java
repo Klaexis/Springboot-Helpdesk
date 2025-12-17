@@ -7,33 +7,35 @@ import com.helpdesk.model.request.TicketUpdateRequestDTO;
 import com.helpdesk.model.response.TicketEmployeeResponseDTO;
 import com.helpdesk.model.response.TicketRemarkResponseDTO;
 import com.helpdesk.model.response.TicketResponseDTO;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Component
 public class TicketMapper {
-    public static Ticket toEntity(TicketCreateRequestDTO dto) {
+    public Ticket toEntity(TicketCreateRequestDTO dto) {
         Ticket ticket = new Ticket();
         ticket.setTicketTitle(dto.getTicketTitle());
         ticket.setTicketBody(dto.getTicketBody());
         return ticket;
     }
 
-    public static TicketEmployeeResponseDTO toEmployeeDTO(com.helpdesk.model.Employee employee) {
+    public TicketEmployeeResponseDTO toEmployeeDTO(com.helpdesk.model.Employee employee) {
         if (employee == null) return null;
 
         TicketEmployeeResponseDTO dto = new TicketEmployeeResponseDTO();
-        dto.setEmployeeId(employee.getEmployeeId());
+        dto.setId(employee.getId());
         dto.setEmployeeName(employee.getEmployeeName());
 
         return dto;
     }
 
-    public static TicketRemarkResponseDTO toRemarkDTO(TicketRemark remark) {
+    public TicketRemarkResponseDTO toRemarkDTO(TicketRemark remark) {
         if (remark == null) return null;
 
         TicketRemarkResponseDTO dto = new TicketRemarkResponseDTO();
-        dto.setRemarkId(remark.getRemarkId());
+        dto.setId(remark.getId());
         dto.setMessage(remark.getMessage());
         dto.setCreatedBy(toEmployeeDTO(remark.getCreatedBy()));
         dto.setCreatedAt(remark.getCreatedAt());
@@ -41,11 +43,11 @@ public class TicketMapper {
         return dto;
     }
 
-    public static TicketResponseDTO toTicketDTO(Ticket ticket) {
+    public TicketResponseDTO toTicketDTO(Ticket ticket) {
         if (ticket == null) return null;
 
         TicketResponseDTO dto = new TicketResponseDTO();
-        dto.setTicketId(ticket.getTicketId());
+        dto.setId(ticket.getId());
         dto.setTicketTitle(ticket.getTicketTitle());
         dto.setTicketBody(ticket.getTicketBody());
         dto.setTicketAssignee(toEmployeeDTO(ticket.getTicketAssignee()));
@@ -57,14 +59,14 @@ public class TicketMapper {
 
         List<TicketRemarkResponseDTO> remarks = ticket.getTicketRemarks()
                 .stream()
-                .map(TicketMapper::toRemarkDTO)
+                .map(this::toRemarkDTO)
                 .collect(Collectors.toList());
         dto.setTicketRemarks(remarks);
 
         return dto;
     }
 
-    public static void updateEntity(TicketUpdateRequestDTO dto, Ticket ticket) {
+    public void updateEntity(TicketUpdateRequestDTO dto, Ticket ticket) {
         if (dto.getTicketTitle() != null) ticket.setTicketTitle(dto.getTicketTitle());
         if (dto.getTicketBody() != null) ticket.setTicketBody(dto.getTicketBody());
         if (dto.getTicketStatus() != null) ticket.setTicketStatus(dto.getTicketStatus());

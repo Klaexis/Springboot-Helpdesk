@@ -38,13 +38,20 @@ public class AdminTicketServiceImpl implements AdminTicketService {
 
     private final EmployeeValidationHelper employeeValidationHelper;
 
-    @Autowired
+    private final TicketMapper ticketMapper;
+
+    private final TicketSpecification ticketSpecification;
+
     public AdminTicketServiceImpl(TicketRepository ticketRepository,
                                   EmployeeRepository employeeRepository,
-                                  EmployeeValidationHelper employeeValidationHelper) {
+                                  EmployeeValidationHelper employeeValidationHelper,
+                                  TicketMapper ticketMapper,
+                                  TicketSpecification ticketSpecification) {
         this.ticketRepository = ticketRepository;
         this.employeeRepository = employeeRepository;
         this.employeeValidationHelper = employeeValidationHelper;
+        this.ticketMapper = ticketMapper;
+        this.ticketSpecification = ticketSpecification;
     }
 
     private Employee validateAdmin(Long adminId) {
@@ -95,7 +102,7 @@ public class AdminTicketServiceImpl implements AdminTicketService {
 
         employeeRepository.save(employee);
 
-        return TicketMapper.toTicketDTO(ticketRepository.save(ticket));
+        return ticketMapper.toTicketDTO(ticketRepository.save(ticket));
     }
 
     @Transactional(readOnly = true)
@@ -104,7 +111,7 @@ public class AdminTicketServiceImpl implements AdminTicketService {
                                        Long ticketId) {
         validateAdmin(adminId);
 
-        return TicketMapper.toTicketDTO(getTicketOrThrow(ticketId));
+        return ticketMapper.toTicketDTO(getTicketOrThrow(ticketId));
     }
 
     @Transactional(readOnly = true)
@@ -114,7 +121,7 @@ public class AdminTicketServiceImpl implements AdminTicketService {
 
         return ticketRepository.findAll()
                 .stream()
-                .map(TicketMapper::toTicketDTO)
+                .map(ticketMapper::toTicketDTO)
                 .collect(Collectors.toList());
     }
 
@@ -146,7 +153,7 @@ public class AdminTicketServiceImpl implements AdminTicketService {
             throw new EmptyPageException(page, "Contains no tickets");
         }
 
-        return tickets.map(TicketMapper::toTicketDTO);
+        return tickets.map(ticketMapper::toTicketDTO);
     }
 
     @Override
@@ -156,12 +163,12 @@ public class AdminTicketServiceImpl implements AdminTicketService {
         Ticket ticket = getTicketOrThrow(ticketId);
         Employee admin = validateAdmin(adminId);
 
-        TicketMapper.updateEntity(updatedTicket, ticket);
+        ticketMapper.updateEntity(updatedTicket, ticket);
         ticket.setTicketUpdatedBy(admin);
 
         handleTicketClosure(ticket);
 
-        return TicketMapper.toTicketDTO(ticketRepository.save(ticket));
+        return ticketMapper.toTicketDTO(ticketRepository.save(ticket));
     }
 
     @Override
@@ -176,7 +183,7 @@ public class AdminTicketServiceImpl implements AdminTicketService {
 
         handleTicketClosure(ticket);
 
-        return TicketMapper.toTicketDTO(ticketRepository.save(ticket));
+        return ticketMapper.toTicketDTO(ticketRepository.save(ticket));
     }
 
     @Override
@@ -197,7 +204,7 @@ public class AdminTicketServiceImpl implements AdminTicketService {
 
         handleTicketClosure(ticket);
 
-        return TicketMapper.toTicketDTO(ticketRepository.save(ticket));
+        return ticketMapper.toTicketDTO(ticketRepository.save(ticket));
     }
 
     @Transactional(readOnly = true)
@@ -213,9 +220,9 @@ public class AdminTicketServiceImpl implements AdminTicketService {
         validateAdmin(adminId);
 
         Specification<Ticket> spec = Specification.allOf(
-                TicketSpecification.hasTitle(title),
-                TicketSpecification.hasAssignee(assignee),
-                TicketSpecification.hasStatus(status)
+                ticketSpecification.hasTitle(title),
+                ticketSpecification.hasAssignee(assignee),
+                ticketSpecification.hasStatus(status)
         );
 
         String sortField = switch (sortBy.toLowerCase()) {
@@ -236,6 +243,6 @@ public class AdminTicketServiceImpl implements AdminTicketService {
             throw new EmptyPageException(page, "No tickets match the search criteria");
         }
 
-        return tickets.map(TicketMapper::toTicketDTO);
+        return tickets.map(ticketMapper::toTicketDTO);
     }
 }

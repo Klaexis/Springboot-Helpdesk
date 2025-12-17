@@ -8,18 +8,20 @@ import com.helpdesk.model.request.AdminCreateRequestDTO;
 import com.helpdesk.model.request.AdminUpdateRequestDTO;
 import com.helpdesk.model.response.AdminResponseDTO;
 import com.helpdesk.model.response.TicketAssignedResponseDTO;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Component
 public class AdminMapper {
 
     // For GET operations
-    public static AdminResponseDTO toDTO(Employee employee) {
+    public AdminResponseDTO toDTO(Employee employee) {
         if (employee == null) return null;
 
         AdminResponseDTO dto = new AdminResponseDTO();
-        dto.setEmployeeId(employee.getEmployeeId());
+        dto.setId(employee.getId());
         dto.setEmployeeName(employee.getEmployeeName());
         dto.setEmployeeAge(employee.getEmployeeAge());
         dto.setEmployeeAddress(employee.getEmployeeAddress());
@@ -35,7 +37,7 @@ public class AdminMapper {
         List<Ticket> assignedTickets = employee.getAssignedTickets();
         List<TicketAssignedResponseDTO> ticketDTOs = assignedTickets.stream().map(t -> {
             TicketAssignedResponseDTO ticketDTO = new TicketAssignedResponseDTO();
-            ticketDTO.setTicketId(t.getTicketId());
+            ticketDTO.setId(t.getId());
             ticketDTO.setTicketTitle(t.getTicketTitle());
             ticketDTO.setTicketStatus(t.getTicketStatus() != null ? t.getTicketStatus().name() : null);
             return ticketDTO;
@@ -47,7 +49,7 @@ public class AdminMapper {
     }
 
     // For CREATE: map basic fields, employee position is set at service
-    public static Employee toEntity(AdminCreateRequestDTO dto) {
+    public Employee toEntity(AdminCreateRequestDTO dto) {
         if (dto == null) return null;
 
         Employee employee = new Employee();
@@ -67,7 +69,7 @@ public class AdminMapper {
     }
 
     // For UPDATE: apply only non-null fields
-    public static void updateEntity(AdminUpdateRequestDTO dto, Employee employee) {
+    public void updateEntity(AdminUpdateRequestDTO dto, Employee employee) {
         if (dto.getEmployeeName() != null) employee.setEmployeeName(dto.getEmployeeName());
         if (dto.getEmployeeAge() != null) employee.setEmployeeAge(dto.getEmployeeAge());
         if (dto.getEmployeeAddress() != null) employee.setEmployeeAddress(dto.getEmployeeAddress());

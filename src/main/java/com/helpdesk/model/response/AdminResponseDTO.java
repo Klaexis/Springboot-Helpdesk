@@ -10,7 +10,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 public class AdminResponseDTO {
-    private Long employeeId;
+    private Long id;
     private String employeeName;
     private Integer employeeAge;
     private String employeeAddress;
