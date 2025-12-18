@@ -1,14 +1,14 @@
 package com.helpdesk.service;
 
-import com.helpdesk.model.Ticket;
 import com.helpdesk.model.TicketStatus;
 import com.helpdesk.model.request.TicketCreateRequestDTO;
+import com.helpdesk.model.request.TicketSearchAssignedRequestDTO;
+import com.helpdesk.model.request.TicketSearchFiledRequestDTO;
 import com.helpdesk.model.request.TicketUpdateRequestDTO;
 import com.helpdesk.model.response.TicketResponseDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.time.LocalDate;
 import java.util.List;
 
 public interface EmployeeTicketService {
@@ -30,26 +30,7 @@ public interface EmployeeTicketService {
 
     TicketResponseDTO addRemarkToAssignedTicket(Long ticketId, Long employeeId, String remark, TicketStatus newStatus);
 
-    Page<TicketResponseDTO> searchAssignedTickets(
-            Long employeeId,
-            String title,
-            LocalDate createdDate,
-            LocalDate updatedDate,
-            TicketStatus status,
-            int page,
-            int size,
-            String sortBy,
-            String direction
-    );
+    Page<TicketResponseDTO> searchAssignedTickets(Long employeeId, TicketSearchAssignedRequestDTO ticketSearchAssignedRequestDTO, Pageable pageable);
 
-    Page<TicketResponseDTO> searchFiledTickets(
-            Long employeeId,
-            String title,
-            LocalDate createdDate,
-            LocalDate updatedDate,
-            int page,
-            int size,
-            String sortBy,
-            String direction
-    );
+    Page<TicketResponseDTO> searchFiledTickets(Long employeeId, TicketSearchFiledRequestDTO searchFiledRequestDTO, Pageable pageable);
 }

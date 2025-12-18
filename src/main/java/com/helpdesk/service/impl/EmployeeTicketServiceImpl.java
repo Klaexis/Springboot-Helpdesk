@@ -6,6 +6,8 @@ import com.helpdesk.model.Ticket;
 import com.helpdesk.model.TicketRemark;
 import com.helpdesk.model.TicketStatus;
 import com.helpdesk.model.request.TicketCreateRequestDTO;
+import com.helpdesk.model.request.TicketSearchAssignedRequestDTO;
+import com.helpdesk.model.request.TicketSearchFiledRequestDTO;
 import com.helpdesk.model.request.TicketUpdateRequestDTO;
 import com.helpdesk.model.response.TicketResponseDTO;
 import com.helpdesk.repository.EmployeeRepository;
@@ -15,6 +17,7 @@ import com.helpdesk.service.EmployeeTicketService;
 import com.helpdesk.service.mapper.TicketMapper;
 import com.helpdesk.service.util.EmployeeValidationHelper;
 
+import com.helpdesk.service.util.PageableSortMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,18 +46,37 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
 
     private final TicketSpecification ticketSpecification;
 
+    private final PageableSortMapper pageableSortMapper;
+
     @Autowired
     public EmployeeTicketServiceImpl(TicketRepository ticketRepository,
                                      EmployeeRepository employeeRepository,
                                      EmployeeValidationHelper employeeValidationHelper,
                                      TicketMapper ticketMapper,
-                                     TicketSpecification ticketSpecification) {
+                                     TicketSpecification ticketSpecification,
+                                     PageableSortMapper pageableSortMapper) {
         this.ticketRepository = ticketRepository;
         this.employeeRepository = employeeRepository;
         this.employeeValidationHelper = employeeValidationHelper;
         this.ticketMapper = ticketMapper;
         this.ticketSpecification = ticketSpecification;
+        this.pageableSortMapper = pageableSortMapper;
     }
+
+    private static final Map<String, String> TICKET_ASSIGNED_SORT_FIELDS = Map.of(
+            "createdat","ticketCreatedDate",
+            "updatedat", "ticketUpdatedDate",
+            "status", "ticketStatus",
+            "title", "ticketTitle"
+    );
+
+    private static final Map<String, String> TICKET_FILED_SORT_FIELDS = Map.of(
+            "createdat","ticketCreatedDate",
+            "updatedat", "ticketUpdatedDate",
+            "title", "ticketTitle"
+    );
+
+    private static final String DEFAULT_TICKET_SORT = "ticketCreatedDate";
 
     private Employee validateEmployee(Long employeeId) {
         Employee employee = employeeRepository.findById(employeeId)
@@ -116,38 +139,15 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
                                                                 Pageable pageable) {
         validateEmployee(employeeId);
 
-        Sort sortedFields;
-
-        if (pageable.getSort().isUnsorted()) {
-            sortedFields = Sort.by("ticketCreatedDate").ascending();
-        } else {
-            List<Sort.Order> orders = new ArrayList<>();
-
-            for (Sort.Order order : pageable.getSort()) {
-                String mappedField = switch (order.getProperty().toLowerCase()) {
-                    case "createdat" -> "ticketCreatedDate";
-                    case "updatedat" -> "ticketUpdatedDate";
-                    case "status"    -> "ticketStatus";
-                    case "title"     -> "ticketTitle";
-                    default -> throw new IllegalArgumentException(
-                            "Invalid sort field: " + order.getProperty()
-                    );
-                };
-
-                orders.add(new Sort.Order(order.getDirection(), mappedField));
-            }
-
-            sortedFields = Sort.by(orders);
-        }
-
-        Pageable mappedPageable = PageRequest.of(
-                pageable.getPageNumber(),
-                pageable.getPageSize(),
-                sortedFields
-        );
-
         Page<Ticket> tickets =
-                ticketRepository.findByTicketAssigneeId(employeeId, mappedPageable);
+                ticketRepository.findByTicketAssigneeId(
+                        employeeId,
+                        pageableSortMapper.map(
+                                pageable,
+                                DEFAULT_TICKET_SORT,
+                                TICKET_ASSIGNED_SORT_FIELDS
+                        )
+                );
 
         if (tickets.isEmpty()) {
             throw new EmptyPageException(
@@ -241,37 +241,15 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
                                                                Pageable pageable) {
         validateEmployee(employeeId);
 
-        Sort sortedFields;
-
-        if (pageable.getSort().isUnsorted()) {
-            sortedFields = Sort.by("ticketCreatedDate").ascending();
-        } else {
-            List<Sort.Order> orders = new ArrayList<>();
-
-            for (Sort.Order order : pageable.getSort()) {
-                String mappedField = switch (order.getProperty().toLowerCase()) {
-                    case "createdat" -> "ticketCreatedDate";
-                    case "updatedat" -> "ticketUpdatedDate";
-                    case "title"     -> "ticketTitle";
-                    default -> throw new IllegalArgumentException(
-                            "Invalid sort field: " + order.getProperty()
-                    );
-                };
-
-                orders.add(new Sort.Order(order.getDirection(), mappedField));
-            }
-
-            sortedFields = Sort.by(orders);
-        }
-
-        Pageable mappedPageable = PageRequest.of(
-                pageable.getPageNumber(),
-                pageable.getPageSize(),
-                sortedFields
-        );
-
         Page<Ticket> tickets =
-                ticketRepository.findByTicketStatus(TicketStatus.FILED, mappedPageable);
+                ticketRepository.findByTicketStatus(
+                        TicketStatus.FILED,
+                        pageableSortMapper.map(
+                                pageable,
+                                DEFAULT_TICKET_SORT,
+                                TICKET_FILED_SORT_FIELDS
+                        )
+                );
 
         if (tickets.isEmpty()) {
             throw new EmptyPageException(
@@ -300,41 +278,32 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
     @Transactional(readOnly = true)
     @Override
     public Page<TicketResponseDTO> searchAssignedTickets(Long employeeId,
-                                                         String title,
-                                                         LocalDate createdDate,
-                                                         LocalDate updatedDate,
-                                                         TicketStatus status,
-                                                         int page,
-                                                         int size,
-                                                         String sortBy,
-                                                         String direction) {
+                                                         TicketSearchAssignedRequestDTO ticketSearchAssignedRequestDTO,
+                                                         Pageable pageable) {
         validateEmployee(employeeId);
 
         Specification<Ticket> spec = Specification.allOf(
                 ticketSpecification.assignedToEmployee(employeeId),
-                ticketSpecification.hasTitle(title),
-                ticketSpecification.hasCreatedDate(createdDate),
-                ticketSpecification.hasUpdatedDate(updatedDate),
-                ticketSpecification.hasStatus(status)
+                ticketSpecification.hasTitle(ticketSearchAssignedRequestDTO.getTitle()),
+                ticketSpecification.hasCreatedDate(ticketSearchAssignedRequestDTO.getCreatedat()),
+                ticketSpecification.hasUpdatedDate(ticketSearchAssignedRequestDTO.getUpdatedat()),
+                ticketSpecification.hasStatus(ticketSearchAssignedRequestDTO.getStatus())
         );
 
-        String sortField = switch (sortBy.toLowerCase()) {
-            case "title"  -> "ticketTitle";
-            case "createdat" -> "ticketCreatedDate";
-            case "updatedat" -> "ticketUpdatedDate";
-            case "status" -> "ticketStatus";
-            default -> throw new IllegalArgumentException("Invalid sort field: " + sortBy);
-        };
-
-        Sort sort = direction.equalsIgnoreCase("desc")
-                ? Sort.by(sortField).descending()
-                : Sort.by(sortField).ascending();
-
-        Pageable pageable = PageRequest.of(page, size, sort);
-        Page<Ticket> tickets = ticketRepository.findAll(spec, pageable);
+        Page<Ticket> tickets = ticketRepository.findAll(
+                spec,
+                pageableSortMapper.map(
+                        pageable,
+                        DEFAULT_TICKET_SORT,
+                        TICKET_ASSIGNED_SORT_FIELDS
+                )
+        );
 
         if (tickets.isEmpty()) {
-            throw new EmptyPageException(page, "No assigned tickets match the search criteria");
+            throw new EmptyPageException(
+                    pageable.getPageNumber(),
+                    "No assigned tickets match the search criteria"
+            );
         }
 
         return tickets.map(ticketMapper::toTicketDTO);
@@ -343,38 +312,31 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
     @Transactional(readOnly = true)
     @Override
     public Page<TicketResponseDTO> searchFiledTickets(Long employeeId,
-                                                      String title,
-                                                      LocalDate createdDate,
-                                                      LocalDate updatedDate,
-                                                      int page,
-                                                      int size,
-                                                      String sortBy,
-                                                      String direction) {
+                                                      TicketSearchFiledRequestDTO searchFiledRequestDTO,
+                                                      Pageable pageable) {
         validateEmployee(employeeId);
 
         Specification<Ticket> spec = Specification.allOf(
                 ticketSpecification.hasStatus(TicketStatus.FILED),
-                ticketSpecification.hasTitle(title),
-                ticketSpecification.hasCreatedDate(createdDate),
-                ticketSpecification.hasUpdatedDate(updatedDate)
+                ticketSpecification.hasTitle(searchFiledRequestDTO.getTitle()),
+                ticketSpecification.hasCreatedDate(searchFiledRequestDTO.getCreatedat()),
+                ticketSpecification.hasUpdatedDate(searchFiledRequestDTO.getUpdatedat())
         );
 
-        String sortField = switch (sortBy.toLowerCase()) {
-            case "title" -> "ticketTitle";
-            case "createdat" -> "ticketCreatedDate";
-            case "updatedat" -> "ticketUpdatedDate";
-            default -> throw new IllegalArgumentException("Invalid sort field: " + sortBy);
-        };
-
-        Sort sort = direction.equalsIgnoreCase("desc")
-                ? Sort.by(sortField).descending()
-                : Sort.by(sortField).ascending();
-
-        Pageable pageable = PageRequest.of(page, size, sort);
-        Page<Ticket> tickets = ticketRepository.findAll(spec, pageable);
+        Page<Ticket> tickets = ticketRepository.findAll(
+                spec,
+                pageableSortMapper.map(
+                        pageable,
+                        DEFAULT_TICKET_SORT,
+                        TICKET_FILED_SORT_FIELDS
+                )
+        );
 
         if (tickets.isEmpty()) {
-            throw new EmptyPageException(page, "No filed tickets match the search criteria");
+            throw new EmptyPageException(
+                    pageable.getPageNumber(),
+                    "No filed tickets match the search criteria"
+            );
         }
 
         return tickets.map(ticketMapper::toTicketDTO);

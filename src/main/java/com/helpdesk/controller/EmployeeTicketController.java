@@ -1,9 +1,7 @@
 package com.helpdesk.controller;
 
 import com.helpdesk.model.TicketStatus;
-import com.helpdesk.model.request.TicketAddRemarkRequestDTO;
-import com.helpdesk.model.request.TicketCreateRequestDTO;
-import com.helpdesk.model.request.TicketUpdateRequestDTO;
+import com.helpdesk.model.request.*;
 import com.helpdesk.model.response.PageResponseDTO;
 import com.helpdesk.model.response.TicketResponseDTO;
 import com.helpdesk.service.EmployeeTicketService;
@@ -132,34 +130,18 @@ public class EmployeeTicketController {
         ));
     }
 
-    // GET /employee/{employeeId}/tickets/search/assigned?page=0&size=5&title=abc&status=FILED&sortBy=title&direction=asc
+    // GET /employee/{employeeId}/tickets/search/assigned?page=0&size=5&title=abc&status=FILED&sort=title,asc
     // sortBy = title, createdDate, updatedDate, status
     @GetMapping("/{employeeId}/tickets/search/assigned")
     public ResponseEntity<PageResponseDTO<Page<TicketResponseDTO>>> searchAssignedTickets(
             @PathVariable Long employeeId,
-            @RequestParam(required = false) String title,
-            @RequestParam(required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-            LocalDate createdDate,
-            @RequestParam(required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-            LocalDate updatedDate,
-            @RequestParam(required = false) TicketStatus status,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size,
-            @RequestParam(defaultValue = "title") String sortBy,
-            @RequestParam(defaultValue = "asc") String direction
+            TicketSearchAssignedRequestDTO searchRequest,
+            Pageable pageable
     ) {
         Page<TicketResponseDTO> result = employeeTicketService.searchAssignedTickets(
                 employeeId,
-                title,
-                createdDate,
-                updatedDate,
-                status,
-                page,
-                size,
-                sortBy,
-                direction
+                searchRequest,
+                pageable
         );
 
         return ResponseEntity.ok(
@@ -170,32 +152,18 @@ public class EmployeeTicketController {
         );
     }
 
-    // GET /employee/{employeeId}/tickets/search/filed?page=0&size=5&title=abc&sortBy=title&direction=asc
+    // GET /employee/{employeeId}/tickets/search/filed?page=0&size=5&title=abc&sort=title,asc
     // sortBy = title, createdDate, updatedDate
     @GetMapping("/{employeeId}/tickets/search/filed")
     public ResponseEntity<PageResponseDTO<Page<TicketResponseDTO>>> searchFiledTickets(
             @PathVariable Long employeeId,
-            @RequestParam(required = false) String title,
-            @RequestParam(required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-            LocalDate createdDate,
-            @RequestParam(required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-            LocalDate updatedDate,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size,
-            @RequestParam(defaultValue = "title") String sortBy,
-            @RequestParam(defaultValue = "asc") String direction
+            TicketSearchFiledRequestDTO searchRequest,
+            Pageable pageable
     ) {
         Page<TicketResponseDTO> result = employeeTicketService.searchFiledTickets(
                 employeeId,
-                title,
-                createdDate,
-                updatedDate,
-                page,
-                size,
-                sortBy,
-                direction
+                searchRequest,
+                pageable
         );
 
         return ResponseEntity.ok(

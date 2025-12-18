@@ -1,6 +1,7 @@
 package com.helpdesk.service;
 
 import com.helpdesk.model.TicketStatus;
+import com.helpdesk.model.request.AdminTicketSearchRequestDTO;
 import com.helpdesk.model.request.TicketUpdateRequestDTO;
 import com.helpdesk.model.response.TicketResponseDTO;
 import org.springframework.data.domain.Page;
@@ -25,14 +26,5 @@ public interface AdminTicketService {
 
     void deleteTicket(Long adminId, Long ticketId);
 
-    Page<TicketResponseDTO> searchTickets(
-            Long adminId,
-            String title,
-            String assignee,
-            TicketStatus status,
-            int page,
-            int size,
-            String sortBy,
-            String direction
-    );
+    Page<TicketResponseDTO> searchTickets(Long adminId, AdminTicketSearchRequestDTO adminTicketSearchRequestDTO, Pageable pageable);
 }

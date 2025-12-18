@@ -3,8 +3,8 @@ package com.helpdesk.service.impl;
 import com.helpdesk.exception.*;
 import com.helpdesk.model.Employee;
 import com.helpdesk.model.EmployeePosition;
-import com.helpdesk.model.EmploymentStatus;
 import com.helpdesk.model.request.AdminCreateRequestDTO;
+import com.helpdesk.model.request.AdminSearchRequestDTO;
 import com.helpdesk.model.request.AdminUpdateRequestDTO;
 import com.helpdesk.model.request.AssignPositionRequestDTO;
 import com.helpdesk.model.response.AdminResponseDTO;
@@ -15,17 +15,15 @@ import com.helpdesk.repository.specification.EmployeeSpecification;
 import com.helpdesk.service.AdminService;
 import com.helpdesk.service.mapper.AdminMapper;
 import com.helpdesk.service.util.EmployeeValidationHelper;
+import com.helpdesk.service.util.PageableSortMapper;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,19 +43,31 @@ public class AdminServiceImpl implements AdminService {
 
     private final EmployeeSpecification employeeSpecification;
 
+    private final PageableSortMapper  pageableSortMapper;
+
     public AdminServiceImpl(EmployeeRepository employeeRepository,
                             EmployeePositionRepository positionRepository,
                             TicketRepository ticketRepository,
                             EmployeeValidationHelper employeeValidationHelper,
                             AdminMapper adminMapper,
-                            EmployeeSpecification employeeSpecification) {
+                            EmployeeSpecification employeeSpecification,
+                            PageableSortMapper pageableSortMapper) {
         this.employeeRepository = employeeRepository;
         this.positionRepository = positionRepository;
         this.ticketRepository = ticketRepository;
         this.employeeValidationHelper = employeeValidationHelper;
         this.adminMapper = adminMapper;
         this.employeeSpecification = employeeSpecification;
+        this.pageableSortMapper = pageableSortMapper;
     }
+
+    private static final Map<String, String> EMPLOYEE_SORT_FIELDS = Map.of(
+            "name", "employeeName",
+            "position", "employeePosition.positionTitle",
+            "status", "employmentStatus"
+    );
+
+    private static final String DEFAULT_EMPLOYEE_SORT = "employeeName";
 
     // Make validateAdmin and getEmployeeOrThrow into helper methods
     private Employee validateAdmin(Long adminId) {
@@ -106,37 +116,14 @@ public class AdminServiceImpl implements AdminService {
                                                            Pageable pageable) {
         validateAdmin(adminId);
 
-        Sort sortedFields;
-
-        if (pageable.getSort().isUnsorted()) {
-            sortedFields = Sort.by("employeeName").ascending();
-        } else {
-            List<Sort.Order> orders = new ArrayList<>();
-
-            for (Sort.Order order : pageable.getSort()) {
-                String mappedField = switch (order.getProperty().toLowerCase()) {
-                    case "name" -> "employeeName";
-                    case "position" -> "employeePosition.positionTitle";
-                    case "status" -> "employmentStatus";
-                    default -> throw new IllegalArgumentException(
-                            "Invalid sort field: " + order.getProperty()
-                    );
-                };
-
-                orders.add(new Sort.Order(order.getDirection(), mappedField));
-            }
-
-            sortedFields = Sort.by(orders);
-        }
-
-        Pageable mappedPageable = PageRequest.of(
-                pageable.getPageNumber(),
-                pageable.getPageSize(),
-                sortedFields
-        );
-
         Page<Employee> employees =
-                employeeRepository.findAll(mappedPageable);
+                employeeRepository.findAll(
+                        pageableSortMapper.map(
+                                pageable,
+                                DEFAULT_EMPLOYEE_SORT,
+                                EMPLOYEE_SORT_FIELDS
+                        )
+                );
 
         if (employees.isEmpty()) {
             throw new EmptyPageException(
@@ -257,40 +244,33 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public Page<AdminResponseDTO> searchEmployees(
             Long adminId,
-            String name,
-            String positionTitle,
-            EmploymentStatus status,
-            int page,
-            int size,
-            String sortBy,
-            String direction
+            AdminSearchRequestDTO adminSearchRequestDTO,
+            Pageable pageable
     ) {
         validateAdmin(adminId);
 
         // allOf = AND, anyOf = OR
         Specification<Employee> spec = Specification.allOf(
-                employeeSpecification.hasName(name),
-                employeeSpecification.hasPosition(positionTitle),
-                employeeSpecification.hasStatus(status)
+                employeeSpecification.hasName(adminSearchRequestDTO.getName()),
+                employeeSpecification.hasPosition(adminSearchRequestDTO.getPosition()),
+                employeeSpecification.hasStatus(adminSearchRequestDTO.getStatus())
         );
 
-        // Sorting
-        String sortField = switch (sortBy.toLowerCase()) {
-            case "name" -> "employeeName";
-            case "position" -> "employeePosition.positionTitle";
-            case "status" -> "employmentStatus";
-            default -> throw new IllegalArgumentException("Invalid sort field: " + sortBy);
-        };
-
-        Sort sort = direction.equalsIgnoreCase("desc")
-                ? Sort.by(sortField).descending()
-                : Sort.by(sortField).ascending();
-
-        Pageable pageable = PageRequest.of(page, size, sort);
-        Page<Employee> employees = employeeRepository.findAll(spec, pageable);
+        Page<Employee> employees =
+                employeeRepository.findAll(
+                        spec,
+                        pageableSortMapper.map(
+                                pageable,
+                                DEFAULT_EMPLOYEE_SORT,
+                                EMPLOYEE_SORT_FIELDS
+                        )
+                );
 
         if (employees.isEmpty()) {
-            throw new EmptyPageException(page, "No employees match the search criteria");
+            throw new EmptyPageException(
+                    pageable.getPageNumber(),
+                    "No employees match the search criteria"
+            );
         }
 
         return employees.map(adminMapper::toDTO);

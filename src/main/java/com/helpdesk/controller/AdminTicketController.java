@@ -1,6 +1,7 @@
 package com.helpdesk.controller;
 
 import com.helpdesk.model.TicketStatus;
+import com.helpdesk.model.request.AdminTicketSearchRequestDTO;
 import com.helpdesk.model.request.TicketAddRemarkRequestDTO;
 import com.helpdesk.model.request.TicketUpdateRequestDTO;
 import com.helpdesk.model.response.PageResponseDTO;
@@ -115,28 +116,18 @@ public class AdminTicketController {
         return ResponseEntity.noContent().build();
     }
 
-    // GET /admin/{adminId}/tickets/search?title=bug&assignee=John&status=IN_PROGRESS&page=0&size=5&sortBy=title&direction=asc
+    // GET /admin/{adminId}/tickets/search?title=bug&assignee=John&status=IN_PROGRESS&page=0&size=5&sort=title,asc
     // sortBy = title, status, assignee
     @GetMapping("/{adminId}/tickets/search")
     public ResponseEntity<PageResponseDTO<Page<TicketResponseDTO>>> searchTickets(
             @PathVariable Long adminId,
-            @RequestParam(required = false) String title,
-            @RequestParam(required = false) String assignee,
-            @RequestParam(required = false) TicketStatus status,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size,
-            @RequestParam(defaultValue = "title") String sortBy,
-            @RequestParam(defaultValue = "asc") String direction
+            AdminTicketSearchRequestDTO searchRequest,
+            Pageable pageable
     ) {
         Page<TicketResponseDTO> result = adminTicketService.searchTickets(
                 adminId,
-                title,
-                assignee,
-                status,
-                page,
-                size,
-                sortBy,
-                direction
+                searchRequest,
+                pageable
         );
 
         return ResponseEntity.ok(

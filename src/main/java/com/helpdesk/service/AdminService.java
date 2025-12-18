@@ -1,7 +1,7 @@
 package com.helpdesk.service;
 
-import com.helpdesk.model.EmploymentStatus;
 import com.helpdesk.model.request.AdminCreateRequestDTO;
+import com.helpdesk.model.request.AdminSearchRequestDTO;
 import com.helpdesk.model.request.AdminUpdateRequestDTO;
 import com.helpdesk.model.request.AssignPositionRequestDTO;
 import com.helpdesk.model.response.AdminResponseDTO;
@@ -27,14 +27,5 @@ public interface AdminService {
 
     AdminResponseDTO unassignPositionFromEmployee(Long adminId, Long employeeId);
 
-    Page<AdminResponseDTO> searchEmployees(
-            Long adminId,
-            String name,
-            String positionTitle,
-            EmploymentStatus status,
-            int page,
-            int size,
-            String sortBy,
-            String direction
-    );
+    Page<AdminResponseDTO> searchEmployees(Long adminId, AdminSearchRequestDTO adminSearchRequestDTO, Pageable pageable);
 }

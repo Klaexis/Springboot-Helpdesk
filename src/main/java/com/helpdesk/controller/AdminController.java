@@ -1,7 +1,7 @@
 package com.helpdesk.controller;
 
-import com.helpdesk.model.EmploymentStatus;
 import com.helpdesk.model.request.AdminCreateRequestDTO;
+import com.helpdesk.model.request.AdminSearchRequestDTO;
 import com.helpdesk.model.request.AdminUpdateRequestDTO;
 import com.helpdesk.model.request.AssignPositionRequestDTO;
 import com.helpdesk.model.response.AdminResponseDTO;
@@ -114,21 +114,17 @@ public class AdminController {
         ));
     }
 
-    // GET /admin/{adminId}/employees/search?name=John&position=Employee&status=ACTIVE&page=0&size=10&sortBy=name&direction=asc
+    // GET /admin/{adminId}/employees/search?name=John&position=Employee&status=ACTIVE&page=0&size=5&sort=name,asc
     @GetMapping("/{adminId}/employees/search")
     public ResponseEntity<PageResponseDTO<Page<AdminResponseDTO>>> searchEmployees(
             @PathVariable Long adminId,
-            @RequestParam(required = false) String name,
-            @RequestParam(required = false) String position,
-            @RequestParam(required = false) EmploymentStatus status,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "name") String sortBy,
-            @RequestParam(defaultValue = "asc") String direction
+            AdminSearchRequestDTO searchRequest,
+            Pageable pageable
     ) {
         Page<AdminResponseDTO> result = adminService.searchEmployees(
-                adminId, name, position, status,
-                page, size, sortBy, direction
+                adminId,
+                searchRequest,
+                pageable
         );
 
         return ResponseEntity.ok(

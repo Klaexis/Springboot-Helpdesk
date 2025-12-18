@@ -13,6 +13,7 @@ import com.helpdesk.service.EmployeePositionService;
 
 import com.helpdesk.service.mapper.EmployeePositionMapper;
 import com.helpdesk.service.util.EmployeeValidationHelper;
+import com.helpdesk.service.util.PageableSortMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional
@@ -34,15 +36,25 @@ public class EmployeePositionServiceImpl implements EmployeePositionService {
 
     private final EmployeePositionMapper positionMapper;
 
+    private final PageableSortMapper pageableSortMapper;
+
     public EmployeePositionServiceImpl(EmployeePositionRepository positionRepository,
                                        EmployeeRepository employeeRepository,
                                        EmployeeValidationHelper employeeValidationHelper,
-                                       EmployeePositionMapper positionMapper) {
+                                       EmployeePositionMapper positionMapper,
+                                       PageableSortMapper pageableSortMapper) {
         this.positionRepository = positionRepository;
         this.employeeRepository = employeeRepository;
         this.employeeValidationHelper = employeeValidationHelper;
         this.positionMapper = positionMapper;
+        this.pageableSortMapper = pageableSortMapper;
     }
+
+    private static final Map<String, String> POSITION_SORT_FIELDS = Map.of(
+            "position","positionTitle"
+    );
+
+    private static final String DEFAULT_POSITION_SORT = "positionTitle";
 
     private Employee validateAdmin(Long adminId) {
         Employee admin = employeeRepository.findById(adminId)
@@ -85,35 +97,14 @@ public class EmployeePositionServiceImpl implements EmployeePositionService {
                                                                       Pageable pageable) {
         validateAdmin(adminId);
 
-        Sort sortedFields;
-
-        if (pageable.getSort().isUnsorted()) {
-            sortedFields = Sort.by("positionTitle").ascending();
-        } else {
-            List<Sort.Order> orders = new ArrayList<>();
-
-            for (Sort.Order order : pageable.getSort()) {
-                String mappedField = switch (order.getProperty().toLowerCase()) {
-                    case "position" -> "positionTitle";
-                    default -> throw new IllegalArgumentException(
-                            "Invalid sort field: " + order.getProperty()
-                    );
-                };
-
-                orders.add(new Sort.Order(order.getDirection(), mappedField));
-            }
-
-            sortedFields = Sort.by(orders);
-        }
-
-        Pageable mappedPageable = PageRequest.of(
-                pageable.getPageNumber(),
-                pageable.getPageSize(),
-                sortedFields
-        );
-
         Page<EmployeePosition> positions =
-                positionRepository.findAll(mappedPageable);
+                positionRepository.findAll(
+                        pageableSortMapper.map(
+                                pageable,
+                                DEFAULT_POSITION_SORT,
+                                POSITION_SORT_FIELDS
+                        )
+                );
 
         if (positions.isEmpty()) {
             throw new EmptyPageException(

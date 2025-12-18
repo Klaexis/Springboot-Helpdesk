@@ -49,8 +49,9 @@ public class EmployeePositionController {
 
     // GET /admin/{adminId}/positions/get/{positionId}
     @GetMapping("/{adminId}/positions/get/{positionId}")
-    public ResponseEntity<EmployeePositionResponseDTO> getPositionById(@PathVariable Long adminId,
-                                                            @PathVariable Long positionId) {
+    public ResponseEntity<EmployeePositionResponseDTO> getPositionById(
+            @PathVariable Long adminId,
+            @PathVariable Long positionId) {
         return ResponseEntity.ok(employeePositionService.findPosition(
                 adminId,
                 positionId
@@ -59,8 +60,9 @@ public class EmployeePositionController {
 
     // POST /admin/{adminId}/positions/create
     @PostMapping("/{adminId}/positions/create")
-    public ResponseEntity<EmployeePositionResponseDTO> createEmployeePosition(@PathVariable Long adminId,
-                                                                   @RequestBody EmployeePositionRequestDTO positionTitle) {
+    public ResponseEntity<EmployeePositionResponseDTO> createEmployeePosition(
+            @PathVariable Long adminId,
+            @RequestBody EmployeePositionRequestDTO positionTitle) {
         return ResponseEntity.ok(employeePositionService.createPosition(
                 adminId,
                 positionTitle
@@ -69,9 +71,10 @@ public class EmployeePositionController {
 
     // PATCH /admin/{adminId}/positions/update/{positionId}
     @PatchMapping("/{adminId}/positions/update/{positionId}")
-    public ResponseEntity<EmployeePositionResponseDTO> updateEmployeePosition(@PathVariable Long adminId,
-                                                                   @PathVariable Long positionId,
-                                                                   @RequestBody EmployeePositionRequestDTO  positionTitle) {
+    public ResponseEntity<EmployeePositionResponseDTO> updateEmployeePosition(
+            @PathVariable Long adminId,
+            @PathVariable Long positionId,
+            @RequestBody EmployeePositionRequestDTO  positionTitle) {
         return ResponseEntity.ok(employeePositionService.updatePosition(
                 adminId,
                 positionId,
