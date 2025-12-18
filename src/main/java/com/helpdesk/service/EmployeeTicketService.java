@@ -6,6 +6,7 @@ import com.helpdesk.model.request.TicketCreateRequestDTO;
 import com.helpdesk.model.request.TicketUpdateRequestDTO;
 import com.helpdesk.model.response.TicketResponseDTO;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -15,7 +16,7 @@ public interface EmployeeTicketService {
 
     List<TicketResponseDTO> viewAssignedTickets(Long employeeId);
 
-    Page<TicketResponseDTO> viewAssignedTicketsPaginated(Long employeeId, int page, int size, String sortBy, String direction);
+    Page<TicketResponseDTO> viewAssignedTicketsPaginated(Long employeeId, Pageable pageable);
 
     TicketResponseDTO updateOwnTicket(Long ticketId, TicketUpdateRequestDTO updatedTicket, Long employeeId);
 
@@ -23,7 +24,7 @@ public interface EmployeeTicketService {
 
     List<TicketResponseDTO> getAllFiledTickets(Long employeeId);
 
-    Page<TicketResponseDTO> getAllFiledTicketsPaginated(Long employeeId, int page, int size, String sortBy, String direction);
+    Page<TicketResponseDTO> getAllFiledTicketsPaginated(Long employeeId, Pageable pageable);
 
     TicketResponseDTO getFiledTicket(Long employeeId, Long ticketId);
 

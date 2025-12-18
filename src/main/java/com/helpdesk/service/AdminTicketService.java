@@ -4,13 +4,14 @@ import com.helpdesk.model.TicketStatus;
 import com.helpdesk.model.request.TicketUpdateRequestDTO;
 import com.helpdesk.model.response.TicketResponseDTO;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 public interface AdminTicketService {
     TicketResponseDTO assignTicket(Long ticketId, Long adminId, Long employeeId);
 
-    Page<TicketResponseDTO> getAllTicketsPaginated(Long adminId, int page, int size, String sortBy, String direction);
+    Page<TicketResponseDTO> getAllTicketsPaginated(Long adminId, Pageable pageable);
 
     TicketResponseDTO getTicket(Long adminId, Long ticketId);
 

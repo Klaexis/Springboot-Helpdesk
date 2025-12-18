@@ -16,6 +16,7 @@ import com.helpdesk.service.AdminService;
 import com.helpdesk.service.mapper.AdminMapper;
 import com.helpdesk.service.util.EmployeeValidationHelper;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -102,28 +103,46 @@ public class AdminServiceImpl implements AdminService {
     @Transactional(readOnly = true)
     @Override
     public Page<AdminResponseDTO> getAllEmployeesPaginated(Long adminId,
-                                                           int page,
-                                                           int size,
-                                                           String sortBy,
-                                                           String direction) {
+                                                           Pageable pageable) {
         validateAdmin(adminId);
 
-        String sortField = switch (sortBy.toLowerCase()) {
-            case "name" -> "employeeName";
-            case "position" -> "employeePosition.positionTitle";
-            case "status" -> "employmentStatus";
-            default -> throw new IllegalArgumentException("Invalid sort field: " + sortBy);
-        };
+        Sort sortedFields;
 
-        Sort sort = direction.equalsIgnoreCase("desc")
-                ? Sort.by(sortField).descending()
-                : Sort.by(sortField).ascending();
+        if (pageable.getSort().isUnsorted()) {
+            sortedFields = Sort.by("employeeName").ascending();
+        } else {
+            List<Sort.Order> orders = new ArrayList<>();
 
-        Pageable pageable = PageRequest.of(page, size, sort);
-        Page<Employee> employees = employeeRepository.findAll(pageable);
+            for (Sort.Order order : pageable.getSort()) {
+                String mappedField = switch (order.getProperty().toLowerCase()) {
+                    case "name" -> "employeeName";
+                    case "position" -> "employeePosition.positionTitle";
+                    case "status" -> "employmentStatus";
+                    default -> throw new IllegalArgumentException(
+                            "Invalid sort field: " + order.getProperty()
+                    );
+                };
+
+                orders.add(new Sort.Order(order.getDirection(), mappedField));
+            }
+
+            sortedFields = Sort.by(orders);
+        }
+
+        Pageable mappedPageable = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                sortedFields
+        );
+
+        Page<Employee> employees =
+                employeeRepository.findAll(mappedPageable);
 
         if (employees.isEmpty()) {
-            throw new EmptyPageException(page, "Contains no employees");
+            throw new EmptyPageException(
+                    pageable.getPageNumber(),
+                    "Contains no employees"
+            );
         }
 
         return employees.map(adminMapper::toDTO);

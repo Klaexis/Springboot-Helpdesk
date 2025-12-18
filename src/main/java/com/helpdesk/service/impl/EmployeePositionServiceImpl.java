@@ -20,6 +20,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -81,25 +82,44 @@ public class EmployeePositionServiceImpl implements EmployeePositionService {
     @Transactional(readOnly = true)
     @Override
     public Page<EmployeePositionResponseDTO> getAllPositionsPaginated(Long adminId,
-                                                                      int page,
-                                                                      int size,
-                                                                      String sortBy,
-                                                                      String direction) {
+                                                                      Pageable pageable) {
         validateAdmin(adminId);
 
-        String sortField = switch (sortBy.toLowerCase()) {
-            case "position" -> "positionTitle";
-            default -> throw new IllegalArgumentException("Invalid sort field: " + sortBy);
-        };
+        Sort sortedFields;
 
-        Sort sort = direction.equalsIgnoreCase("desc")
-                ? Sort.by(sortField).descending()
-                : Sort.by(sortField).ascending();
+        if (pageable.getSort().isUnsorted()) {
+            sortedFields = Sort.by("positionTitle").ascending();
+        } else {
+            List<Sort.Order> orders = new ArrayList<>();
 
-        Pageable pageable = PageRequest.of(page, size, sort);
-        Page<EmployeePosition> positions = positionRepository.findAll(pageable);
+            for (Sort.Order order : pageable.getSort()) {
+                String mappedField = switch (order.getProperty().toLowerCase()) {
+                    case "position" -> "positionTitle";
+                    default -> throw new IllegalArgumentException(
+                            "Invalid sort field: " + order.getProperty()
+                    );
+                };
+
+                orders.add(new Sort.Order(order.getDirection(), mappedField));
+            }
+
+            sortedFields = Sort.by(orders);
+        }
+
+        Pageable mappedPageable = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                sortedFields
+        );
+
+        Page<EmployeePosition> positions =
+                positionRepository.findAll(mappedPageable);
+
         if (positions.isEmpty()) {
-            throw new EmptyPageException(page, "No positions found");
+            throw new EmptyPageException(
+                    pageable.getPageNumber(),
+                    "No positions found"
+            );
         }
 
         return positions.map(positionMapper::toDTO);

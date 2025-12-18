@@ -26,6 +26,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -128,29 +129,47 @@ public class AdminTicketServiceImpl implements AdminTicketService {
     @Transactional(readOnly = true)
     @Override
     public Page<TicketResponseDTO> getAllTicketsPaginated(Long adminId,
-                                                          int page,
-                                                          int size,
-                                                          String sortBy,
-                                                          String direction) {
+                                                          Pageable pageable) {
         validateAdmin(adminId);
 
-        String sortField = switch (sortBy.toLowerCase()) {
-            case "createdat" -> "ticketCreatedDate";
-            case "updatedat" -> "ticketUpdatedDate";
-            case "status" -> "ticketStatus";
-            case "title" -> "ticketTitle";
-            default -> throw new IllegalArgumentException("Invalid sort field: " + sortBy);
-        };
+        Sort sortedFields;
 
-        Sort sort = direction.equalsIgnoreCase("desc")
-                ? Sort.by(sortField).descending()
-                : Sort.by(sortField).ascending();
+        if (pageable.getSort().isUnsorted()) {
+            sortedFields = Sort.by("ticketCreatedDate").ascending();
+        } else {
+            List<Sort.Order> orders = new ArrayList<>();
 
-        Pageable pageable = PageRequest.of(page, size, sort);
-        Page<Ticket> tickets = ticketRepository.findAll(pageable);
+            for (Sort.Order order : pageable.getSort()) {
+                String mappedField = switch (order.getProperty().toLowerCase()) {
+                    case "createdat" -> "ticketCreatedDate";
+                    case "updatedat" -> "ticketUpdatedDate";
+                    case "status" -> "ticketStatus";
+                    case "title" -> "ticketTitle";
+                    default -> throw new IllegalArgumentException(
+                            "Invalid sort field: " + order.getProperty()
+                    );
+                };
+
+                orders.add(new Sort.Order(order.getDirection(), mappedField));
+            }
+
+            sortedFields = Sort.by(orders);
+        }
+
+        Pageable mappedPageable = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                sortedFields
+        );
+
+        Page<Ticket> tickets =
+                ticketRepository.findAll(mappedPageable);
 
         if (tickets.isEmpty()) {
-            throw new EmptyPageException(page, "Contains no tickets");
+            throw new EmptyPageException(
+                    pageable.getPageNumber(),
+                    "Contains no tickets"
+            );
         }
 
         return tickets.map(ticketMapper::toTicketDTO);

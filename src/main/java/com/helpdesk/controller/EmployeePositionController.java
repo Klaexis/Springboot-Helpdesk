@@ -29,7 +29,7 @@ public class EmployeePositionController {
         ));
     }
 
-    // GET /admin/{adminId}/positions/pages?page=0&size=5&sortBy=position&direction=asc
+    // GET /admin/{adminId}/positions/pages?page=0&size=5&sort=position,asc
     // sortBy = position
     @GetMapping("/{adminId}/positions/pages")
     public ResponseEntity<PageResponseDTO<Page<EmployeePositionResponseDTO>>> getAllPositionsPaginated(
@@ -37,7 +37,7 @@ public class EmployeePositionController {
             Pageable pageable
     ) {
         Page<EmployeePositionResponseDTO> result = employeePositionService.getAllPositionsPaginated(
-                adminId, pageable.getPageNumber(), pageable.getPageSize(), "position", "asc");
+                adminId, pageable);
 
         return ResponseEntity.ok(
             new PageResponseDTO<>(

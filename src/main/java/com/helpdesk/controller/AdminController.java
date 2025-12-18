@@ -10,6 +10,7 @@ import com.helpdesk.service.AdminService;
 
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,18 +35,15 @@ public class AdminController {
         ));
     }
 
-    // GET /admin/{adminId}/employees/pages?page=0&size=5&sortBy=name&direction=asc
+    // GET /admin/{adminId}/employees/pages?page=0&size=5&sort=name,desc
     // sortBy = name, position, status
     @GetMapping("/{adminId}/employees/pages")
     public ResponseEntity<PageResponseDTO<Page<AdminResponseDTO>>> getAllEmployeesPaginated(
             @PathVariable Long adminId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size,
-            @RequestParam(defaultValue = "name") String sortBy,
-            @RequestParam(defaultValue = "asc") String direction
+            Pageable pageable
     ) {
         Page<AdminResponseDTO> result = adminService.getAllEmployeesPaginated
-                (adminId, page, size, sortBy, direction);
+                (adminId, pageable);
 
         return ResponseEntity.ok(
             new PageResponseDTO<>(

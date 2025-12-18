@@ -9,6 +9,7 @@ import com.helpdesk.model.response.TicketResponseDTO;
 import com.helpdesk.service.EmployeeTicketService;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -43,22 +44,15 @@ public class EmployeeTicketController {
         ));
     }
 
-    // GET /employee/{employeeId}/tickets/get/assignedTickets/pages?page=0&size=5&sortBy=createdAt&direction=asc
+    // GET /employee/{employeeId}/tickets/get/assignedTickets/pages?page=0&size=5&sort=createdat,asc
     // sortBy = createdAt, updatedAt, status, title
     @GetMapping("/{employeeId}/tickets/get/assignedTickets/pages")
     public ResponseEntity<PageResponseDTO<Page<TicketResponseDTO>>> viewAssignedTicketsPaginated(
             @PathVariable Long employeeId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size,
-            @RequestParam(defaultValue = "createdAt") String sortBy,
-            @RequestParam(defaultValue = "asc") String direction
-    ) {
+            Pageable pageable) {
         Page<TicketResponseDTO> result = employeeTicketService.viewAssignedTicketsPaginated(
                 employeeId,
-                page,
-                size,
-                sortBy,
-                direction
+                pageable
         );
 
         return ResponseEntity.ok(
@@ -110,21 +104,15 @@ public class EmployeeTicketController {
         ));
     }
 
-    // GET /employee/{employeeId}/tickets/get/filedTickets/pages?page=0&size=5&sortBy=createdAt&direction=asc
+    // GET /employee/{employeeId}/tickets/get/filedTickets/pages?page=0&size=5&sort=createdat,asc
     // sortBy = createdAt, updatedAt, title
     @GetMapping("/{employeeId}/tickets/get/filedTickets/pages")
     public ResponseEntity<PageResponseDTO<Page<TicketResponseDTO>>> getAllFiledTicketsPaginated(
             @PathVariable Long employeeId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size,
-            @RequestParam(defaultValue = "createdAt") String sortBy,
-            @RequestParam(defaultValue = "asc") String direction) {
+            Pageable pageable) {
         Page<TicketResponseDTO> result = employeeTicketService.getAllFiledTicketsPaginated(
                 employeeId,
-                page,
-                size,
-                sortBy,
-                direction
+                pageable
         );
 
         return ResponseEntity.ok(

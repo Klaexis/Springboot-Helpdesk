@@ -11,6 +11,7 @@ public class EmployeePositionMapper {
         if (position == null) return null;
 
         EmployeePositionResponseDTO dto = new EmployeePositionResponseDTO();
+        dto.setId(position.getId());
         dto.setPositionTitle(position.getPositionTitle());
         return dto;
     }

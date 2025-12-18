@@ -6,13 +6,14 @@ import com.helpdesk.model.request.AdminUpdateRequestDTO;
 import com.helpdesk.model.request.AssignPositionRequestDTO;
 import com.helpdesk.model.response.AdminResponseDTO;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 public interface AdminService {
     AdminResponseDTO findEmployee(Long adminId, Long employeeId);
 
-    Page<AdminResponseDTO> getAllEmployeesPaginated(Long adminId, int page, int size, String sortBy, String direction);
+    Page<AdminResponseDTO> getAllEmployeesPaginated(Long adminId, Pageable pageable);
 
     List<AdminResponseDTO> getAllEmployees(Long adminId);
 
