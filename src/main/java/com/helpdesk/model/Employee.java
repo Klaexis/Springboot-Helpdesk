@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-// Make all IDs into id
 @Entity
 @Table(name = "employees")
 public class Employee {

@@ -1,6 +1,5 @@
 package com.helpdesk.controller;
 
-import com.helpdesk.model.EmployeePosition;
 import com.helpdesk.model.request.EmployeePositionRequestDTO;
 import com.helpdesk.model.response.EmployeePositionResponseDTO;
 import com.helpdesk.model.response.PageResponseDTO;
