@@ -1,6 +1,7 @@
 package com.helpdesk.service.impl;
 
-import com.helpdesk.exception.*;
+import com.helpdesk.exception.TicketAccessException;
+import com.helpdesk.exception.EmptyPageException;
 import com.helpdesk.model.Employee;
 import com.helpdesk.model.Ticket;
 import com.helpdesk.model.TicketRemark;
@@ -10,12 +11,11 @@ import com.helpdesk.model.request.TicketSearchAssignedRequestDTO;
 import com.helpdesk.model.request.TicketSearchFiledRequestDTO;
 import com.helpdesk.model.request.TicketUpdateRequestDTO;
 import com.helpdesk.model.response.TicketResponseDTO;
-import com.helpdesk.repository.EmployeeRepository;
 import com.helpdesk.repository.TicketRepository;
 import com.helpdesk.repository.specification.TicketSpecification;
 import com.helpdesk.service.EmployeeTicketService;
+import com.helpdesk.service.ValidationService;
 import com.helpdesk.service.mapper.TicketMapper;
-import com.helpdesk.service.util.EmployeeValidationHelper;
 
 import com.helpdesk.service.util.PageableSortMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,29 +34,25 @@ import java.util.stream.Collectors;
 public class EmployeeTicketServiceImpl implements EmployeeTicketService {
     private final TicketRepository ticketRepository;
 
-    private final EmployeeRepository employeeRepository;
-
-    private final EmployeeValidationHelper employeeValidationHelper;
-
     private final TicketMapper ticketMapper;
 
     private final TicketSpecification ticketSpecification;
 
     private final PageableSortMapper pageableSortMapper;
 
+    private final ValidationService validationService;
+
     @Autowired
     public EmployeeTicketServiceImpl(TicketRepository ticketRepository,
-                                     EmployeeRepository employeeRepository,
-                                     EmployeeValidationHelper employeeValidationHelper,
                                      TicketMapper ticketMapper,
                                      TicketSpecification ticketSpecification,
-                                     PageableSortMapper pageableSortMapper) {
+                                     PageableSortMapper pageableSortMapper,
+                                     ValidationService validationService) {
         this.ticketRepository = ticketRepository;
-        this.employeeRepository = employeeRepository;
-        this.employeeValidationHelper = employeeValidationHelper;
         this.ticketMapper = ticketMapper;
         this.ticketSpecification = ticketSpecification;
         this.pageableSortMapper = pageableSortMapper;
+        this.validationService = validationService;
     }
 
     private static final Map<String, String> TICKET_ASSIGNED_SORT_FIELDS = Map.of(
@@ -74,20 +70,6 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
 
     private static final String DEFAULT_TICKET_SORT = "ticketCreatedDate";
 
-    private Employee validateEmployee(Long employeeId) {
-        Employee employee = employeeRepository.findById(employeeId)
-                .orElseThrow(() -> new EmployeeNotFoundException(employeeId));
-
-        employeeValidationHelper.validateActive(employee);
-
-        return employee;
-    }
-
-    private Ticket getTicketOrThrow(Long ticketId) {
-        return ticketRepository.findById(ticketId)
-                .orElseThrow(() -> new TicketNotFoundException(ticketId));
-    }
-
     private void handleTicketClosure(Ticket ticket) {
         if (ticket.getTicketStatus() == TicketStatus.CLOSED) {
             Employee assignee = ticket.getTicketAssignee();
@@ -101,7 +83,7 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
     @Override
     public TicketResponseDTO fileTicket(TicketCreateRequestDTO ticket,
                                         Long employeeId) {
-        Employee employee = validateEmployee(employeeId);
+        Employee employee = validationService.validateEmployee(employeeId);
 
         Ticket newTicket = ticketMapper.toEntity(ticket);
         newTicket.setTicketCreatedBy(employee);
@@ -121,7 +103,7 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
     @Transactional(readOnly = true)
     @Override
     public List<TicketResponseDTO> viewAssignedTickets(Long employeeId) {
-        validateEmployee(employeeId);
+        validationService.validateEmployee(employeeId);
 
         return ticketRepository.findByTicketAssigneeId(employeeId)
                 .stream()
@@ -133,7 +115,7 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
     @Override
     public Page<TicketResponseDTO> viewAssignedTicketsPaginated(Long employeeId,
                                                                 Pageable pageable) {
-        validateEmployee(employeeId);
+        validationService.validateEmployee(employeeId);
 
         Page<Ticket> tickets =
                 ticketRepository.findByTicketAssigneeId(
@@ -159,8 +141,8 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
     public TicketResponseDTO updateOwnTicket(Long ticketId,
                                              TicketUpdateRequestDTO updatedTicket,
                                              Long employeeId) {
-        Ticket ticket = getTicketOrThrow(ticketId);
-        Employee employee = validateEmployee(employeeId);
+        Ticket ticket = validationService.getTicketOrThrow(ticketId);
+        Employee employee = validationService.validateEmployee(employeeId);
 
         if (!ticket.getTicketCreatedBy().getId().equals(employeeId)) {
             throw new TicketAccessException("You can only update your own tickets");
@@ -178,8 +160,8 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
     public TicketResponseDTO updateOwnTicketStatus(Long ticketId,
                                                    TicketStatus newStatus,
                                                    Long employeeId) {
-        Ticket ticket = getTicketOrThrow(ticketId);
-        Employee employee = validateEmployee(employeeId);
+        Ticket ticket = validationService.getTicketOrThrow(ticketId);
+        Employee employee = validationService.validateEmployee(employeeId);
 
         Employee assignee = ticket.getTicketAssignee();
         if (assignee == null || !assignee.getId().equals(employeeId)) {
@@ -199,8 +181,8 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
                                                        Long employeeId,
                                                        String remark,
                                                        TicketStatus newStatus) {
-        Ticket ticket = getTicketOrThrow(ticketId);
-        Employee employee = validateEmployee(employeeId);
+        Ticket ticket = validationService.getTicketOrThrow(ticketId);
+        Employee employee = validationService.validateEmployee(employeeId);
 
         Employee assignee = ticket.getTicketAssignee();
         if (assignee == null || !assignee.getId().equals(employeeId)) {
@@ -222,7 +204,7 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
     @Transactional(readOnly = true)
     @Override
     public List<TicketResponseDTO> getAllFiledTickets(Long employeeId) {
-        validateEmployee(employeeId);
+        validationService.validateEmployee(employeeId);
 
         List<Ticket> filedTickets = ticketRepository.findByTicketStatus(TicketStatus.FILED);
 
@@ -235,7 +217,7 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
     @Override
     public Page<TicketResponseDTO> getAllFiledTicketsPaginated(Long employeeId,
                                                                Pageable pageable) {
-        validateEmployee(employeeId);
+        validationService.validateEmployee(employeeId);
 
         Page<Ticket> tickets =
                 ticketRepository.findByTicketStatus(
@@ -261,8 +243,8 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
     @Override
     public TicketResponseDTO getFiledTicket(Long employeeId,
                                             Long ticketId) {
-        validateEmployee(employeeId);
-        Ticket ticket = getTicketOrThrow(ticketId);
+        validationService.validateEmployee(employeeId);
+        Ticket ticket = validationService.getTicketOrThrow(ticketId);
 
         if (ticket.getTicketStatus() != TicketStatus.FILED) {
             throw new IllegalArgumentException("Ticket is not in FILED status");
@@ -276,7 +258,7 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
     public Page<TicketResponseDTO> searchAssignedTickets(Long employeeId,
                                                          TicketSearchAssignedRequestDTO ticketSearchAssignedRequestDTO,
                                                          Pageable pageable) {
-        validateEmployee(employeeId);
+        validationService.validateEmployee(employeeId);
 
         Specification<Ticket> spec = Specification.allOf(
                 ticketSpecification.assignedToEmployee(employeeId),
@@ -310,7 +292,7 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
     public Page<TicketResponseDTO> searchFiledTickets(Long employeeId,
                                                       TicketSearchFiledRequestDTO searchFiledRequestDTO,
                                                       Pageable pageable) {
-        validateEmployee(employeeId);
+        validationService.validateEmployee(employeeId);
 
         Specification<Ticket> spec = Specification.allOf(
                 ticketSpecification.hasStatus(TicketStatus.FILED),

@@ -1,6 +1,8 @@
 package com.helpdesk.service.impl;
 
-import com.helpdesk.exception.*;
+import com.helpdesk.exception.EmployeeNotFoundException;
+import com.helpdesk.exception.EmployeePositionNotFoundException;
+import com.helpdesk.exception.EmptyPageException;
 import com.helpdesk.model.Employee;
 import com.helpdesk.model.EmployeePosition;
 import com.helpdesk.model.request.AdminCreateRequestDTO;
@@ -13,8 +15,8 @@ import com.helpdesk.repository.EmployeeRepository;
 import com.helpdesk.repository.TicketRepository;
 import com.helpdesk.repository.specification.EmployeeSpecification;
 import com.helpdesk.service.AdminService;
+import com.helpdesk.service.ValidationService;
 import com.helpdesk.service.mapper.AdminMapper;
-import com.helpdesk.service.util.EmployeeValidationHelper;
 import com.helpdesk.service.util.PageableSortMapper;
 
 import java.util.List;
@@ -37,28 +39,28 @@ public class AdminServiceImpl implements AdminService {
 
     private final TicketRepository ticketRepository;
 
-    private final EmployeeValidationHelper employeeValidationHelper;
-
     private final AdminMapper adminMapper;
 
     private final EmployeeSpecification employeeSpecification;
 
     private final PageableSortMapper  pageableSortMapper;
 
+    private final ValidationService validationService;
+
     public AdminServiceImpl(EmployeeRepository employeeRepository,
                             EmployeePositionRepository positionRepository,
                             TicketRepository ticketRepository,
-                            EmployeeValidationHelper employeeValidationHelper,
                             AdminMapper adminMapper,
                             EmployeeSpecification employeeSpecification,
-                            PageableSortMapper pageableSortMapper) {
+                            PageableSortMapper pageableSortMapper,
+                            ValidationService validationService) {
         this.employeeRepository = employeeRepository;
         this.positionRepository = positionRepository;
         this.ticketRepository = ticketRepository;
-        this.employeeValidationHelper = employeeValidationHelper;
         this.adminMapper = adminMapper;
         this.employeeSpecification = employeeSpecification;
         this.pageableSortMapper = pageableSortMapper;
+        this.validationService = validationService;
     }
 
     private static final Map<String, String> EMPLOYEE_SORT_FIELDS = Map.of(
@@ -69,27 +71,11 @@ public class AdminServiceImpl implements AdminService {
 
     private static final String DEFAULT_EMPLOYEE_SORT = "employeeName";
 
-    // Make validateAdmin and getEmployeeOrThrow into helper methods
-    private Employee validateAdmin(Long adminId) {
-        Employee admin = employeeRepository.findById(adminId)
-                .orElseThrow(() -> new AdminNotFoundException(adminId));
-
-        employeeValidationHelper.validateAdmin(admin);
-        employeeValidationHelper.validateActive(admin);
-
-        return admin;
-    }
-
-    private Employee getEmployeeOrThrow(Long employeeId) {
-        return employeeRepository.findById(employeeId)
-                .orElseThrow(() -> new EmployeeNotFoundException(employeeId));
-    }
-
     @Transactional(readOnly = true)
     @Override
     public AdminResponseDTO findEmployee(Long adminId,
                                          Long employeeId) {
-        validateAdmin(adminId);
+        validationService.validateAdmin(adminId);
 
         Employee employee = employeeRepository.findByIdWithTickets(employeeId);
         if (employee == null) {
@@ -102,7 +88,7 @@ public class AdminServiceImpl implements AdminService {
     @Transactional(readOnly = true)
     @Override
     public List<AdminResponseDTO> getAllEmployees(Long adminId) {
-        validateAdmin(adminId);
+        validationService.validateAdmin(adminId);
 
         return employeeRepository.findAll()
                 .stream()
@@ -114,7 +100,7 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public Page<AdminResponseDTO> getAllEmployeesPaginated(Long adminId,
                                                            Pageable pageable) {
-        validateAdmin(adminId);
+        validationService.validateAdmin(adminId);
 
         Page<Employee> employees =
                 employeeRepository.findAll(
@@ -138,7 +124,7 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public AdminResponseDTO createEmployee(Long adminId,
                                            @Valid AdminCreateRequestDTO createdEmployee) {
-        validateAdmin(adminId);
+        validationService.validateAdmin(adminId);
         Employee employee = adminMapper.toEntity(createdEmployee);
 
         if (createdEmployee.getPositionTitle() != null && !createdEmployee.getPositionTitle().isBlank()) {
@@ -159,8 +145,8 @@ public class AdminServiceImpl implements AdminService {
     public AdminResponseDTO updateEmployee(Long adminId,
                                            Long employeeId,
                                            AdminUpdateRequestDTO updatedEmployee) {
-        validateAdmin(adminId);
-        Employee employee = getEmployeeOrThrow(employeeId);
+        validationService.validateAdmin(adminId);
+        Employee employee = validationService.getEmployeeOrThrow(employeeId);
 
         if (updatedEmployee.getEmployeeName() != null && updatedEmployee.getEmployeeName().isBlank()) {
             throw new IllegalArgumentException("Name cannot be blank");
@@ -197,8 +183,8 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public void deleteEmployee(Long adminId,
                                Long employeeId) {
-        validateAdmin(adminId);
-        Employee employee = getEmployeeOrThrow(employeeId);
+        validationService.validateAdmin(adminId);
+        Employee employee = validationService.getEmployeeOrThrow(employeeId);
 
         employee.getAssignedTickets().forEach(ticket -> ticket.setTicketAssignee(null));
         ticketRepository.saveAll(employee.getAssignedTickets());
@@ -210,8 +196,8 @@ public class AdminServiceImpl implements AdminService {
     public AdminResponseDTO assignPositionToEmployee(Long adminId,
                                                      Long employeeId,
                                                      AssignPositionRequestDTO positionTitle) {
-        validateAdmin(adminId);
-        Employee employee = getEmployeeOrThrow(employeeId);
+        validationService.validateAdmin(adminId);
+        Employee employee = validationService.getEmployeeOrThrow(employeeId);
 
         EmployeePosition position =
                 positionRepository.findByPositionTitle(positionTitle.getPositionTitle());
@@ -228,9 +214,9 @@ public class AdminServiceImpl implements AdminService {
     @Transactional
     public AdminResponseDTO unassignPositionFromEmployee(Long adminId,
                                                          Long employeeId) {
-        validateAdmin(adminId);
+        validationService.validateAdmin(adminId);
 
-        Employee employee = getEmployeeOrThrow(employeeId);
+        Employee employee = validationService.getEmployeeOrThrow(employeeId);
 
         if (employee.getEmployeePosition() == null) {
             throw new IllegalStateException("Employee has no assigned position");
@@ -247,7 +233,7 @@ public class AdminServiceImpl implements AdminService {
             AdminSearchRequestDTO adminSearchRequestDTO,
             Pageable pageable
     ) {
-        validateAdmin(adminId);
+        validationService.validateAdmin(adminId);
 
         // allOf = AND, anyOf = OR
         Specification<Employee> spec = Specification.allOf(

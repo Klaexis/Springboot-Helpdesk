@@ -1,9 +1,6 @@
 package com.helpdesk.service.impl;
 
-import com.helpdesk.exception.AdminNotFoundException;
-import com.helpdesk.exception.EmployeeNotFoundException;
 import com.helpdesk.exception.EmptyPageException;
-import com.helpdesk.exception.TicketNotFoundException;
 import com.helpdesk.model.Employee;
 import com.helpdesk.model.Ticket;
 import com.helpdesk.model.TicketRemark;
@@ -15,8 +12,8 @@ import com.helpdesk.repository.EmployeeRepository;
 import com.helpdesk.repository.TicketRepository;
 import com.helpdesk.repository.specification.TicketSpecification;
 import com.helpdesk.service.AdminTicketService;
+import com.helpdesk.service.ValidationService;
 import com.helpdesk.service.mapper.TicketMapper;
-import com.helpdesk.service.util.EmployeeValidationHelper;
 
 import com.helpdesk.service.util.PageableSortMapper;
 import org.springframework.data.domain.Page;
@@ -36,26 +33,26 @@ public class AdminTicketServiceImpl implements AdminTicketService {
 
     private final EmployeeRepository employeeRepository;
 
-    private final EmployeeValidationHelper employeeValidationHelper;
-
     private final TicketMapper ticketMapper;
 
     private final TicketSpecification ticketSpecification;
 
     private final PageableSortMapper pageableSortMapper;
 
+    private final ValidationService validationService;
+
     public AdminTicketServiceImpl(TicketRepository ticketRepository,
                                   EmployeeRepository employeeRepository,
-                                  EmployeeValidationHelper employeeValidationHelper,
                                   TicketMapper ticketMapper,
                                   TicketSpecification ticketSpecification,
-                                  PageableSortMapper pageableSortMapper) {
+                                  PageableSortMapper pageableSortMapper,
+                                  ValidationService validationService) {
         this.ticketRepository = ticketRepository;
         this.employeeRepository = employeeRepository;
-        this.employeeValidationHelper = employeeValidationHelper;
         this.ticketMapper = ticketMapper;
         this.ticketSpecification = ticketSpecification;
         this.pageableSortMapper = pageableSortMapper;
+        this.validationService = validationService;
     }
 
     private static final Map<String, String> TICKET_SORT_FIELDS = Map.of(
@@ -66,26 +63,6 @@ public class AdminTicketServiceImpl implements AdminTicketService {
     );
 
     private static final String DEFAULT_TICKET_SORT = "ticketCreatedDate";
-
-    private Employee validateAdmin(Long adminId) {
-        Employee admin = employeeRepository.findById(adminId)
-                .orElseThrow(() -> new AdminNotFoundException(adminId));
-
-        employeeValidationHelper.validateAdmin(admin);
-        employeeValidationHelper.validateActive(admin);
-
-        return admin;
-    }
-
-    private Employee getEmployeeOrThrow(Long employeeId) {
-        return employeeRepository.findById(employeeId)
-                .orElseThrow(() -> new EmployeeNotFoundException(employeeId));
-    }
-
-    private Ticket getTicketOrThrow(Long ticketId) {
-        return ticketRepository.findById(ticketId)
-                .orElseThrow(() -> new TicketNotFoundException(ticketId));
-    }
 
     private void handleTicketClosure(Ticket ticket) {
         if (ticket.getTicketStatus() == TicketStatus.CLOSED) {
@@ -101,9 +78,9 @@ public class AdminTicketServiceImpl implements AdminTicketService {
     public TicketResponseDTO assignTicket(Long ticketId,
                                           Long adminId,
                                           Long employeeId) {
-        Ticket ticket = getTicketOrThrow(ticketId);
-        Employee admin = validateAdmin(adminId);
-        Employee employee = getEmployeeOrThrow(employeeId);
+        Ticket ticket = validationService.getTicketOrThrow(ticketId);
+        Employee admin = validationService.validateAdmin(adminId);
+        Employee employee = validationService.getEmployeeOrThrow(employeeId);
 
         ticket.setTicketAssignee(employee);
         ticket.setTicketUpdatedBy(admin);
@@ -122,15 +99,15 @@ public class AdminTicketServiceImpl implements AdminTicketService {
     @Override
     public TicketResponseDTO getTicket(Long adminId,
                                        Long ticketId) {
-        validateAdmin(adminId);
+        validationService.validateAdmin(adminId);
 
-        return ticketMapper.toTicketDTO(getTicketOrThrow(ticketId));
+        return ticketMapper.toTicketDTO(validationService.getTicketOrThrow(ticketId));
     }
 
     @Transactional(readOnly = true)
     @Override
     public List<TicketResponseDTO> getAllTickets(Long adminId) {
-        validateAdmin(adminId);
+        validationService.validateAdmin(adminId);
 
         return ticketRepository.findAll()
                 .stream()
@@ -142,7 +119,7 @@ public class AdminTicketServiceImpl implements AdminTicketService {
     @Override
     public Page<TicketResponseDTO> getAllTicketsPaginated(Long adminId,
                                                           Pageable pageable) {
-        validateAdmin(adminId);
+        validationService.validateAdmin(adminId);
 
         Page<Ticket> tickets =
                 ticketRepository.findAll(
@@ -167,8 +144,8 @@ public class AdminTicketServiceImpl implements AdminTicketService {
     public TicketResponseDTO updateTicket(Long ticketId,
                                           TicketUpdateRequestDTO updatedTicket,
                                           Long adminId) {
-        Ticket ticket = getTicketOrThrow(ticketId);
-        Employee admin = validateAdmin(adminId);
+        Ticket ticket = validationService.getTicketOrThrow(ticketId);
+        Employee admin = validationService.validateAdmin(adminId);
 
         ticketMapper.updateEntity(updatedTicket, ticket);
         ticket.setTicketUpdatedBy(admin);
@@ -182,8 +159,8 @@ public class AdminTicketServiceImpl implements AdminTicketService {
     public TicketResponseDTO updateTicketStatus(Long ticketId,
                                                 TicketStatus newStatus,
                                                 Long adminId) {
-        Ticket ticket = getTicketOrThrow(ticketId);
-        Employee admin = validateAdmin(adminId);
+        Ticket ticket = validationService.getTicketOrThrow(ticketId);
+        Employee admin = validationService.validateAdmin(adminId);
 
         ticket.setTicketStatus(newStatus);
         ticket.setTicketUpdatedBy(admin);
@@ -198,8 +175,8 @@ public class AdminTicketServiceImpl implements AdminTicketService {
                                              Long adminId,
                                              String remark,
                                              TicketStatus newStatus) {
-        Ticket ticket = getTicketOrThrow(ticketId);
-        Employee admin = validateAdmin(adminId);
+        Ticket ticket = validationService.getTicketOrThrow(ticketId);
+        Employee admin = validationService.validateAdmin(adminId);
 
         TicketRemark ticketRemark = new TicketRemark(remark, admin, ticket);
         ticket.getTicketRemarks().add(ticketRemark);
@@ -216,8 +193,8 @@ public class AdminTicketServiceImpl implements AdminTicketService {
 
     @Override
     public void deleteTicket(Long adminId, Long ticketId) {
-        validateAdmin(adminId);
-        Ticket ticket = getTicketOrThrow(ticketId);
+        validationService.validateAdmin(adminId);
+        Ticket ticket = validationService.getTicketOrThrow(ticketId);
 
         Employee assignee = ticket.getTicketAssignee();
         if (assignee != null) {
@@ -236,7 +213,7 @@ public class AdminTicketServiceImpl implements AdminTicketService {
     public Page<TicketResponseDTO> searchTickets(Long adminId,
                                                  AdminTicketSearchRequestDTO adminTicketSearchRequestDTO,
                                                  Pageable pageable) {
-        validateAdmin(adminId);
+        validationService.validateAdmin(adminId);
 
         Specification<Ticket> spec = Specification.allOf(
                 ticketSpecification.hasTitle(adminTicketSearchRequestDTO.getTitle()),
