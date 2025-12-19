@@ -64,16 +64,6 @@ public class AdminTicketServiceImpl implements AdminTicketService {
 
     private static final String DEFAULT_TICKET_SORT = "ticketCreatedDate";
 
-    private void handleTicketClosure(Ticket ticket) {
-        if (ticket.getTicketStatus() == TicketStatus.CLOSED) {
-            Employee assignee = ticket.getTicketAssignee();
-            if (assignee != null) {
-                assignee.getAssignedTickets().remove(ticket);
-                ticket.setTicketAssignee(null);
-            }
-        }
-    }
-
     @Override
     public TicketResponseDTO assignTicket(Long ticketId,
                                           Long adminId,
@@ -150,7 +140,7 @@ public class AdminTicketServiceImpl implements AdminTicketService {
         ticketMapper.updateEntity(updatedTicket, ticket);
         ticket.setTicketUpdatedBy(admin);
 
-        handleTicketClosure(ticket);
+        validationService.handleTicketClosure(ticket);
 
         return ticketMapper.toTicketDTO(ticketRepository.save(ticket));
     }
@@ -165,7 +155,7 @@ public class AdminTicketServiceImpl implements AdminTicketService {
         ticket.setTicketStatus(newStatus);
         ticket.setTicketUpdatedBy(admin);
 
-        handleTicketClosure(ticket);
+        validationService.handleTicketClosure(ticket);
 
         return ticketMapper.toTicketDTO(ticketRepository.save(ticket));
     }
@@ -186,7 +176,7 @@ public class AdminTicketServiceImpl implements AdminTicketService {
         }
         ticket.setTicketUpdatedBy(admin);
 
-        handleTicketClosure(ticket);
+        validationService.handleTicketClosure(ticket);
 
         return ticketMapper.toTicketDTO(ticketRepository.save(ticket));
     }

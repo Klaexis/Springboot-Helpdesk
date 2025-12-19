@@ -7,6 +7,7 @@ import com.helpdesk.exception.TicketNotFoundException;
 import com.helpdesk.model.Employee;
 import com.helpdesk.model.EmployeePosition;
 import com.helpdesk.model.Ticket;
+import com.helpdesk.model.TicketStatus;
 import com.helpdesk.repository.EmployeePositionRepository;
 import com.helpdesk.repository.EmployeeRepository;
 import com.helpdesk.repository.TicketRepository;
@@ -67,6 +68,17 @@ public class ValidationServiceImpl implements ValidationService {
     public EmployeePosition getPositionOrThrow(Long positionId) {
         return positionRepository.findById(positionId)
                 .orElseThrow(() -> new EmployeePositionNotFoundException(positionId));
+    }
+
+    @Transactional
+    public void handleTicketClosure(Ticket ticket) {
+        if (ticket.getTicketStatus() == TicketStatus.CLOSED) {
+            Employee assignee = ticket.getTicketAssignee();
+            if (assignee != null) {
+                assignee.getAssignedTickets().remove(ticket);
+                ticket.setTicketAssignee(null);
+            }
+        }
     }
 
 }

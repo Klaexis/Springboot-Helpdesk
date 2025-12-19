@@ -70,16 +70,6 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
 
     private static final String DEFAULT_TICKET_SORT = "ticketCreatedDate";
 
-    private void handleTicketClosure(Ticket ticket) {
-        if (ticket.getTicketStatus() == TicketStatus.CLOSED) {
-            Employee assignee = ticket.getTicketAssignee();
-            if (assignee != null) {
-                assignee.getAssignedTickets().remove(ticket);
-                ticket.setTicketAssignee(null);
-            }
-        }
-    }
-
     @Override
     public TicketResponseDTO fileTicket(TicketCreateRequestDTO ticket,
                                         Long employeeId) {
@@ -151,7 +141,7 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
         ticketMapper.updateEntity(updatedTicket, ticket);
         ticket.setTicketUpdatedBy(employee);
 
-        handleTicketClosure(ticket);
+        validationService.handleTicketClosure(ticket);
 
         return ticketMapper.toTicketDTO(ticketRepository.save(ticket));
     }
@@ -171,7 +161,7 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
         ticket.setTicketStatus(newStatus);
         ticket.setTicketUpdatedBy(employee);
 
-        handleTicketClosure(ticket);
+        validationService.handleTicketClosure(ticket);
 
         return ticketMapper.toTicketDTO(ticketRepository.save(ticket));
     }
@@ -196,7 +186,7 @@ public class EmployeeTicketServiceImpl implements EmployeeTicketService {
 
         ticket.setTicketUpdatedBy(employee);
 
-        handleTicketClosure(ticket);
+        validationService.handleTicketClosure(ticket);
 
         return ticketMapper.toTicketDTO(ticketRepository.save(ticket));
     }

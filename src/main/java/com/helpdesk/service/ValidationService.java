@@ -14,4 +14,6 @@ public interface ValidationService {
     Ticket getTicketOrThrow(Long ticketId);
 
     EmployeePosition getPositionOrThrow(Long positionId);
+
+    void handleTicketClosure(Ticket ticket);
 }
