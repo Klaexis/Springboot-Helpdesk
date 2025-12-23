@@ -71,6 +71,6 @@ public class TicketSpecification {
 
     public Specification<Ticket> assignedToEmployee(Long employeeId) {
         return (root, query, cb) ->
-                cb.equal(root.get("ticketAssignee").get("employeeId"), employeeId);
+                cb.equal(root.get("ticketAssignee").get("id"), employeeId);
     }
 }
